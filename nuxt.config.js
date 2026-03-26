@@ -26,8 +26,8 @@ export default {
   ],
 
   publicRuntimeConfig: {
-    apiBaseUrl: process.env.API_BASE_URL || 'http://127.0.0.1:8000',
-    userApiBaseUrl: process.env.USER_API_BASE_URL || `${process.env.API_BASE_URL || 'http://127.0.0.1:8000'}/user/`
+    apiBaseUrl: process.env.API_BASE_URL || 'http://172.65.10.52:8014',
+    userApiBaseUrl: process.env.USER_API_BASE_URL || `${process.env.API_BASE_URL || 'http://172.65.10.52:8014'}/user/`
   },
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -45,7 +45,7 @@ export default {
   ],
 
   axios: {
-    baseURL: process.env.API_BASE_URL || 'http://127.0.0.1:8000'
+    baseURL: process.env.API_BASE_URL || 'http://172.65.10.52:8014'
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
