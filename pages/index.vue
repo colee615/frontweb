@@ -46,9 +46,9 @@ const FALLBACK_PAGE = {
 
 export default {
   name: 'IndexPage',
-  async asyncData({ $axios, $config }) {
+  async asyncData({ $api }) {
     try {
-      const payload = await $axios.$get(`${($config && $config.apiBaseUrl) || 'http://127.0.0.1:8000'}/api/site/pages/home`)
+      const payload = await $api.$get('/api/site/pages/home')
 
       return {
         pageContent: normalizePageContent(payload)
@@ -89,9 +89,6 @@ export default {
         market: this.getSectionSettings('market'),
         footer: this.getSectionSettings('footer')
       }
-    },
-    apiBaseUrl() {
-      return this.$config.apiBaseUrl || 'http://127.0.0.1:8000'
     },
     themeStyles() {
       const theme = this.pageContent.theme || {}

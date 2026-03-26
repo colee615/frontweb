@@ -1,3 +1,6 @@
+const API_BASE_URL = process.env.API_BASE_URL || 'http://172.65.10.52:8014'
+const USER_API_BASE_URL = process.env.USER_API_BASE_URL || `${API_BASE_URL}/user/`
+
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -22,12 +25,12 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '~/plugins/user.js'
+    '~/plugins/api.js'
   ],
 
   publicRuntimeConfig: {
-    apiBaseUrl: process.env.API_BASE_URL || 'http://172.65.10.52:8014',
-    userApiBaseUrl: process.env.USER_API_BASE_URL || `${process.env.API_BASE_URL || 'http://172.65.10.52:8014'}/user/`
+    apiBaseUrl: API_BASE_URL,
+    userApiBaseUrl: USER_API_BASE_URL
   },
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -45,7 +48,7 @@ export default {
   ],
 
   axios: {
-    baseURL: process.env.API_BASE_URL || 'http://172.65.10.52:8014'
+    baseURL: API_BASE_URL
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
