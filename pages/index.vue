@@ -9,15 +9,9 @@
               <img v-if="logoUrl" :src="logoUrl" alt="Correos de Bolivia" />
             </div>
             <div class="cb-page-loader__copy">
-              <span class="cb-page-loader__eyebrow">Cargando contenido actualizado</span>
-              <h2>Estamos preparando tu experiencia</h2>
-              <p>Recuperamos la informacion del servidor para mostrar el sitio completo y sin saltos visuales.</p>
+              <span class="cb-page-loader__eyebrow">Actualizando contenido</span>
+              <p>Cargando informacion del sitio</p>
             </div>
-          </div>
-          <div class="cb-page-loader__pulse">
-            <span />
-            <span />
-            <span />
           </div>
           <div class="cb-page-loader__bar">
             <span />
