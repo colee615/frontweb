@@ -1,23 +1,30 @@
 <template>
-  <section class="cb-app-banner" :style="bannerStyle">
-    <div class="cb-shell cb-app-inner">
-      <div class="cb-app-copy">
-        <div class="cb-app-icon" v-html="icons.phone"></div>
-        <div>
-          <h2>{{ content.title || 'Nueva App de Correos de Bolivia' }}</h2>
-          <p>{{ content.text || 'Descargala ahora y gestiona tus envios desde tu movil con total comodidad' }}</p>
-        </div>
-      </div>
+  <section class="cb-app-banner">
+    <div class="cb-app-banner-stage">
+      <transition name="cb-app-banner-fade" mode="out-in">
+        <div
+          :key="activeSlideKey"
+          class="cb-app-banner-slide"
+          :style="activeSlideStyle"
+          role="img"
+          :aria-label="activeSlide.title || 'Banner promocional'"
+        ></div>
+      </transition>
 
-      <div class="cb-store-buttons">
-        <a :href="content.app_store_url || '#'" class="cb-store-btn">
-          <span class="cb-inline-icon" v-html="icons.download"></span>
-          <span>{{ appStoreLines[0] }}<br>{{ appStoreLines[1] }}</span>
-        </a>
-        <a :href="content.play_store_url || '#'" class="cb-store-btn">
-          <span class="cb-inline-icon" v-html="icons.download"></span>
-          <span>{{ playStoreLines[0] }}<br>{{ playStoreLines[1] }}</span>
-        </a>
+      <div v-if="hasMultipleSlides" class="cb-app-banner-controls">
+        <button type="button" class="cb-app-banner-btn" aria-label="Banner anterior" @click="goPrev">‹</button>
+        <div class="cb-app-banner-dots">
+          <button
+            v-for="(slide, index) in normalizedSlides"
+            :key="slide.key"
+            type="button"
+            class="cb-app-banner-dot"
+            :class="{ 'is-active': index === activeIndex }"
+            :aria-label="`Ir al banner ${index + 1}`"
+            @click="goTo(index)"
+          ></button>
+        </div>
+        <button type="button" class="cb-app-banner-btn" aria-label="Siguiente banner" @click="goNext">›</button>
       </div>
     </div>
   </section>
@@ -27,39 +34,108 @@
 export default {
   name: 'HomeAppBanner',
   props: {
-    icons: {
-      type: Object,
-      required: true
-    },
     content: {
       type: Object,
       default: () => ({})
+    },
+    slides: {
+      type: Array,
+      default: () => []
+    }
+  },
+  data() {
+    return {
+      activeIndex: 0,
+      rotationTimer: null
     }
   },
   computed: {
-    appStoreLines() {
-      return this.parseLines(this.content.app_store_label || 'Disponible en|App Store')
+    normalizedSlides() {
+      return (Array.isArray(this.slides) ? this.slides : [])
+        .filter((slide) => slide && slide.image)
+        .map((slide, index) => ({
+          key: slide.id || slide.title || slide.image || `app-banner-${index}`,
+          title: slide.title || `Banner ${index + 1}`,
+          image: slide.image,
+          durationSeconds: Math.max(1, Number.parseInt(slide.duration_seconds, 10) || 5)
+        }))
     },
-    playStoreLines() {
-      return this.parseLines(this.content.play_store_label || 'Disponible en|Google Play')
+    hasMultipleSlides() {
+      return this.normalizedSlides.length > 1
     },
-    bannerStyle() {
-      if (!this.content.background_image) {
+    activeSlide() {
+      return this.normalizedSlides[this.activeIndex] || this.normalizedSlides[0] || {}
+    },
+    activeSlideKey() {
+      return `${this.activeSlide.key}-${this.activeIndex}`
+    },
+    activeSlideStyle() {
+      if (!this.activeSlide.image) {
         return {}
       }
 
       return {
-        backgroundImage: `linear-gradient(rgba(254, 204, 54, 0.68), rgba(254, 204, 54, 0.68)), url('${this.content.background_image}')`,
-        backgroundPosition: 'center',
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat'
+        backgroundImage: `url('${this.activeSlide.image}')`
       }
     }
   },
+  mounted() {
+    this.startRotation()
+  },
+  watch: {
+    slides: {
+      deep: true,
+      handler() {
+        this.activeIndex = 0
+        this.startRotation()
+      }
+    }
+  },
+  beforeDestroy() {
+    this.clearRotation()
+  },
   methods: {
-    parseLines(value) {
-      const parts = value.split('|')
-      return parts.length >= 2 ? parts : ['Disponible en', 'App Store']
+    clearRotation() {
+      clearTimeout(this.rotationTimer)
+      this.rotationTimer = null
+    },
+    startRotation() {
+      this.clearRotation()
+
+      if (!this.hasMultipleSlides) {
+        return
+      }
+
+      const duration = (this.activeSlide.durationSeconds || 5) * 1000
+
+      this.rotationTimer = setTimeout(() => {
+        this.goNext(true)
+      }, duration)
+    },
+    goTo(index) {
+      this.activeIndex = index
+      this.startRotation()
+    },
+    goNext(fromTimer = false) {
+      if (!this.hasMultipleSlides) {
+        return
+      }
+
+      this.activeIndex = (this.activeIndex + 1) % this.normalizedSlides.length
+
+      if (!fromTimer) {
+        this.startRotation()
+      } else {
+        this.startRotation()
+      }
+    },
+    goPrev() {
+      if (!this.hasMultipleSlides) {
+        return
+      }
+
+      this.activeIndex = (this.activeIndex - 1 + this.normalizedSlides.length) % this.normalizedSlides.length
+      this.startRotation()
     }
   }
 }

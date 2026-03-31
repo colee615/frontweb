@@ -1,5 +1,12 @@
 ﻿<template>
   <div class="cb-bolivia-map-stage">
+    <div
+      class="cb-bolivia-map-canvas"
+      :class="{ 'is-compact-layout': usesCompactCard }"
+      @mouseenter="handleCanvasMouseEnter"
+      @mouseleave="handleCanvasMouseLeave"
+      @click.self="handleCanvasClick"
+    >
 <svg class="cb-bolivia-map-svg" aria-label="Mapa de Bolivia por departamentos" role="img" baseprofile="tiny" fill="#ffffff" height="1000" stroke="#2f5fa7" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" version="1.2" viewBox="0 0 1000 1000" width="1000" xmlns="http://www.w3.org/2000/svg">
  <g id="features">
   <path class="cb-bolivia-dept cb-bolivia-dept--BOL" data-id="BOL" data-name="La Paz" d="M136.8 613l-0.7-1.1-0.8 0-1 0.4-1.4 0.1-1.1-0.4-1.1-0.4-2-1.3-1.5-0.4-0.5-0.1-0.4-0.5-1.4-1.5-1 0.2-0.8 0.6-0.8 0-1-1.7-0.6-2.5-0.1-5.1-0.4-2.5-1.7-3.2-2.3-2.6-5.3-4.8-1.4-2.1-0.6-2.5-0.3-5.5 0.1-5-0.2-2.4-0.7-2-1-1.3-1.3-1.3-2.6-2.2-1.1-0.4-3.4-0.4-0.1 0 1.1-1.8 1.1-3.8 0.7-1.5 0.3-0.1 1.1-0.2 0.4-0.1 3.6-3.3 2-1.4 1.8-0.7 1.9-0.3 1.7-0.7 1.5-1.7 0.3-1-0.3-0.5-0.5-0.2-0.2-0.4 0.2-0.7 0.4-0.4 2.8-1.7 0.8-0.9 1.7-3.8 6.7-7.2 0.9-1.5 1.3-3.7 0.6-1 1-0.6 2.4-0.2 1.2-0.3 3.8-2 1.1-0.9 1.1-1.4 0.8-1.1-1.7-2.4-0.4-1.2 0.2-2.1-0.1-4 0.2-1.4 0.6-1.2 1.7-2.2 2.2-1.1 7.4-3 1.5-2.3-0.7-1.9-1.5-1-3.5-1.4-2.6-3-1.5-0.9-1.9 0.7-2.1-0.7-0.7-0.1-0.8 0.3-1.2 1-0.8 0.3-1.7 0-1.5-0.6-1.5-0.8-1.2-1.1-2.3-2.9-1.5-3.7-2.7-7.1-2.8-7.1-2.8-7-2.9-7.1-0.8-2-0.3-2 0.6-2.1 4.2-6.5 0.4-1.3 0.1-1.4 0.4-1.3 0.8-1.3 0.7-0.3 1.8-0.6 0.5-0.3 0-0.6-0.8-2.1 0.4-1.1 1.1-1.4 1.2-1.1 2.2-0.8 0.9-2.6 1.3-0.1 1.6 0.1 1-0.8 0.1-1.3-1.5-1.5-1.6-2.4-1.1-1-3.9-2.9-1.1-1.1-3.8-5.9-1.1-1-1.4-1.3-0.4-1.2 0.3-1.3 1-2.6 0.2-0.5-0.3-5.6 0.1-1.1 0.6-0.9 1.5-0.9 3.6-1.1 1.1-0.6 0.9-2 0.4-8.7 0.8-1.3 1.3-0.1 1.5 0.3 1.5 0 0.4-0.7-0.2-3.2 0.2-1.1 0.4-0.3 1.1-0.3 0.5-0.3 2.6-3 1.2-0.9 4.3-2.4 1.3-1.3-0.3-1.3-0.9-1.4-0.5-1.2 0-2.6 0.1-1.3 0.3-1.2 1.7-1.2 2.2-0.6 4.4-0.6 1.3-1.3-0.3-2.4-1.6-4.6-0.4-2.3-0.4-1-0.7-1-3.5-2.4-0.9-1.2-0.4-2.2 0-2.4-0.2-2.3-1.2-1.8-0.8-2.6-0.1-0.9 0.2-1.1 0.3-0.8 0-0.8-0.7-1-3.5-2.9-1.4-1.9 0.9-1.6 0.9 0 2 0.3 0.7-0.1 0.6-0.8 0-0.8-0.1-0.8 0.2-0.9 0.5-0.8 1.4-1.5 0.5-0.9 0.6-1.6 0.4-1.7-0.2-1.5 0.7-13.3-0.9-5.3-0.2-2.7 0.5-8-0.1-1-0.8-6.6 0-2.9 0.3-1.6 2.1-1.6 0.7-1.6 0.8-1.3 1.5 0.2 0.8-1.9 1-1.4 1.4-0.9 5.4-1.5 0.5-0.6 1.5-3-0.6-0.8-2.2-0.5-0.6-0.7 0.1-1.1 0.6-1 0.9-0.7 2-1.1 0.9-0.8 0.8-1 0.5-1.1 0.4-1.3 0.4-0.6 0.7-0.3-0.4-0.6 0.8 0.1 2.1 0.1 0.7-0.1 0.4-0.3 0.8-0.9 0.3-0.2 1.3-3.6 0.7-1 1.6-0.3 1.1 0.6 1 0.7 1.1 0.4 1.3-0.2 0.8-0.5 1.3-2 3-7.7 1.4-2.1 7.8-4.1 1.7-1.8 0.5-2.3 0.5-4.9 1.1-1.8 2-1 4.9-0.7 1.8-0.9 1.4 0.1 1.6-0.3 1.6-0.6 1.1-0.8 1-1.5 0.5-1.7 0-0.4 1.2 0.3 67.6 31.9-0.5 1.2-0.2 1.3 0.1 4.1 0.2 0.9 0.5 1-0.1 1.1-0.8 1.4-1.7 2.4 1 2.9 0.3 1.4-0.1 1.7-3.7 15.6-3.2 7.7-0.9 0.3-1.1-0.1-1.3 0.2-1.1 1.1-2.6 4.7-0.5 0.4-1.2 0.7-0.5 0.4-0.3 0.6-0.3 1.4-0.3 0.6-5.3 6.3-2.3 1.8-1 1.2-2.8 4.3-1.1 2.3 0.1 2.3 1.1 6.2 1.1 1.8 0 1.3-0.5 1.1-2.8 3.6-1.3 2.1-0.8 0.9-1 0.7-0.9 0.9-0.6 1.3-0.8 2.8 0 1.3 0.9 1.8-0.2 1.3-0.6 1.1-0.6 0.8-0.5 1-1.8 8.1 0 1.1 0.9 3 0 0.8 0.7 5.3-0.2 4.1 0.6 2.2 0.1 1.1-0.3 1.1-0.8 1-2.1 0.9-0.8 0.7-0.2 1.2 0.1 1.3 0.4 1.4 0.9 2.4 0.2 0.3 0.4 0.4 0.2 0.2 0.1 0.4 0 0.9 0 0.4 0.3 0.7 1.5 1.4 0.8 1.2 0.4 1.3-0.1 1.4-0.6 1.3-0.4 0.6-1.1 0.9-0.5 0.6-0.3 0.7-0.2 0.5 0.3 0.5 1.8 4.2 1.3 1.8 3.2 3 0.5 1 0.4 1.5 0 2.8-0.3 2.6-0.3 1.4-0.2 1.4 0.1 1.1 0.2 1.4 0.8 2.5 1 1.2 0.9 0.6 1 0.7 0.6 0.4 0.7 0.2 0.9 0.1 1.5-0.2 0.8 0 0.8 0.1 0.8 0.6 0.7 0.9 1.2 2.5 0.6 0.9 0.8 0.9 1.6 1.8 1.8 2.7 4.2 8.5 0.2 0.9 0 0.8-0.5 2.9 0 0.7 0.1 0.7 0.2 0.7 0.5 0.8 0.7 0.7 0.9 0.6 1.4 0.6 0.4 0.3 0.6 0.6 1.4 2.4 13.2 12.5 2.7 2.8-5.5 4.7-2.4 3-2 2.2 0.1 0.2 0.3 0.2 0.3 0.2 0.3 0.3 0.1 0.4-0.2 1.1-0.3 0.7-0.6 0.7-0.5 0.8-0.2 0.8 0.1 0.8 0.2 1.6 0 1.8-0.6 5 0.1 0.7 0.2 0.5 1.2 1.5 1 1.8 1.9 2.1 0.7 1.2 0.2 1.5-0.2 1 0.1 0.5 2.1 0.7 0.3 0.3 0.5 0.9 1.4 1.8 0.4 1-0.3 8.5-0.9 3.4 0.1 1.8 0.8 1.8 1.9 3.5 0.6 2-0.1 5.2 0.1 0.9 0.4 3.2 0.1 1.1-0.2 1.1-0.9 1.4-1.5 1.2-1.8 1-1.5 0.5-4 0.5-1.6 0.8-1.3 1.9-1.2 2.3-0.5 1.2-0.1 1.4 0.2 1.4-0.1 0.6-0.2 0.8-1.2 1.5-0.3 0.6-0.5 1.4-0.2 1.4 0.3 1.3 1 0.9 3.1 1.3 0.7 1.1 1 1.1 0.8 1.2 0.5 0.9 0.4 1.1 0.9 5-0.2 2.1 0.1 0.9 0.2 0.7 0.5 0.9 0.5 0.6 1 3.7-1.3 2.6 0.3 0.7 0.4 0.8 0.6 0.6 0.4 0.6 0.2 1-0.5 0.6-0.8 0.6-8.5 4.5-1.5-1.4-0.2-0.3-1.6-1.8-1.1-1.7-0.8-1.8-0.5-0.8-0.4-0.6-0.6-0.6-0.9-0.8-0.4-0.2-0.5-0.2-0.8-0.1-0.7-0.1-0.5 0.1-8.6 2.4-1.4 0.6-7.8 4.6-8 5.8-1.6 1.2-10.9 6.9-1.3 0.9-0.2 0.4-0.1 0.5 0.1 1 0.2 0.5 0.2 0.5 0.6 1 0.4 1 0.1 0.3 0 0.5-0.1 0.4-0.2 0.7-0.1 0.5-0.4 0.7-0.5 0.5-1.4 0.9-0.8 0.2-0.9-0.1-0.3-0.1-0.4-0.1-12.9-9.8-1.5-0.7-2.2-0.8-5.2-2.6-2-0.7-10.3-0.4-7.9 0.6-2.1 0.6-4.2 1.9-0.6 0.4-3.7 3.2-5.8 7.4-2.3 2.1-5.6 4.3-3.4 1.9-8.7 2.3-4.8 2.5-0.6 0.2z"  id="BOL" name="La Paz">
@@ -33,51 +40,243 @@
       role="button"
       tabindex="0"
       :aria-label="marker.name"
-      @mouseenter="setActiveDepartment(marker.dept)"
-      @mouseleave="clearActiveDepartment(marker.dept)"
+      @mouseenter="handleMarkerMouseEnter(marker.dept)"
       @focus="setActiveDepartment(marker.dept)"
-      @blur="clearActiveDepartment(marker.dept)"
-      @click="toggleActiveDepartment(marker.dept)"
+      @blur="scheduleClearActiveDepartment"
+      @click.stop="handleMarkerClick(marker)"
       @keydown.enter.prevent="toggleActiveDepartment(marker.dept)"
       @keydown.space.prevent="toggleActiveDepartment(marker.dept)"
     >
       <span class="cb-map-marker__pin" aria-hidden="true"></span>
       <span class="cb-map-marker__label">{{ marker.name }}</span>
     </div>
+      <transition name="cb-map-overlay">
+        <aside
+          v-if="activeOffice && !usesCompactCard"
+          class="cb-map-office-card"
+          :class="activeOfficePlacementClass"
+          :style="activeOfficeStyle"
+          :aria-label="`Informacion de ${activeOffice.name}`"
+          @click.stop
+          @mouseenter="cancelHoverTimers"
+          @mouseleave="handleCardMouseLeave"
+        >
+          <p class="cb-map-office-card__eyebrow">{{ activeOffice.name }}</p>
+          <h4>{{ activeOffice.officeName }}</h4>
+          <p class="cb-map-office-card__address">{{ activeOffice.address }}</p>
+          <div class="cb-map-office-card__facts">
+            <span v-if="activeOffice.weekdayHours" class="cb-map-office-card__fact">
+              Lun a Vie: {{ activeOffice.weekdayHours }}
+            </span>
+            <span v-if="activeOffice.saturdayHours" class="cb-map-office-card__fact">
+              Sábado: {{ activeOffice.saturdayHours }}
+            </span>
+            <span
+              v-if="!activeOffice.weekdayHours && !activeOffice.saturdayHours && activeOffice.hours"
+              class="cb-map-office-card__fact"
+            >
+              {{ activeOffice.hours }}
+            </span>
+          </div>
+          <button type="button" class="cb-map-route-btn" @click="openGoogleMaps(activeOffice)">
+            Abrir en Google Maps
+          </button>
+        </aside>
+      </transition>
+    </div>
   </div>
 </template>
 
 <script>
+const FALLBACK_MARKERS = [
+  { key: 'lapaz', dept: 'BOL', name: 'La Paz', officeName: 'Oficina Central La Paz', address: 'Av. Mariscal Santa Cruz, La Paz', phone: '+591 2 2312121', hours: 'Lun a Vie, 08:00 a 18:00', weekdayHours: '08:00 a 18:00', saturdayHours: '09:00 a 13:00', left: '29.6%', top: '46%', delay: '0.25s', mapsUrl: 'https://www.google.com/maps/search/?api=1&query=-16.4957,-68.1336' },
+  { key: 'cochabamba', dept: 'BOC', name: 'Cochabamba', officeName: 'Oficina Correos Cochabamba', address: 'Av. Ayacucho, Cochabamba', phone: '+591 4 4528001', hours: 'Lun a Vie, 08:00 a 17:30', weekdayHours: '08:00 a 17:30', saturdayHours: '09:00 a 12:30', left: '41.8%', top: '58.5%', delay: '0.35s', mapsUrl: 'https://www.google.com/maps/search/?api=1&query=-17.3895,-66.1568' },
+  { key: 'santacruz', dept: 'BOS', name: 'Santa Cruz', officeName: 'Oficina Correos Santa Cruz', address: 'Av. Irala, Santa Cruz de la Sierra', phone: '+591 3 3366001', hours: 'Lun a Vie, 08:00 a 17:30', weekdayHours: '08:00 a 17:30', saturdayHours: '09:00 a 12:30', left: '59.2%', top: '58%', delay: '0.55s', mapsUrl: 'https://www.google.com/maps/search/?api=1&query=-17.7833,-63.1821' }
+]
+
 export default {
   name: 'HomeBoliviaMap',
+  props: {
+    offices: {
+      type: Array,
+      default: () => []
+    }
+  },
+  computed: {
+    markers() {
+      const source = this.offices.length ? this.offices : FALLBACK_MARKERS
+
+      return source
+        .filter((office) => office.dept && office.left && office.top)
+        .map((office, index) => ({
+          key: office.key || String(office.name || office.title || `office-${index}`).toLowerCase().replace(/[^a-z0-9]+/g, ''),
+          dept: String(office.dept || '').toUpperCase(),
+          name: office.name || office.title || `Oficina ${index + 1}`,
+          officeName: office.title || office.officeName || office.name || `Oficina ${index + 1}`,
+          address: office.address || '',
+          phone: office.phone || '',
+          hours: office.hours || '',
+          weekdayHours: this.normalizeScheduleValue(office.weekday_hours || office.weekdayHours || office.hours || '', 'weekday'),
+          saturdayHours: this.normalizeScheduleValue(office.saturday_hours || office.saturdayHours || '', 'saturday'),
+          left: office.left,
+          top: office.top,
+          delay: office.delay || `${Math.min(index, 6) * 0.1}s`,
+          mapsUrl: office.maps_url || office.mapsUrl || '#'
+        }))
+    },
+    activeOffice() {
+      return this.markers.find((marker) => marker.dept === this.activeDepartment) || null
+    },
+    activeOfficeStyle() {
+      if (!this.activeOffice || this.usesCompactCard) {
+        return {}
+      }
+
+      return {
+        left: this.activeOffice.left,
+        top: this.activeOffice.top
+      }
+    },
+    activeOfficePlacementClass() {
+      if (!this.activeOffice) {
+        return ''
+      }
+
+      if (this.usesCompactCard) {
+        return {
+          'is-compact': true
+        }
+      }
+
+      const left = Number.parseFloat(this.activeOffice.left)
+      const top = Number.parseFloat(this.activeOffice.top)
+
+      return {
+        'is-right': left >= 58,
+        'is-bottom': top <= 28
+      }
+    },
+    usesCompactCard() {
+      return this.viewportWidth <= 767 || !this.canHover
+    }
+  },
   data() {
     return {
       activeDepartment: null,
+      hoverOpenTimeout: null,
+      hoverCloseTimeout: null,
       departmentElements: {},
-      markers: [
-        { key: 'cobija', dept: 'BON', name: 'Cobija', left: '33.2%', top: '16.5%', delay: '0s' },
-        { key: 'lapaz', dept: 'BOL', name: 'La Paz', left: '29.6%', top: '46%', delay: '0.25s' },
-        { key: 'trinidad', dept: 'BOB', name: 'Trinidad', left: '43.8%', top: '35.5%', delay: '0.45s' },
-        { key: 'oruro', dept: 'BOO', name: 'Oruro', left: '31.8%', top: '67.2%', delay: '0.15s' },
-        { key: 'cochabamba', dept: 'BOC', name: 'Cochabamba', left: '41.8%', top: '58.5%', delay: '0.35s' },
-        { key: 'santacruz', dept: 'BOS', name: 'Santa Cruz', left: '59.2%', top: '58%', delay: '0.55s' },
-        { key: 'sucre', dept: 'BOH', name: 'Sucre', left: '46.6%', top: '75.2%', delay: '0.2s' },
-        { key: 'potosi', dept: 'BOP', name: 'Potosi', left: '35.7%', top: '81.2%', delay: '0.4s' },
-        { key: 'tarija', dept: 'BOT', name: 'Tarija', left: '47.7%', top: '87.5%', delay: '0.6s' }
-      ]
+      viewportWidth: process.client ? window.innerWidth : 1280,
+      canHover: process.client ? window.matchMedia('(hover: hover)').matches : true
     }
   },
   methods: {
-    setActiveDepartment(departmentId) {
-      this.activeDepartment = departmentId
+    updateInteractionMode() {
+      if (!process.client) {
+        return
+      }
+
+      this.viewportWidth = window.innerWidth
+      this.canHover = window.matchMedia('(hover: hover)').matches
     },
-    clearActiveDepartment(departmentId) {
-      if (this.activeDepartment === departmentId) {
-        this.activeDepartment = null
+    cancelHoverTimers() {
+      clearTimeout(this.hoverOpenTimeout)
+      clearTimeout(this.hoverCloseTimeout)
+      this.hoverOpenTimeout = null
+      this.hoverCloseTimeout = null
+    },
+    handleCanvasMouseEnter() {
+      if (this.canHover) {
+        this.cancelHoverTimers()
       }
     },
+    handleCanvasMouseLeave() {
+      if (this.canHover) {
+        this.scheduleClearActiveDepartment()
+      }
+    },
+    handleCanvasClick() {
+      if (this.usesCompactCard) {
+        this.clearActiveDepartment()
+      }
+    },
+    handleMarkerClick(marker) {
+      if (this.usesCompactCard) {
+        this.openGoogleMaps(marker)
+        return
+      }
+
+      this.toggleActiveDepartment(marker.dept)
+    },
+    handleMarkerMouseEnter(departmentId) {
+      if (!this.canHover) {
+        return
+      }
+
+      this.scheduleActiveDepartment(departmentId)
+    },
+    scheduleActiveDepartment(departmentId) {
+      if (!this.canHover) {
+        this.setActiveDepartment(departmentId)
+        return
+      }
+
+      this.cancelHoverTimers()
+      this.hoverOpenTimeout = setTimeout(() => {
+        this.setActiveDepartment(departmentId)
+      }, 130)
+    },
+    setActiveDepartment(departmentId) {
+      this.cancelHoverTimers()
+      this.activeDepartment = departmentId
+    },
+    clearActiveDepartment() {
+      this.cancelHoverTimers()
+      this.activeDepartment = null
+    },
+    scheduleClearActiveDepartment() {
+      if (!this.canHover || this.usesCompactCard) {
+        return
+      }
+
+      this.cancelHoverTimers()
+      this.hoverCloseTimeout = setTimeout(() => {
+        this.activeDepartment = null
+      }, 170)
+    },
     toggleActiveDepartment(departmentId) {
+      this.cancelHoverTimers()
       this.activeDepartment = this.activeDepartment === departmentId ? null : departmentId
+    },
+    handleCardMouseLeave() {
+      if (this.canHover && !this.usesCompactCard) {
+        this.scheduleClearActiveDepartment()
+      }
+    },
+    openRoute(url) {
+      if (process.client) {
+        window.open(url, '_blank', 'noopener,noreferrer')
+      }
+    },
+    openGoogleMaps(office) {
+      this.openRoute(office.mapsUrl || '#')
+    },
+    normalizeScheduleValue(value, type) {
+      const text = String(value || '').trim()
+
+      if (!text) {
+        return ''
+      }
+
+      if (type === 'weekday') {
+        return text.replace(/^lun(?:es)?\s*a\s*vie(?:rnes)?\s*[:,.-]?\s*/i, '')
+      }
+
+      if (type === 'saturday') {
+        return text.replace(/^s[aá]b(?:ado)?\s*[:,.-]?\s*/i, '')
+      }
+
+      return text
     },
     syncDepartmentState() {
       Object.entries(this.departmentElements || {}).forEach(([departmentId, department]) => {
@@ -86,6 +285,9 @@ export default {
     }
   },
   mounted() {
+    this.updateInteractionMode()
+    window.addEventListener('resize', this.updateInteractionMode, { passive: true })
+
     const departments = this.$el.querySelectorAll('.cb-bolivia-dept')
     this.departmentListeners = []
     this.departmentElements = {}
@@ -103,13 +305,22 @@ export default {
 
       const departmentId = department.getAttribute('data-id')
       this.departmentElements[departmentId] = department
-      const activate = () => this.setActiveDepartment(departmentId)
-      const deactivate = () => this.clearActiveDepartment(departmentId)
-      const toggle = () => this.toggleActiveDepartment(departmentId)
+      const activate = () => this.handleMarkerMouseEnter(departmentId)
+      const deactivate = () => this.handleCanvasMouseLeave()
+      const toggle = () => {
+        const office = this.markers.find((marker) => marker.dept === departmentId)
+
+        if (this.usesCompactCard && office) {
+          this.openGoogleMaps(office)
+          return
+        }
+
+        this.toggleActiveDepartment(departmentId)
+      }
 
       department.addEventListener('mouseenter', activate)
-      department.addEventListener('mouseleave', deactivate)
       department.addEventListener('focus', activate)
+      department.addEventListener('mouseleave', deactivate)
       department.addEventListener('blur', deactivate)
       department.addEventListener('click', toggle)
 
@@ -124,17 +335,23 @@ export default {
     }
   },
   beforeDestroy() {
+    if (process.client) {
+      window.removeEventListener('resize', this.updateInteractionMode)
+    }
+
     if (!this.departmentListeners) {
       return
     }
 
     this.departmentListeners.forEach(({ department, activate, deactivate, toggle }) => {
       department.removeEventListener('mouseenter', activate)
-      department.removeEventListener('mouseleave', deactivate)
       department.removeEventListener('focus', activate)
+      department.removeEventListener('mouseleave', deactivate)
       department.removeEventListener('blur', deactivate)
       department.removeEventListener('click', toggle)
     })
+
+    this.cancelHoverTimers()
   }
 }
 </script>

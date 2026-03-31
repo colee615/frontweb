@@ -10,13 +10,14 @@
         >
           <video
             v-if="slide.media_type === 'video'"
+            :ref="`hero-video-${index}`"
             class="cb-hero-media__asset"
             :src="slide.src"
             :poster="slide.poster || null"
             autoplay
             muted
-            loop
             playsinline
+            preload="metadata"
           ></video>
           <div
             v-else
@@ -85,7 +86,8 @@ const DEFAULT_SLIDES = [
   {
     media_type: 'image',
     src: 'https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1600&q=80',
-    poster: ''
+    poster: '',
+    duration_seconds: 5
   }
 ]
 
@@ -137,7 +139,13 @@ export default {
       ]
     },
     normalizedSlides() {
-      const validSlides = this.slides.filter((slide) => slide && slide.src)
+      const validSlides = this.slides
+        .filter((slide) => slide && slide.src)
+        .map((slide) => ({
+          ...slide,
+          duration_seconds: this.normalizeDuration(slide.duration_seconds)
+        }))
+
       return validSlides.length ? validSlides : DEFAULT_SLIDES
     },
     trackingBaseUrl() {
@@ -157,6 +165,7 @@ export default {
       immediate: true,
       handler() {
         this.activeSlide = 0
+        this.syncActiveVideo()
         this.setupRotation()
       }
     }
@@ -175,15 +184,69 @@ export default {
         return
       }
 
-      this.slideTimer = setInterval(() => {
-        this.activeSlide = (this.activeSlide + 1) % this.normalizedSlides.length
-      }, 5000)
+      const currentSlide = this.normalizedSlides[this.activeSlide]
+      const duration = this.normalizeDuration(currentSlide && currentSlide.duration_seconds)
+
+      this.slideTimer = setTimeout(() => {
+        this.goToNextSlide()
+      }, duration * 1000)
     },
     clearRotation() {
       if (this.slideTimer) {
-        clearInterval(this.slideTimer)
+        clearTimeout(this.slideTimer)
         this.slideTimer = null
       }
+    },
+    goToNextSlide() {
+      this.activeSlide = (this.activeSlide + 1) % this.normalizedSlides.length
+      this.syncActiveVideo()
+      this.setupRotation()
+    },
+    syncActiveVideo() {
+      if (!process.client) {
+        return
+      }
+
+      this.$nextTick(() => {
+        this.normalizedSlides.forEach((slide, index) => {
+          if (slide.media_type !== 'video') {
+            return
+          }
+
+          const videoRef = this.$refs[`hero-video-${index}`]
+          const video = Array.isArray(videoRef) ? videoRef[0] : videoRef
+
+          if (!video) {
+            return
+          }
+
+          if (index === this.activeSlide) {
+            try {
+              video.currentTime = 0
+              const playPromise = video.play()
+
+              if (playPromise && typeof playPromise.catch === 'function') {
+                playPromise.catch(() => {})
+              }
+            } catch (error) {
+            }
+
+            return
+          }
+
+          video.pause()
+          video.currentTime = 0
+        })
+      })
+    },
+    normalizeDuration(value) {
+      const parsed = parseInt(value, 10)
+
+      if (Number.isNaN(parsed)) {
+        return 5
+      }
+
+      return Math.min(Math.max(parsed, 1), 300)
     },
     openTracking() {
       const code = this.trackingCode && this.trackingCode.trim()

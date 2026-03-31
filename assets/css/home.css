@@ -63,37 +63,39 @@ a {
   position: relative;
   z-index: 1;
   width: min(100%, calc(100vw - 48px));
-  min-height: calc(100vh - 48px);
+  max-height: calc(100vh - 48px);
   display: grid;
   place-items: center;
 }
 
 .cb-modal__close {
   position: absolute;
-  top: 18px;
-  right: 18px;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  top: 10px;
+  right: 10px;
+  width: 42px;
+  height: 42px;
+  border: 2px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
-  background: rgba(31, 49, 82, 0.92);
+  background: linear-gradient(180deg, rgba(45, 68, 108, 0.98), rgba(24, 40, 70, 1));
   color: #fff;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
-  transition: transform 0.18s ease, background 0.18s ease;
-  z-index: 2;
+  backdrop-filter: blur(10px);
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  z-index: 6;
 }
 
 .cb-modal__close:hover,
 .cb-modal__close:focus {
-  background: rgba(21, 34, 58, 0.98);
-  transform: scale(1.02);
+  background: linear-gradient(180deg, rgba(62, 90, 135, 0.96), rgba(32, 53, 92, 0.98));
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
 }
 
 .cb-modal__poster-shell {
@@ -109,6 +111,63 @@ a {
   position: relative;
 }
 
+.cb-modal__poster-shell.has-multiple {
+  padding-bottom: 18px;
+}
+
+.cb-modal__stack {
+  position: absolute;
+  inset: 14px 14px 18px 14px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cb-modal__stack-card {
+  position: absolute;
+  top: 8px;
+  right: 0;
+  bottom: 0;
+  width: calc(100% - 56px);
+  overflow: hidden;
+  border: 0;
+  border-radius: 22px;
+  padding: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
+  box-shadow: 0 16px 36px rgba(5, 16, 34, 0.16);
+  cursor: pointer;
+  transition: transform 0.24s ease, box-shadow 0.24s ease, filter 0.24s ease;
+  pointer-events: auto;
+}
+
+.cb-modal__stack-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(16, 37, 66, 0.12), rgba(16, 37, 66, 0.34));
+}
+
+.cb-modal__stack-card:hover,
+.cb-modal__stack-card:focus {
+  filter: brightness(1.02);
+}
+
+.cb-modal__stack-poster {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.cb-modal__stack-card--level-1 {
+  transform: rotate(2.8deg) scale(0.965);
+  opacity: 0.92;
+}
+
+.cb-modal__stack-card--level-2 {
+  transform: rotate(6deg) scale(0.93);
+  opacity: 0.74;
+}
+
 .cb-modal__poster-wrap {
   width: auto;
   padding: 10px;
@@ -117,6 +176,8 @@ a {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
     0 10px 24px rgba(3, 18, 39, 0.12);
+  position: relative;
+  z-index: 2;
 }
 
 .cb-modal__poster-frame {
@@ -129,6 +190,10 @@ a {
   box-shadow:
     0 12px 24px rgba(15, 38, 74, 0.14),
     0 2px 8px rgba(15, 38, 74, 0.06);
+}
+
+.cb-modal__poster-frame--deck {
+  overflow: hidden;
 }
 
 .cb-modal__poster-flag {
@@ -171,6 +236,73 @@ a {
   line-height: 1.6;
 }
 
+.cb-modal__deck-nav {
+  position: absolute;
+  inset: auto 20px 20px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.cb-modal__deck-btn {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(34, 54, 91, 0.9), rgba(21, 34, 58, 0.96));
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 22px rgba(8, 16, 32, 0.24);
+  pointer-events: auto;
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.cb-modal__deck-btn:hover,
+.cb-modal__deck-btn:focus {
+  background: linear-gradient(180deg, rgba(48, 74, 119, 0.94), rgba(24, 40, 70, 0.98));
+  border-color: rgba(254, 204, 54, 0.34);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(8, 16, 32, 0.3);
+}
+
+.cb-modal__deck-dots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(14, 24, 43, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 22px rgba(8, 16, 32, 0.2);
+  pointer-events: auto;
+}
+
+.cb-modal__deck-dot {
+  width: 8px;
+  height: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.34);
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, width 0.18s ease;
+}
+
+.cb-modal__deck-dot.is-active {
+  background: var(--cb-yellow);
+  width: 18px;
+  transform: none;
+}
+
 .cb-modal-fade-enter-active,
 .cb-modal-fade-leave-active {
   transition: opacity 0.22s ease;
@@ -179,6 +311,25 @@ a {
 .cb-modal-fade-enter,
 .cb-modal-fade-leave-to {
   opacity: 0;
+}
+
+.cb-modal-card-next-enter-active,
+.cb-modal-card-next-leave-active,
+.cb-modal-card-prev-enter-active,
+.cb-modal-card-prev-leave-active {
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.cb-modal-card-next-enter,
+.cb-modal-card-prev-leave-to {
+  opacity: 0;
+  transform: translateX(28px) rotate(1.2deg);
+}
+
+.cb-modal-card-next-leave-to,
+.cb-modal-card-prev-enter {
+  opacity: 0;
+  transform: translateX(-28px) rotate(-1.2deg);
 }
 
 .cb-shell {
@@ -739,61 +890,62 @@ a {
 
 .cb-service-card {
   position: relative;
-  min-height: 196px;
-  border: 1px solid rgba(32, 83, 154, 0.12);
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at top right, rgba(254, 204, 54, 0.15), transparent 34%),
-    linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  padding: 24px 24px 22px;
+  min-height: 176px;
+  border: 1px solid rgba(32, 83, 154, 0.08);
+  border-radius: 20px;
+  background: #ffffff;
+  padding: 22px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
-  box-shadow: 0 14px 34px rgba(32, 83, 154, 0.06);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  gap: 14px;
+  box-shadow: 0 8px 18px rgba(32, 83, 154, 0.035);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
   overflow: hidden;
 }
 
 .cb-service-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 24px;
-  width: 58px;
-  height: 4px;
-  background: var(--cb-yellow);
-  border-radius: 999px;
+  display: none;
 }
 
-.cb-service-card__glow {
+.cb-service-card::after {
+  content: '';
   position: absolute;
-  right: -28px;
-  bottom: -34px;
-  width: 118px;
-  height: 118px;
+  right: 22px;
+  bottom: 18px;
+  width: 54px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(254, 204, 54, 0.96), rgba(254, 204, 54, 0.35));
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(32, 83, 154, 0.08) 0%, rgba(32, 83, 154, 0) 70%);
+  opacity: 1;
   pointer-events: none;
 }
 
+.cb-service-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  z-index: 1;
+}
+
 .cb-service-icon {
-  width: 84px;
-  height: 84px;
+  width: 58px;
+  height: 58px;
   color: var(--cb-blue);
   display: grid;
   place-items: center;
   margin-bottom: 0;
   position: relative;
   z-index: 1;
-  background: linear-gradient(145deg, #fff8df 0%, #ffffff 100%);
-  border-radius: 28px;
-  box-shadow: 0 12px 24px rgba(32, 83, 154, 0.08);
+  background: linear-gradient(180deg, #fff8e1 0%, #fffdf6 100%);
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1px rgba(254, 204, 54, 0.16);
 }
 
 .cb-service-icon img {
-  width: 84px;
-  height: 84px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
   object-position: center;
   display: block;
@@ -801,9 +953,9 @@ a {
 
 .cb-service-icon span {
   display: inline-flex;
-  width: 72px;
-  height: 72px;
-  border-radius: 24px;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
   background: var(--cb-yellow);
   align-items: center;
   justify-content: center;
@@ -811,25 +963,31 @@ a {
 
 .cb-service-body {
   display: grid;
-  gap: 10px;
+  gap: 7px;
   align-content: start;
   width: 100%;
   position: relative;
   z-index: 1;
+  flex: 1 1 auto;
+  position: relative;
+  padding-bottom: 14px;
+}
+
+.cb-service-body::after {
+  display: none;
 }
 
 .cb-service-kicker {
   display: inline-flex;
   width: fit-content;
   min-width: 0;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(32, 83, 154, 0.08);
-  color: var(--cb-blue);
+  padding: 0;
+  background: transparent;
+  color: rgba(32, 83, 154, 0.55);
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -837,21 +995,22 @@ a {
   margin: 0;
   color: var(--cb-blue);
   font-size: 18px;
-  line-height: 1.3;
+  line-height: 1.28;
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .cb-service-card p {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.55;
-  max-width: 26ch;
+  font-size: 13px;
+  line-height: 1.6;
+  max-width: 28ch;
+  color: rgba(16, 37, 66, 0.74);
 }
 
 .cb-service-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(32, 83, 154, 0.2);
-  box-shadow: 0 22px 42px rgba(32, 83, 154, 0.11);
+  border-color: rgba(32, 83, 154, 0.13);
+  box-shadow: 0 12px 24px rgba(32, 83, 154, 0.05);
 }
 
 .cb-status {
@@ -881,10 +1040,14 @@ a {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 28px;
+  align-items: stretch;
 }
 
 .cb-panel {
   padding: 32px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .cb-panel-title {
@@ -949,10 +1112,37 @@ a {
   margin-bottom: 26px;
   min-height: 348px;
   display: grid;
-  place-items: center;
+  align-items: start;
+  flex: 1 1 auto;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.92),
     0 12px 24px rgba(32, 83, 154, 0.05);
+}
+
+.cb-calculator-visual {
+  position: relative;
+  border: 1px solid #e4ebf5;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at top right, rgba(254, 204, 54, 0.07), transparent 26%),
+    linear-gradient(180deg, #fffdf8 0%, #f8fbff 100%);
+  overflow: hidden;
+  margin-bottom: 26px;
+  min-height: 348px;
+  display: grid;
+  align-items: center;
+  flex: 1 1 auto;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 12px 24px rgba(32, 83, 154, 0.05);
+}
+
+.cb-calculator-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), transparent 42%);
+  pointer-events: none;
 }
 
 .cb-map-visual::before {
@@ -967,7 +1157,16 @@ a {
 .cb-bolivia-map-stage {
   position: relative;
   width: 100%;
-  height: 348px;
+  padding: 18px;
+}
+
+.cb-bolivia-map-canvas {
+  position: relative;
+  min-height: 348px;
+}
+
+.cb-bolivia-map-canvas.is-compact-layout {
+  min-height: 400px;
 }
 
 .cb-bolivia-map-svg {
@@ -1097,6 +1296,135 @@ a {
     0 5px 10px rgba(32, 83, 154, 0.14),
     0 1px 3px rgba(32, 83, 154, 0.1);
   filter: none;
+}
+
+.cb-map-office-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  width: min(280px, calc(100% - 24px));
+  padding: 12px 12px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(32, 83, 154, 0.1);
+  box-shadow:
+    0 14px 26px rgba(23, 63, 117, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  pointer-events: auto;
+  transform: translate(14px, calc(-100% - 16px));
+}
+
+.cb-map-office-card.is-compact {
+  left: 12px;
+  right: 12px;
+  top: auto;
+  bottom: 12px;
+  width: auto;
+  max-width: none;
+  padding: 12px 12px 13px;
+  background: rgba(255, 255, 255, 0.96);
+  transform: none;
+  border-radius: 16px;
+  box-shadow:
+    0 16px 28px rgba(23, 63, 117, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98);
+}
+
+.cb-map-office-card.is-right {
+  transform: translate(calc(-100% - 14px), calc(-100% - 16px));
+}
+
+.cb-map-office-card.is-bottom {
+  transform: translate(14px, 16px);
+}
+
+.cb-map-office-card.is-right.is-bottom {
+  transform: translate(calc(-100% - 14px), 16px);
+}
+
+.cb-map-office-card__eyebrow {
+  margin: 0 0 6px;
+  color: #7b89a1;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cb-map-office-card h4 {
+  margin: 0;
+  color: var(--cb-blue);
+  font-size: 15px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.cb-map-office-card__address {
+  margin: 8px 0 0;
+  color: #53627c;
+  font-size: 13px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cb-map-office-card__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.cb-map-office-card__fact {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(32, 83, 154, 0.08);
+  color: #5e6f8a;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.cb-map-route-btn {
+  margin-top: 12px;
+  min-height: 34px;
+  padding: 8px 13px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--cb-blue);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(32, 83, 154, 0.14);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.cb-map-route-btn:hover,
+.cb-map-route-btn:focus {
+  transform: translateY(-1px);
+  background: #1b4d93;
+}
+
+.cb-map-overlay-enter-active,
+.cb-map-overlay-leave-active {
+  transition: opacity 0.24s ease, transform 0.24s ease;
+}
+
+.cb-map-overlay-enter,
+.cb-map-overlay-leave-to {
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
 }
 
 @keyframes cbMapMarkerFloat {
@@ -1346,16 +1674,37 @@ a {
 }
 
 .cb-calculator-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  padding: 26px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.cb-calculator-form__fields {
   display: grid;
   gap: 14px;
+  align-content: start;
+}
+
+.cb-panel--calculator {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.cb-panel--calculator .cb-primary-btn--full {
+  margin-top: 0;
 }
 
 .cb-app-banner {
-  background: linear-gradient(135deg, var(--cb-yellow) 0%, var(--cb-yellow) 100%);
-  padding: 64px 0;
+  padding: 0;
+  background:
+    radial-gradient(circle at top left, rgba(254, 204, 54, 0.08), transparent 24%),
+    linear-gradient(180deg, #fff 0%, #f8fbff 100%);
 }
 
-.cb-app-inner,
 .cb-footer-bottom {
   display: flex;
   justify-content: space-between;
@@ -1367,58 +1716,107 @@ a {
   padding-top: 14px;
 }
 
-.cb-app-copy {
+.cb-app-banner-stage {
+  position: relative;
+  width: 100%;
+  min-height: 420px;
+  border-radius: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0f2747, #173b67);
+  border: 0;
+  box-shadow: none;
+}
+
+.cb-app-banner-slide {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.cb-app-banner-slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(9, 24, 46, 0.08), rgba(9, 24, 46, 0.16));
+}
+
+.cb-app-banner-controls {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 22px;
+  z-index: 2;
   display: flex;
   align-items: center;
-  gap: 24px;
+  justify-content: space-between;
+  pointer-events: none;
 }
 
-.cb-app-icon {
-  width: 112px;
-  height: 112px;
-  border-radius: 16px;
-  background: var(--cb-blue);
-  color: var(--cb-yellow);
-  display: grid;
-  place-items: center;
-}
-
-.cb-app-icon svg {
-  width: 46px;
-  height: 46px;
-}
-
-.cb-app-copy h2 {
-  margin: 0 0 10px;
-  font-size: 32px;
-  line-height: 1.2;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-}
-
-.cb-app-copy p {
-  font-size: 18px;
-  line-height: 1.55;
-}
-
-.cb-store-buttons {
-  display: flex;
-  gap: 16px;
-}
-
-.cb-store-btn {
-  min-width: 180px;
-  height: 72px;
-  border-radius: 10px;
-  background: var(--cb-blue);
+.cb-app-banner-btn {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(26, 44, 76, 0.84), rgba(13, 27, 49, 0.94));
   color: #fff;
+  font-size: 24px;
+  line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 0 18px;
-  text-align: left;
-  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 16px 28px rgba(10, 22, 42, 0.28);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.cb-app-banner-btn:hover,
+.cb-app-banner-btn:focus {
+  background: linear-gradient(180deg, rgba(36, 60, 101, 0.9), rgba(16, 34, 60, 0.98));
+  border-color: rgba(254, 204, 54, 0.42);
+  transform: translateY(-2px);
+}
+
+.cb-app-banner-dots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(8, 17, 32, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+}
+
+.cb-app-banner-dot {
+  width: 8px;
+  height: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.34);
+  cursor: pointer;
+  transition: width 0.18s ease, background 0.18s ease;
+}
+
+.cb-app-banner-dot.is-active {
+  width: 18px;
+  background: var(--cb-yellow);
+}
+
+.cb-app-banner-fade-enter-active,
+.cb-app-banner-fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.cb-app-banner-fade-enter,
+.cb-app-banner-fade-leave-to {
+  opacity: 0;
 }
 
 .cb-market {
@@ -1878,6 +2276,10 @@ a {
   .cb-store-btn {
     width: 100%;
   }
+
+  .cb-app-banner-stage {
+    min-height: 340px;
+  }
 }
 
 @media (min-width: 640px) {
@@ -1979,9 +2381,78 @@ a {
 
   .cb-map-visual,
   .cb-bolivia-map-stage,
+  .cb-bolivia-map-canvas {
+    min-height: 360px;
+  }
+
   .cb-bolivia-map-svg {
-    min-height: 292px;
-    height: 292px;
+    height: 260px;
+  }
+
+  .cb-map-marker {
+    gap: 0;
+  }
+
+  .cb-map-marker__pin {
+    width: 12px;
+    height: 12px;
+    flex-basis: 12px;
+  }
+
+  .cb-map-marker__label {
+    display: none;
+  }
+
+  .cb-map-office-card,
+  .cb-map-office-card.is-right,
+  .cb-map-office-card.is-bottom,
+  .cb-map-office-card.is-right.is-bottom,
+  .cb-map-office-card.is-compact {
+    left: 10px;
+    right: 10px;
+    top: auto;
+    bottom: 10px;
+    width: auto;
+    max-width: none;
+    padding: 12px 12px 13px;
+    border-radius: 15px;
+    transform: none;
+    backdrop-filter: blur(12px);
+  }
+
+  .cb-map-office-card__eyebrow {
+    margin-bottom: 4px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  .cb-map-office-card h4 {
+    font-size: 15px;
+    line-height: 1.25;
+  }
+
+  .cb-map-office-card__address {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .cb-map-office-card__facts {
+    margin-top: 8px;
+    gap: 6px;
+  }
+
+  .cb-map-office-card__fact {
+    min-height: 26px;
+    padding: 0 9px;
+    font-size: 10px;
+  }
+
+  .cb-map-route-btn {
+    width: 100%;
+    min-height: 38px;
+    margin-top: 10px;
+    justify-content: center;
   }
 
   .cb-market-head {
@@ -1991,35 +2462,90 @@ a {
   }
 
   .cb-modal {
-    padding: 14px;
-  }
-
-  .cb-modal__dialog,
-  .cb-modal__poster-shell {
-    min-height: calc(100vh - 28px);
+    place-items: center;
+    padding: 12px;
+    overflow-y: auto;
   }
 
   .cb-modal__dialog {
-    width: min(100%, calc(100vw - 28px));
+    width: min(100%, calc(100vw - 24px));
+    max-height: none;
+    min-height: calc(100vh - 24px);
+    padding: 0;
+    place-items: center;
   }
 
   .cb-modal__poster-shell {
-    width: auto;
-    max-width: calc(100vw - 28px);
-    padding: 8px;
-    border-radius: 24px;
+    width: 100%;
+    max-width: 430px;
+    padding: 6px;
+    border-radius: 22px;
+  }
+
+  .cb-modal__poster-shell.has-multiple {
+    padding-bottom: 12px;
   }
 
   .cb-modal__close {
-    top: 12px;
-    right: 12px;
-    width: 38px;
-    height: 38px;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+    z-index: 6;
+  }
+
+  .cb-modal__poster-wrap {
+    padding: 8px;
+    border-radius: 18px;
+  }
+
+  .cb-modal__poster-frame {
+    border-radius: 12px;
   }
 
   .cb-modal__poster {
-    max-width: calc(100vw - 60px);
-    max-height: calc(100vh - 88px);
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: none;
+  }
+
+  .cb-modal__stack {
+    inset: 6px 6px 12px 6px;
+  }
+
+  .cb-modal__stack-card {
+    width: calc(100% - 30px);
+  }
+
+  .cb-modal__stack-card--level-1 {
+    transform: rotate(2.2deg) scale(0.975);
+  }
+
+  .cb-modal__stack-card--level-2 {
+    transform: rotate(4.2deg) scale(0.95);
+  }
+
+  .cb-modal__deck-nav {
+    inset: auto 12px 12px;
+  }
+
+  .cb-modal__deck-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 16px;
+    font-size: 21px;
+  }
+
+  .cb-modal__deck-dots {
+    gap: 7px;
+    padding: 8px 12px;
+  }
+
+  .cb-modal__deck-dot {
+    width: 8px;
+    height: 8px;
   }
 
   .cb-view-all {
@@ -2048,21 +2574,25 @@ a {
     font-size: 22px;
   }
 
-  .cb-app-copy {
-    gap: 18px;
+  .cb-app-banner-stage {
+    min-height: 280px;
   }
 
-  .cb-app-icon {
-    width: 92px;
-    height: 92px;
+  .cb-app-banner-controls {
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
   }
 
-  .cb-app-copy h2 {
-    font-size: 28px;
+  .cb-app-banner-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 16px;
+    font-size: 21px;
   }
 
-  .cb-app-copy p {
-    font-size: 16px;
+  .cb-app-banner-dots {
+    padding: 8px 12px;
   }
 
   .cb-footer-grid {
@@ -2194,9 +2724,42 @@ a {
 
   .cb-map-visual,
   .cb-bolivia-map-stage,
+  .cb-bolivia-map-canvas {
+    min-height: 334px;
+  }
+
+  .cb-bolivia-map-stage {
+    padding: 14px;
+  }
+
   .cb-bolivia-map-svg {
-    min-height: 262px;
-    height: 262px;
+    height: 236px;
+  }
+
+  .cb-map-office-card {
+    padding: 12px;
+    width: min(240px, calc(100% - 20px));
+  }
+
+  .cb-map-office-card h4 {
+    font-size: 15px;
+  }
+
+  .cb-map-office-card,
+  .cb-map-office-card.is-right,
+  .cb-map-office-card.is-bottom,
+  .cb-map-office-card.is-right.is-bottom,
+  .cb-map-office-card.is-compact {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: auto;
+    padding: 11px 11px 12px;
+  }
+
+  .cb-map-route-btn {
+    min-height: 36px;
+    font-size: 11px;
   }
 
   .cb-product-stamp__frame {
@@ -2216,9 +2779,21 @@ a {
     height: 38px;
   }
 
-  .cb-store-btn {
-    min-width: 0;
-    height: 64px;
+  .cb-app-banner-stage {
+    min-height: 236px;
+  }
+
+  .cb-app-banner-controls {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .cb-app-banner-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    font-size: 18px;
   }
 }
 
@@ -2244,6 +2819,51 @@ a {
 @media (min-width: 1024px) {
   .cb-nav-links {
     display: flex;
+  }
+}
+
+@media (max-width: 479px) {
+  .cb-modal {
+    padding: 10px;
+  }
+
+  .cb-modal__dialog {
+    width: min(100%, calc(100vw - 20px));
+    min-height: calc(100vh - 20px);
+  }
+
+  .cb-modal__poster-shell {
+    padding: 5px;
+    border-radius: 18px;
+  }
+
+  .cb-modal__poster-wrap {
+    padding: 6px;
+    border-radius: 15px;
+  }
+
+  .cb-modal__close {
+    top: 8px;
+    right: 8px;
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+    z-index: 6;
+  }
+
+  .cb-modal__deck-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    font-size: 18px;
+  }
+
+  .cb-modal__stack-card--level-1 {
+    transform: rotate(1.8deg) scale(0.98);
+  }
+
+  .cb-modal__stack-card--level-2 {
+    transform: rotate(3deg) scale(0.962);
   }
 }
 

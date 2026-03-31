@@ -8,18 +8,19 @@
 
       <div class="cb-services-grid">
         <article v-for="service in services" :key="service.title" class="cb-service-card">
-          <div class="cb-service-card__glow"></div>
-          <div class="cb-service-icon">
-            <img
-              v-if="service.iconImage"
-              :src="service.iconImage"
-              :alt="service.title"
-              loading="lazy"
-            >
-            <span v-else v-html="icons[service.icon]"></span>
+          <div class="cb-service-card__top">
+            <div class="cb-service-icon">
+              <img
+                v-if="service.iconImage"
+                :src="service.iconImage"
+                :alt="service.title"
+                loading="lazy"
+              >
+              <span v-else v-html="icons[service.icon]"></span>
+            </div>
           </div>
           <div class="cb-service-body">
-            <span class="cb-service-kicker">{{ content.kicker || 'Servicio destacado' }}</span>
+            <span class="cb-service-kicker">{{ content.kicker || 'Servicio' }}</span>
             <h3>{{ service.title }}</h3>
             <p>{{ service.text }}</p>
           </div>

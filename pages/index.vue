@@ -1,17 +1,139 @@
 <template>
   <div class="cb-page" :style="themeStyles">
-    <HomeAnnouncementModal :content="sectionSettings.announcement_modal" :logo-url="logoUrl" />
+    <HomeAnnouncementModal :content="sectionSettings.announcement_modal" :slides="announcementSlides" />
     <HomeHeader :logo-url="logoUrl" :icons="icons" :content="sectionSettings.header" :links="headerLinks" />
     <HomeHero :icons="icons" :content="sectionSettings.hero" :slides="heroSlides" />
     <HomeServices :services="services" :icons="icons" :content="sectionSettings.services" />
-    <HomeTools :icons="icons" :content="sectionSettings.tools" />
-    <HomeAppBanner :icons="icons" :content="sectionSettings.app_banner" />
+    <HomeTools :icons="icons" :content="sectionSettings.tools" :offices="toolOffices" />
+    <HomeAppBanner :content="sectionSettings.app_banner" :slides="appBannerSlides" />
     <HomeMarket :products="products" :icons="icons" :content="sectionSettings.market" />
     <HomeFooter :logo-url="logoUrl" :icons="icons" :content="sectionSettings.footer" :links="footerLinks" />
   </div>
 </template>
 
 <script>
+import { sanitizeContentTree } from '~/utils/contentSecurity'
+
+const DEFAULT_TOOL_OFFICES = [
+  {
+    title: 'Oficina Correos Cobija',
+    name: 'Cobija',
+    dept: 'BON',
+    address: 'Av. 9 de Febrero, Cobija, Pando',
+    hours: 'Lun a Vie, 08:30 a 16:30',
+    weekday_hours: '08:30 a 16:30',
+    saturday_hours: '09:00 a 12:30',
+    phone: '+591 3 8420001',
+    left: '33.2%',
+    top: '16.5%',
+    maps_url: 'https://www.google.com/maps/search/?api=1&query=-11.0267,-68.7692'
+  },
+  {
+    title: 'Oficina Central La Paz',
+    name: 'La Paz',
+    dept: 'BOL',
+    address: 'Av. Mariscal Santa Cruz, La Paz',
+    hours: 'Lun a Vie, 08:00 a 18:00',
+    weekday_hours: '08:00 a 18:00',
+    saturday_hours: '09:00 a 13:00',
+    phone: '+591 2 2312121',
+    left: '29.6%',
+    top: '46%',
+    maps_url: 'https://www.google.com/maps/search/?api=1&query=-16.4957,-68.1336'
+  },
+  {
+    title: 'Oficina Correos Trinidad',
+    name: 'Trinidad',
+    dept: 'BOB',
+    address: 'Zona Central, Trinidad, Beni',
+    hours: 'Lun a Vie, 08:30 a 16:30',
+    weekday_hours: '08:30 a 16:30',
+    saturday_hours: '09:00 a 12:30',
+    phone: '+591 3 4622001',
+    left: '43.8%',
+    top: '35.5%',
+    maps_url: 'https://www.google.com/maps/search/?api=1&query=-14.8333,-64.9'
+  },
+  {
+    title: 'Oficina Correos Oruro',
+    name: 'Oruro',
+    dept: 'BOO',
+    address: 'Calle La Plata, Oruro',
+    hours: 'Lun a Vie, 08:30 a 16:30',
+    weekday_hours: '08:30 a 16:30',
+    saturday_hours: '09:00 a 12:30',
+    phone: '+591 2 5277001',
+    left: '31.8%',
+    top: '67.2%',
+    maps_url: 'https://www.google.com/maps/search/?api=1&query=-17.9647,-67.106'
+  },
+  {
+    title: 'Oficina Correos Cochabamba',
+    name: 'Cochabamba',
+    dept: 'BOC',
+    address: 'Av. Ayacucho, Cochabamba',
+    hours: 'Lun a Vie, 08:00 a 17:30',
+    weekday_hours: '08:00 a 17:30',
+    saturday_hours: '09:00 a 12:30',
+    phone: '+591 4 4528001',
+    left: '41.8%',
+    top: '58.5%',
+    maps_url: 'https://www.google.com/maps/search/?api=1&query=-17.3895,-66.1568'
+  },
+  {
+    title: 'Oficina Correos Santa Cruz',
+    name: 'Santa Cruz',
+    dept: 'BOS',
+    address: 'Av. Irala, Santa Cruz de la Sierra',
+    hours: 'Lun a Vie, 08:00 a 17:30',
+    weekday_hours: '08:00 a 17:30',
+    saturday_hours: '09:00 a 12:30',
+    phone: '+591 3 3366001',
+    left: '59.2%',
+    top: '58%',
+    maps_url: 'https://www.google.com/maps/search/?api=1&query=-17.7833,-63.1821'
+  },
+  {
+    title: 'Oficina Correos Sucre',
+    name: 'Sucre',
+    dept: 'BOH',
+    address: 'Calle Aniceto Arce, Sucre',
+    hours: 'Lun a Vie, 08:30 a 16:30',
+    weekday_hours: '08:30 a 16:30',
+    saturday_hours: '09:00 a 12:30',
+    phone: '+591 4 6459001',
+    left: '46.6%',
+    top: '75.2%',
+    maps_url: 'https://www.google.com/maps/search/?api=1&query=-19.047,-65.2595'
+  },
+  {
+    title: 'Oficina Correos Potosi',
+    name: 'Potosi',
+    dept: 'BOP',
+    address: 'Zona Central, Potosi',
+    hours: 'Lun a Vie, 08:30 a 16:30',
+    weekday_hours: '08:30 a 16:30',
+    saturday_hours: '09:00 a 12:30',
+    phone: '+591 2 6229001',
+    left: '35.7%',
+    top: '81.2%',
+    maps_url: 'https://www.google.com/maps/search/?api=1&query=-19.5723,-65.755'
+  },
+  {
+    title: 'Oficina Correos Tarija',
+    name: 'Tarija',
+    dept: 'BOT',
+    address: 'Calle General Trigo, Tarija',
+    hours: 'Lun a Vie, 08:30 a 16:30',
+    weekday_hours: '08:30 a 16:30',
+    saturday_hours: '09:00 a 12:30',
+    phone: '+591 4 6648001',
+    left: '47.7%',
+    top: '87.5%',
+    maps_url: 'https://www.google.com/maps/search/?api=1&query=-21.5355,-64.7296'
+  }
+]
+
 const FALLBACK_PAGE = {
   meta_title: 'Correos de Bolivia',
   meta_description: '',
@@ -72,6 +194,10 @@ export default {
     products() {
       return this.getSectionItems('market')
     },
+    toolOffices() {
+      const items = this.getSectionItems('tools')
+      return items.length ? items : DEFAULT_TOOL_OFFICES
+    },
     headerLinks() {
       return this.getSectionItems('header')
     },
@@ -89,6 +215,46 @@ export default {
         market: this.getSectionSettings('market'),
         footer: this.getSectionSettings('footer')
       }
+    },
+    announcementSlides() {
+      const items = this.getSectionItems('announcement_modal')
+
+      if (items.length) {
+        return items
+      }
+
+      const settings = this.getSectionSettings('announcement_modal')
+
+      if (!settings.poster_image) {
+        return []
+      }
+
+      return [{
+        title: settings.poster_title || 'Popup principal',
+        poster_image: settings.poster_image,
+        poster_alt: settings.poster_alt || 'Comunicado institucional',
+        poster_title: settings.poster_title || '',
+        poster_caption: settings.poster_caption || ''
+      }]
+    },
+    appBannerSlides() {
+      const items = this.getSectionItems('app_banner')
+
+      if (items.length) {
+        return items
+      }
+
+      const settings = this.getSectionSettings('app_banner')
+
+      if (!settings.background_image) {
+        return []
+      }
+
+      return [{
+        title: 'Banner principal',
+        image: settings.background_image,
+        duration_seconds: 5
+      }]
     },
     themeStyles() {
       const theme = this.pageContent.theme || {}
@@ -139,7 +305,7 @@ export default {
         ...(item.data || {}),
         id: item.id,
         type: item.type,
-        name: item.name
+        itemName: item.name
       }))
     }
   },
@@ -186,9 +352,9 @@ function normalizePageContent(payload = {}) {
     ...payload,
     theme: {
       ...FALLBACK_PAGE.theme,
-      ...(payload.theme || {})
+      ...sanitizeContentTree(payload.theme || {})
     },
-    sections: normalizedSections
+    sections: normalizedSections.map((section) => sanitizeContentTree(section))
   }
 }
 </script>
