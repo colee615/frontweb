@@ -3,17 +3,17 @@
     <div class="cb-shell">
       <div class="cb-footer-grid">
         <div>
-          <h4>{{ content.help_title || 'Ayuda' }}</h4>
+          <h4>{{ content.help_title || '' }}</h4>
           <a v-for="link in helpLinks" :key="link.label" :href="link.url || '#'">{{ link.label }}</a>
         </div>
 
         <div>
-          <h4>{{ content.company_title || 'Empresa' }}</h4>
+          <h4>{{ content.company_title || '' }}</h4>
           <a v-for="link in companyLinks" :key="link.label" :href="link.url || '#'">{{ link.label }}</a>
         </div>
 
         <div>
-          <h4>{{ content.contact_title || 'Contacto' }}</h4>
+          <h4>{{ content.contact_title || '' }}</h4>
           <div class="cb-contact-line">
             <span class="cb-inline-icon" v-html="icons.pin"></span>
             <span>{{ addressLines[0] }}<br>{{ addressLines[1] }}</span>
@@ -24,13 +24,13 @@
           </div>
           <div class="cb-contact-line">
             <span class="cb-inline-icon" v-html="icons.mail"></span>
-            <span>{{ content.email || 'info@correos.bo' }}</span>
+            <span>{{ content.email || '' }}</span>
           </div>
         </div>
 
         <div>
-          <h4>{{ content.social_title || 'Siguenos' }}</h4>
-          <p class="cb-footer-copy">{{ content.social_text || 'Mantente conectado con nosotros en redes sociales' }}</p>
+          <h4>{{ content.social_title || '' }}</h4>
+          <p class="cb-footer-copy">{{ content.social_text || '' }}</p>
           <div class="cb-socials">
             <a v-for="social in socialLinks" :key="social.aria_label" :href="social.url || '#'" :aria-label="social.aria_label">{{ social.label }}</a>
           </div>
@@ -42,8 +42,8 @@
           <img :src="logoUrl" alt="Correos de Bolivia">
         </a>
         <div class="cb-copyright">
-          <p>{{ content.copyright || '© 2026 Correos de Bolivia. Todos los derechos reservados.' }}</p>
-          <p>{{ content.legal_text || 'Empresa Publica Nacional Estrategica' }}</p>
+          <p>{{ content.copyright || '' }}</p>
+          <p>{{ content.legal_text || '' }}</p>
         </div>
       </div>
     </div>
@@ -73,45 +73,19 @@ export default {
   },
   computed: {
     helpLinks() {
-      const links = this.links.filter((link) => link.group === 'help')
-      return links.length
-        ? links
-        : [
-            { label: 'Preguntas Frecuentes', url: '#' },
-            { label: 'Como Rastrear un Envio', url: '#' },
-            { label: 'Tarifas y Servicios', url: '#' },
-            { label: 'Reclamos', url: '#' },
-            { label: 'Terminos y Condiciones', url: '#' }
-          ]
+      return this.links.filter((link) => link.group === 'help')
     },
     companyLinks() {
-      const links = this.links.filter((link) => link.group === 'company')
-      return links.length
-        ? links
-        : [
-            { label: 'Sobre Nosotros', url: '#' },
-            { label: 'Nuestra Historia', url: '#' },
-            { label: 'Trabaja con Nosotros', url: '#' },
-            { label: 'Noticias', url: '#' },
-            { label: 'Responsabilidad Social', url: '#' }
-          ]
+      return this.links.filter((link) => link.group === 'company')
     },
     socialLinks() {
-      const links = this.links.filter((link) => link.group === 'social')
-      return links.length
-        ? links
-        : [
-            { label: 'f', aria_label: 'Facebook', url: '#' },
-            { label: 'x', aria_label: 'Twitter', url: '#' },
-            { label: 'ig', aria_label: 'Instagram', url: '#' },
-            { label: 'in', aria_label: 'LinkedIn', url: '#' }
-          ]
+      return this.links.filter((link) => link.group === 'social')
     },
     addressLines() {
-      return this.parseLines(this.content.address || 'Av. Mariscal Santa Cruz 1278|La Paz, Bolivia')
+      return this.parseLines(this.content.address || '')
     },
     phoneLines() {
-      return this.parseLines(this.content.phone || '+591 2 2356789|0800-10-5050 (Gratis)')
+      return this.parseLines(this.content.phone || '')
     }
   },
   methods: {

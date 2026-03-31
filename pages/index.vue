@@ -5,7 +5,9 @@
         <span />
       </div>
     </transition>
+
     <HomeHeader :logo-url="logoUrl" :icons="icons" :content="sectionSettings.header" :links="headerLinks" />
+
     <div v-if="isBootLoading" class="cb-home-skeleton" aria-hidden="true">
       <section class="cb-home-skeleton__hero">
         <div class="cb-shell cb-home-skeleton__hero-grid">
@@ -67,6 +69,7 @@
         </div>
       </section>
     </div>
+
     <div v-else class="cb-page__content">
       <HomeAnnouncementModal :content="sectionSettings.announcement_modal" :slides="announcementSlides" />
       <HomeHero :icons="icons" :content="sectionSettings.hero" :slides="heroSlides" />
@@ -82,131 +85,11 @@
 <script>
 import { sanitizeContentTree } from '~/utils/contentSecurity'
 
-const DEFAULT_TOOL_OFFICES = [
-  {
-    title: 'Oficina Correos Cobija',
-    name: 'Cobija',
-    dept: 'BON',
-    address: 'Av. 9 de Febrero, Cobija, Pando',
-    hours: 'Lun a Vie, 08:30 a 16:30',
-    weekday_hours: '08:30 a 16:30',
-    saturday_hours: '09:00 a 12:30',
-    phone: '+591 3 8420001',
-    left: '33.2%',
-    top: '16.5%',
-    maps_url: 'https://www.google.com/maps/search/?api=1&query=-11.0267,-68.7692'
-  },
-  {
-    title: 'Oficina Central La Paz',
-    name: 'La Paz',
-    dept: 'BOL',
-    address: 'Av. Mariscal Santa Cruz, La Paz',
-    hours: 'Lun a Vie, 08:00 a 18:00',
-    weekday_hours: '08:00 a 18:00',
-    saturday_hours: '09:00 a 13:00',
-    phone: '+591 2 2312121',
-    left: '29.6%',
-    top: '46%',
-    maps_url: 'https://www.google.com/maps/search/?api=1&query=-16.4957,-68.1336'
-  },
-  {
-    title: 'Oficina Correos Trinidad',
-    name: 'Trinidad',
-    dept: 'BOB',
-    address: 'Zona Central, Trinidad, Beni',
-    hours: 'Lun a Vie, 08:30 a 16:30',
-    weekday_hours: '08:30 a 16:30',
-    saturday_hours: '09:00 a 12:30',
-    phone: '+591 3 4622001',
-    left: '43.8%',
-    top: '35.5%',
-    maps_url: 'https://www.google.com/maps/search/?api=1&query=-14.8333,-64.9'
-  },
-  {
-    title: 'Oficina Correos Oruro',
-    name: 'Oruro',
-    dept: 'BOO',
-    address: 'Calle La Plata, Oruro',
-    hours: 'Lun a Vie, 08:30 a 16:30',
-    weekday_hours: '08:30 a 16:30',
-    saturday_hours: '09:00 a 12:30',
-    phone: '+591 2 5277001',
-    left: '31.8%',
-    top: '67.2%',
-    maps_url: 'https://www.google.com/maps/search/?api=1&query=-17.9647,-67.106'
-  },
-  {
-    title: 'Oficina Correos Cochabamba',
-    name: 'Cochabamba',
-    dept: 'BOC',
-    address: 'Av. Ayacucho, Cochabamba',
-    hours: 'Lun a Vie, 08:00 a 17:30',
-    weekday_hours: '08:00 a 17:30',
-    saturday_hours: '09:00 a 12:30',
-    phone: '+591 4 4528001',
-    left: '41.8%',
-    top: '58.5%',
-    maps_url: 'https://www.google.com/maps/search/?api=1&query=-17.3895,-66.1568'
-  },
-  {
-    title: 'Oficina Correos Santa Cruz',
-    name: 'Santa Cruz',
-    dept: 'BOS',
-    address: 'Av. Irala, Santa Cruz de la Sierra',
-    hours: 'Lun a Vie, 08:00 a 17:30',
-    weekday_hours: '08:00 a 17:30',
-    saturday_hours: '09:00 a 12:30',
-    phone: '+591 3 3366001',
-    left: '59.2%',
-    top: '58%',
-    maps_url: 'https://www.google.com/maps/search/?api=1&query=-17.7833,-63.1821'
-  },
-  {
-    title: 'Oficina Correos Sucre',
-    name: 'Sucre',
-    dept: 'BOH',
-    address: 'Calle Aniceto Arce, Sucre',
-    hours: 'Lun a Vie, 08:30 a 16:30',
-    weekday_hours: '08:30 a 16:30',
-    saturday_hours: '09:00 a 12:30',
-    phone: '+591 4 6459001',
-    left: '46.6%',
-    top: '75.2%',
-    maps_url: 'https://www.google.com/maps/search/?api=1&query=-19.047,-65.2595'
-  },
-  {
-    title: 'Oficina Correos Potosi',
-    name: 'Potosi',
-    dept: 'BOP',
-    address: 'Zona Central, Potosi',
-    hours: 'Lun a Vie, 08:30 a 16:30',
-    weekday_hours: '08:30 a 16:30',
-    saturday_hours: '09:00 a 12:30',
-    phone: '+591 2 6229001',
-    left: '35.7%',
-    top: '81.2%',
-    maps_url: 'https://www.google.com/maps/search/?api=1&query=-19.5723,-65.755'
-  },
-  {
-    title: 'Oficina Correos Tarija',
-    name: 'Tarija',
-    dept: 'BOT',
-    address: 'Calle General Trigo, Tarija',
-    hours: 'Lun a Vie, 08:30 a 16:30',
-    weekday_hours: '08:30 a 16:30',
-    saturday_hours: '09:00 a 12:30',
-    phone: '+591 4 6648001',
-    left: '47.7%',
-    top: '87.5%',
-    maps_url: 'https://www.google.com/maps/search/?api=1&query=-21.5355,-64.7296'
-  }
-]
-
-const FALLBACK_PAGE = {
-  meta_title: 'Correos de Bolivia',
+const EMPTY_PAGE = {
+  meta_title: '',
   meta_description: '',
   theme: {
-    logo_url: 'https://correos.gob.bo/wp-content/uploads/2023/06/LOGO-19-2-26-B-scaled.png',
+    logo_url: '',
     primary_color: '#20539a',
     secondary_color: '#2f3f5c',
     accent_color: '#fecc36'
@@ -217,20 +100,21 @@ const FALLBACK_PAGE = {
       settings: {
         enabled: false,
         show_once: false,
-        storage_key: 'cb-home-invitation-2026',
-        modal_title: 'Invitacion oficial',
+        storage_key: 'cb-home-announcement',
         poster_image: '',
-        poster_alt: 'Comunicado institucional'
+        poster_alt: '',
+        poster_title: '',
+        poster_caption: ''
       },
       items: []
     },
-    { key: 'header', settings: { help_label: 'Ayuda / Contacto', login_label: 'Iniciar Sesion', search_placeholder: 'Buscar...', language_primary: 'Espanol', language_secondary: 'English', accessibility_label: 'Accesibilidad' }, items: [{ data: { label: 'Quienes somos', url: '#' } }, { data: { label: 'Noticias', url: '#' } }, { data: { label: 'Institucional', url: '#' } }] },
-    { key: 'hero', settings: { title: 'Conectando Bolivia|con el Mundo', subtitle: 'Servicio postal confiable, rapido y seguro', tracking_title: 'Rastrea tu Envio', tracking_text: 'Ingresa tu codigo de seguimiento para conocer el estado de tu paquete', tracking_label: 'Codigo de seguimiento', tracking_placeholder: 'Ej: PE123456789', tracking_button: 'Buscar' }, items: [{ data: { title: 'Principal', media_type: 'image', src: 'https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1600&q=80', poster: '' } }] },
-    { key: 'services', settings: { title: 'Servicios Destacados', subtitle: 'Soluciones integrales para todas tus necesidades de envio', kicker: 'Servicio destacado' }, items: [{ data: { icon: 'plane', iconImage: '/IconosWEB-normalized/Icono EMS Bolivia.png', title: 'EMS', text: 'Envio expreso internacional' } }, { data: { icon: 'truck', iconImage: '/IconosWEB-normalized/Icono Delivery.png', title: 'Delivery Express', text: 'Entregas rapidas nacionales' } }, { data: { icon: 'mail', title: 'Correspondencia Agrupada', text: 'Envios de correspondencia masiva' } }, { data: { icon: 'box', iconImage: '/IconosWEB-normalized/Icono Encomienda Postal.png', title: 'Encomienda Postal', text: 'Paquetes y encomiendas' } }, { data: { icon: 'grid', iconImage: '/IconosWEB-normalized/ICONOS NUEVOS casillas postales.png', title: 'Casillas', text: 'Casillas postales de alquiler' } }, { data: { icon: 'cube', iconImage: '/IconosWEB-normalized/Icono Mi Encomienda.png', title: 'Mi Encomienda', text: 'Seguimiento personalizado' } }, { data: { icon: 'clock', iconImage: '/IconosWEB-normalized/Icono Servicio Prioritario.png', title: 'Servicio Prioritario', text: 'Entregas con prioridad' } }, { data: { icon: 'stamp', iconImage: '/IconosWEB-normalized/Icono Filatelia.png', title: 'Filatelia', text: 'Sellos y colecciones' } }, { data: { icon: 'pin', title: 'Red Nacional', text: 'Oficinas en todo el pais' } }] },
-    { key: 'tools', settings: { map_title: 'Mapa de Oficinas', map_text: 'Encuentra la oficina de Correos más cercana a tu ubicación', map_button_label: 'Ver Todas las Oficinas', calculator_title: 'Calculadora de Tarifas', calculator_text: 'Calcula el costo de tu envio de manera rapida', origin_label: 'Ciudad de Origen', origin_placeholder: 'Selecciona una ciudad', destination_label: 'Ciudad de Destino', destination_placeholder: 'Selecciona una ciudad', weight_label: 'Peso (kg)', weight_placeholder: 'Ej: 2.5', calculate_button_label: 'Calcular Tarifa' }, items: [] },
-    { key: 'app_banner', settings: { title: 'Nueva App de Correos de Bolivia', text: 'Descargala ahora y gestiona tus envios desde tu movil con total comodidad', app_store_label: 'Disponible en|App Store', play_store_label: 'Disponible en|Google Play', app_store_url: '#', play_store_url: '#', background_image: '' }, items: [] },
-    { key: 'market', settings: { title: 'Correos Market / Filatelia', subtitle: 'Descubre nuestra coleccion exclusiva de sellos y souvenirs', view_all_label: 'Ver todos los productos ->', view_all_url: '#' }, items: [{ data: { title: 'Coleccion Bolivia 2026', price: 'Bs. 85.00', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Bolivia_stamp_1988.jpg/320px-Bolivia_stamp_1988.jpg', year: '2026', series: 'Coleccion Oficial', description: 'Una pieza conmemorativa pensada para coleccionistas que valoran la identidad postal boliviana.' } }, { data: { title: 'Serie Especial Patrimonio', price: 'Bs. 120.00', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Bolivia_stamp_1951.jpg/320px-Bolivia_stamp_1951.jpg', year: 'Edicion Especial', series: 'Patrimonio Cultural', description: 'Serie dedicada al legado historico y arquitectonico, con una presentacion elegante y coleccionable.' } }, { data: { title: 'Sellos Conmemorativos', price: 'Bs. 65.00', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Bolivia_1868_5c_stamp.jpg/320px-Bolivia_1868_5c_stamp.jpg', year: 'Serie Clasica', series: 'Memoria Postal', description: 'Una seleccion de emisiones historicas con valor documental y un acabado visual refinado.' } }, { data: { title: 'Album Filatelico Premium', price: 'Bs. 200.00', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Bolivia_stamp_1938.jpg/320px-Bolivia_stamp_1938.jpg', year: 'Premium', series: 'Edicion Institucional', description: 'Un formato distinguido para preservar piezas filatelicas con mejor presentacion y cuidado editorial.' } }] },
-    { key: 'footer', settings: { help_title: 'Ayuda', company_title: 'Empresa', contact_title: 'Contacto', social_title: 'Siguenos', social_text: 'Mantente conectado con nosotros en redes sociales', address: 'Av. Mariscal Santa Cruz 1278|La Paz, Bolivia', phone: '+591 2 2356789|0800-10-5050 (Gratis)', email: 'info@correos.bo', copyright: '© 2026 Correos de Bolivia. Todos los derechos reservados.', legal_text: 'Empresa Publica Nacional Estrategica' }, items: [{ data: { group: 'help', label: 'Preguntas Frecuentes', url: '#' } }, { data: { group: 'help', label: 'Como Rastrear un Envio', url: '#' } }, { data: { group: 'help', label: 'Tarifas y Servicios', url: '#' } }, { data: { group: 'help', label: 'Reclamos', url: '#' } }, { data: { group: 'help', label: 'Terminos y Condiciones', url: '#' } }, { data: { group: 'company', label: 'Sobre Nosotros', url: '#' } }, { data: { group: 'company', label: 'Nuestra Historia', url: '#' } }, { data: { group: 'company', label: 'Trabaja con Nosotros', url: '#' } }, { data: { group: 'company', label: 'Noticias', url: '#' } }, { data: { group: 'company', label: 'Responsabilidad Social', url: '#' } }, { data: { group: 'social', label: 'f', aria_label: 'Facebook', url: '#' } }, { data: { group: 'social', label: 'x', aria_label: 'Twitter', url: '#' } }, { data: { group: 'social', label: 'ig', aria_label: 'Instagram', url: '#' } }, { data: { group: 'social', label: 'in', aria_label: 'LinkedIn', url: '#' } }] }
+    { key: 'header', settings: { help_label: '', login_label: '', search_placeholder: '', language_primary: '', language_secondary: '', accessibility_label: '' }, items: [] },
+    { key: 'hero', settings: { title: '', subtitle: '', tracking_title: '', tracking_text: '', tracking_label: '', tracking_placeholder: '', tracking_button: '' }, items: [] },
+    { key: 'services', settings: { title: '', subtitle: '', kicker: '' }, items: [] },
+    { key: 'tools', settings: { map_title: '', map_text: '', map_button_label: '', calculator_title: '', calculator_text: '', origin_label: '', origin_placeholder: '', destination_label: '', destination_placeholder: '', weight_label: '', weight_placeholder: '', calculate_button_label: '' }, items: [] },
+    { key: 'app_banner', settings: { title: '', text: '', app_store_label: '', play_store_label: '', app_store_url: '', play_store_url: '', background_image: '' }, items: [] },
+    { key: 'market', settings: { title: '', subtitle: '', view_all_label: '', view_all_url: '' }, items: [] },
+    { key: 'footer', settings: { help_title: '', company_title: '', contact_title: '', social_title: '', social_text: '', address: '', phone: '', email: '', copyright: '', legal_text: '' }, items: [] }
   ]
 }
 
@@ -259,7 +143,7 @@ export default {
   },
   computed: {
     logoUrl() {
-      return this.pageContent.theme.logo_url || FALLBACK_PAGE.theme.logo_url
+      return this.pageContent.theme.logo_url || ''
     },
     services() {
       return this.getSectionItems('services')
@@ -271,8 +155,7 @@ export default {
       return this.getSectionItems('market')
     },
     toolOffices() {
-      const items = this.getSectionItems('tools')
-      return items.length ? items : DEFAULT_TOOL_OFFICES
+      return this.getSectionItems('tools')
     },
     headerLinks() {
       return this.getSectionItems('header')
@@ -309,7 +192,7 @@ export default {
       }
 
       return [{
-        title: 'Banner principal',
+        title: '',
         image: settings.background_image,
         duration_seconds: 5
       }]
@@ -318,9 +201,9 @@ export default {
       const theme = this.pageContent.theme || {}
 
       return {
-        '--cb-blue': theme.primary_color || FALLBACK_PAGE.theme.primary_color,
-        '--cb-yellow': theme.accent_color || FALLBACK_PAGE.theme.accent_color,
-        '--cb-ink': theme.secondary_color || FALLBACK_PAGE.theme.secondary_color
+        '--cb-blue': theme.primary_color || EMPTY_PAGE.theme.primary_color,
+        '--cb-yellow': theme.accent_color || EMPTY_PAGE.theme.accent_color,
+        '--cb-ink': theme.secondary_color || EMPTY_PAGE.theme.secondary_color
       }
     },
     icons() {
@@ -355,7 +238,6 @@ export default {
         const payload = await this.$api.$get('/api/site/pages/home')
         this.pageContent = normalizePageContent(payload)
       } catch (error) {
-        // Keep the rendered content already available and simply reveal it.
       } finally {
         const minimumRevealDelay = 900
         const elapsed = Date.now() - startedAt
@@ -387,7 +269,7 @@ export default {
   },
   head() {
     return {
-      title: this.pageContent.meta_title || 'Correos de Bolivia',
+      title: this.pageContent.meta_title || '',
       meta: [
         { hid: 'description', name: 'description', content: this.pageContent.meta_description || '' }
       ],
@@ -398,7 +280,7 @@ export default {
 
 function normalizePageContent(payload = {}) {
   const sectionMap = payload.section_map || {}
-  const fallbackSectionMap = FALLBACK_PAGE.sections.reduce((accumulator, section) => {
+  const fallbackSectionMap = EMPTY_PAGE.sections.reduce((accumulator, section) => {
     accumulator[section.key] = section
     return accumulator
   }, {})
@@ -424,14 +306,15 @@ function normalizePageContent(payload = {}) {
   })
 
   return {
-    ...FALLBACK_PAGE,
+    ...EMPTY_PAGE,
     ...payload,
     theme: {
-      ...FALLBACK_PAGE.theme,
+      ...EMPTY_PAGE.theme,
       ...sanitizeContentTree(payload.theme || {})
     },
     sections: normalizedSections.map((section) => sanitizeContentTree(section))
   }
 }
 </script>
+
 <style src="~/assets/css/home.css"></style>

@@ -6,15 +6,15 @@
           <span class="cb-top-link__icon" v-html="icons.globe"></span>
           <span class="cb-top-link__text">
             <span class="cb-top-link__light-es">ES</span>
-            <strong>{{ content.language_primary || 'Espanol' }}</strong>
+            <strong>{{ content.language_primary || '' }}</strong>
             <span class="cb-top-link__sep">|</span>
             <span class="cb-top-link__light-us">US</span>
-            <strong>{{ content.language_secondary || 'English' }}</strong>
+            <strong>{{ content.language_secondary || '' }}</strong>
           </span>
         </button>
         <button type="button" class="cb-top-link">
           <span class="cb-top-link__icon" v-html="icons.accessibility"></span>
-          <span class="cb-top-link__text">{{ content.accessibility_label || 'Accesibilidad' }}</span>
+          <span class="cb-top-link__text">{{ content.accessibility_label || '' }}</span>
         </button>
       </div>
 
@@ -22,12 +22,12 @@
         <button type="button" class="cb-top-link">
           <span class="cb-top-link__icon" v-html="icons.help"></span>
           <span class="cb-top-link__text">
-            <span>{{ content.help_label || 'Ayuda / Contacto' }}</span>
+            <span>{{ content.help_label || '' }}</span>
           </span>
         </button>
         <button type="button" class="cb-top-link">
           <span class="cb-top-link__icon" v-html="icons.login"></span>
-          <span class="cb-top-link__text"><span>{{ content.login_label || 'Iniciar Sesion' }}</span></span>
+          <span class="cb-top-link__text"><span>{{ content.login_label || '' }}</span></span>
         </button>
       </div>
     </div>
@@ -45,7 +45,7 @@
         <div class="cb-nav-actions">
           <button class="cb-search-pill" type="button">
             <span class="cb-inline-icon" v-html="icons.search"></span>
-            <span>{{ content.search_placeholder || 'Buscar...' }}</span>
+            <span>{{ content.search_placeholder || '' }}</span>
           </button>
           <button class="cb-menu-btn" type="button" aria-label="Abrir menu">
             <span></span>
@@ -81,13 +81,7 @@ export default {
   },
   computed: {
     navLinks() {
-      return this.links.length
-        ? this.links
-        : [
-            { label: 'Quienes somos', url: '#' },
-            { label: 'Noticias', url: '#' },
-            { label: 'Institucional', url: '#' }
-          ]
+      return this.links
     }
   }
 }

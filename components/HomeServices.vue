@@ -2,8 +2,8 @@
   <section class="cb-section cb-section--tight">
     <div class="cb-shell">
       <div class="cb-section-heading">
-        <h2>{{ content.title || 'Servicios Destacados' }}</h2>
-        <p>{{ content.subtitle || 'Soluciones integrales para todas tus necesidades de envio' }}</p>
+        <h2>{{ content.title || '' }}</h2>
+        <p>{{ content.subtitle || '' }}</p>
       </div>
 
       <div class="cb-services-grid">
@@ -20,7 +20,7 @@
             </div>
           </div>
           <div class="cb-service-body">
-            <span class="cb-service-kicker">{{ content.kicker || 'Servicio' }}</span>
+            <span class="cb-service-kicker">{{ content.kicker || '' }}</span>
             <h3>{{ service.title }}</h3>
             <p>{{ service.text }}</p>
           </div>

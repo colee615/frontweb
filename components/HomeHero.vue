@@ -31,19 +31,21 @@
     <div class="cb-hero-overlay"></div>
     <div class="cb-shell cb-hero-content">
       <div class="cb-hero-copy">
-        <h1>{{ titleLines[0] }}<br>{{ titleLines[1] }}</h1>
-        <p>{{ content.subtitle || 'Servicio postal confiable, rapido y seguro' }}</p>
+        <h1 v-if="titleLines[0] || titleLines[1]">
+          {{ titleLines[0] }}<br v-if="titleLines[1]">{{ titleLines[1] }}
+        </h1>
+        <p v-if="content.subtitle">{{ content.subtitle }}</p>
       </div>
 
       <div class="cb-track-card">
-        <h2>{{ content.tracking_title || 'Rastrea tu Envio' }}</h2>
-        <p>{{ content.tracking_text || 'Ingresa tu codigo de seguimiento para conocer el estado de tu paquete' }}</p>
-        <label for="hero-track">{{ content.tracking_label || 'Codigo de seguimiento' }}</label>
+        <h2 v-if="content.tracking_title">{{ content.tracking_title }}</h2>
+        <p v-if="content.tracking_text">{{ content.tracking_text }}</p>
+        <label v-if="content.tracking_label" for="hero-track">{{ content.tracking_label }}</label>
         <input
           id="hero-track"
           v-model.trim="trackingCode"
           type="text"
-          :placeholder="content.tracking_placeholder || 'Ej: PE123456789'"
+          :placeholder="content.tracking_placeholder || ''"
           @keydown.enter.prevent="openTracking"
         >
         <div class="cb-captcha">
@@ -68,7 +70,7 @@
               type="text"
               autocomplete="off"
               autocapitalize="characters"
-              placeholder="ESCRIBE EL CAPTCHA"
+              placeholder="Escribe el captcha"
               @keydown.enter.prevent="openTracking"
             >
             <button type="button" class="cb-captcha__submit" @click="openTracking">
@@ -83,15 +85,6 @@
 </template>
 
 <script>
-const DEFAULT_SLIDES = [
-  {
-    media_type: 'image',
-    src: 'https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1600&q=80',
-    poster: '',
-    duration_seconds: 5
-  }
-]
-
 const CAPTCHA_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 
 function createCaptchaCode(length = 5) {
@@ -134,17 +127,17 @@ export default {
   },
   computed: {
     titleLines() {
-      const title = this.content.title || 'Conectando Bolivia|con el Mundo'
+      const title = this.content.title || ''
+
+      if (!title.trim()) {
+        return ['', '']
+      }
+
       const lines = title.split('|')
 
       if (lines.length >= 2) {
         return [lines[0], lines.slice(1).join(' ')]
       }
-
-      if (title.includes(' con el Mundo')) {
-        return ['Conectando Bolivia', 'con el Mundo']
-      }
-
       const words = title.split(' ')
       const midpoint = Math.ceil(words.length / 2)
 
@@ -154,14 +147,12 @@ export default {
       ]
     },
     normalizedSlides() {
-      const validSlides = this.slides
+      return this.slides
         .filter((slide) => slide && slide.src)
         .map((slide) => ({
           ...slide,
           duration_seconds: this.normalizeDuration(slide.duration_seconds)
         }))
-
-      return validSlides.length ? validSlides : DEFAULT_SLIDES
     },
     trackingBaseUrl() {
       return (this.$config && this.$config.trackingBaseUrl) || 'https://trackingbo.correos.gob.bo:8100'
