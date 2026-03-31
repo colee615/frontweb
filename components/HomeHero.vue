@@ -91,6 +91,18 @@ const DEFAULT_SLIDES = [
   }
 ]
 
+const CAPTCHA_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+
+function createCaptchaCode(length = 5) {
+  let code = ''
+
+  for (let index = 0; index < length; index += 1) {
+    code += CAPTCHA_CHARS.charAt(Math.floor(Math.random() * CAPTCHA_CHARS.length))
+  }
+
+  return code
+}
+
 export default {
   name: 'HomeHero',
   props: {
@@ -113,7 +125,7 @@ export default {
       slideTimer: null,
       trackingCode: '',
       captchaAnswer: '',
-      captchaExpected: '',
+      captchaExpected: createCaptchaCode(5),
       captchaError: ''
     }
   },
@@ -172,9 +184,6 @@ export default {
   },
   beforeDestroy() {
     this.clearRotation()
-  },
-  mounted() {
-    this.generateCaptcha()
   },
   methods: {
     setupRotation() {
@@ -268,21 +277,11 @@ export default {
       this.generateCaptcha()
     },
     generateCaptcha() {
-      this.captchaExpected = this.randomCaptchaCode(5)
+      this.captchaExpected = createCaptchaCode(5)
       this.captchaError = ''
     },
     isCaptchaValid() {
       return this.captchaAnswer.toUpperCase() === this.captchaExpected
-    },
-    randomCaptchaCode(length) {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-      let code = ''
-
-      for (let index = 0; index < length; index += 1) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length))
-      }
-
-      return code
     },
     captchaCharStyle(index) {
       const rotations = [-12, 8, -6, 10, -9, 6]
