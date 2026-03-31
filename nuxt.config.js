@@ -3,6 +3,7 @@ require('dotenv').config()
 const DEV_API_BASE_URL = 'http://127.0.0.1:8000'
 const API_BASE_URL = (process.env.API_BASE_URL || (process.env.NODE_ENV === 'development' ? DEV_API_BASE_URL : '')).replace(/\/+$/, '')
 const USER_API_BASE_URL = ((process.env.USER_API_BASE_URL || `${API_BASE_URL}/user`) || '/user').replace(/\/?$/, '/')
+const TRACKING_BASE_URL = (process.env.TRACKING_BASE_URL || 'https://trackingbo.correos.gob.bo:8100').replace(/\/+$/, '')
 const CONNECT_SRC = ["'self'"]
 const IMG_SRC = ["'self'", 'data:', 'https:']
 const MEDIA_SRC = ["'self'", 'https:']
@@ -15,6 +16,10 @@ if (/^https?:\/\//i.test(API_BASE_URL)) {
   CONNECT_SRC.push(API_BASE_URL)
   IMG_SRC.push(API_BASE_URL)
   MEDIA_SRC.push(API_BASE_URL)
+}
+
+if (/^https?:\/\//i.test(TRACKING_BASE_URL)) {
+  CONNECT_SRC.push(TRACKING_BASE_URL)
 }
 
 if (process.env.NODE_ENV === 'development') {
@@ -53,6 +58,7 @@ export default {
   publicRuntimeConfig: {
     apiBaseUrl: API_BASE_URL,
     userApiBaseUrl: USER_API_BASE_URL,
+    trackingBaseUrl: TRACKING_BASE_URL,
     axios: {
       browserBaseURL: API_BASE_URL || '/',
       baseURL: API_BASE_URL || '/'

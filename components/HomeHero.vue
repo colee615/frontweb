@@ -49,7 +49,7 @@
         <div class="cb-captcha">
           <div class="cb-captcha__head">
             <span class="cb-captcha__label">Verificacion de seguridad</span>
-            <button type="button" class="cb-captcha__refresh" @click="generateCaptcha">Nuevo codigo</button>
+            <button type="button" class="cb-captcha__refresh" :disabled="captchaLoading" @click="generateCaptcha">Nuevo codigo</button>
           </div>
           <div class="cb-captcha__visual" :style="captchaStyle">
             <span
@@ -58,6 +58,7 @@
               class="cb-captcha__char"
               :style="captchaCharStyle(index)"
             >{{ char }}</span>
+            <span v-if="!captchaChars.length && captchaLoading" class="cb-captcha__char">...</span>
           </div>
           <p class="cb-captcha__hint">Escribe el codigo mostrado para continuar con la consulta.</p>
           <div class="cb-captcha__input-row">
@@ -125,8 +126,10 @@ export default {
       slideTimer: null,
       trackingCode: '',
       captchaAnswer: '',
-      captchaExpected: createCaptchaCode(5),
-      captchaError: ''
+      captchaExpected: '',
+      captchaChallenge: '',
+      captchaError: '',
+      captchaLoading: false
     }
   },
   computed: {
@@ -161,7 +164,13 @@ export default {
       return validSlides.length ? validSlides : DEFAULT_SLIDES
     },
     trackingBaseUrl() {
-      return 'https://trackingbo.correos.gob.bo:8100/trackingbo'
+      return (this.$config && this.$config.trackingBaseUrl) || 'https://trackingbo.correos.gob.bo:8100'
+    },
+    trackingAccessUrl() {
+      return `${this.trackingBaseUrl}/api/public/tracking/access`
+    },
+    trackingCaptchaUrl() {
+      return `${this.trackingBaseUrl}/api/public/tracking/captcha`
     },
     captchaChars() {
       return this.captchaExpected.split('')
@@ -184,6 +193,9 @@ export default {
   },
   beforeDestroy() {
     this.clearRotation()
+  },
+  mounted() {
+    this.generateCaptcha()
   },
   methods: {
     setupRotation() {
@@ -257,31 +269,85 @@ export default {
 
       return Math.min(Math.max(parsed, 1), 300)
     },
-    openTracking() {
+    async openTracking() {
       const code = this.trackingCode && this.trackingCode.trim()
 
       if (!code || !process.client) {
         return
       }
 
-      if (!this.isCaptchaValid()) {
+      if (!this.captchaAnswer.trim()) {
         this.captchaError = 'Completa correctamente el captcha para continuar.'
         return
       }
 
       this.captchaError = ''
 
-      const trackingUrl = `${this.trackingBaseUrl}?codigo=${encodeURIComponent(code)}`
-      window.open(trackingUrl, '_blank', 'noopener')
-      this.captchaAnswer = ''
-      this.generateCaptcha()
+      try {
+        const response = await fetch(this.trackingAccessUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          },
+          body: JSON.stringify({
+            codigo: code,
+            captcha_answer: this.captchaAnswer,
+            captcha_challenge: this.captchaChallenge
+          })
+        })
+
+        const payload = await response.json()
+
+        if (!response.ok) {
+          if (payload && payload.captcha) {
+            this.applyRemoteCaptcha(payload.captcha)
+          } else {
+            await this.generateCaptcha()
+          }
+
+          throw new Error(payload && payload.message ? payload.message : 'No se pudo validar el captcha.')
+        }
+
+        if (!payload.redirect_url) {
+          throw new Error('No se pudo generar el acceso al tracking.')
+        }
+
+        window.open(payload.redirect_url, '_blank', 'noopener')
+        this.captchaAnswer = ''
+        await this.generateCaptcha()
+      } catch (error) {
+        this.captchaError = error && error.message ? error.message : 'No se pudo abrir el tracking.'
+      }
     },
-    generateCaptcha() {
-      this.captchaExpected = createCaptchaCode(5)
+    async generateCaptcha() {
+      this.captchaLoading = true
+
+      try {
+        const response = await fetch(this.trackingCaptchaUrl, {
+          headers: {
+            Accept: 'application/json'
+          }
+        })
+        const payload = await response.json()
+
+        if (!response.ok || !payload || !payload.challenge) {
+          throw new Error('No se pudo cargar el captcha.')
+        }
+
+        this.applyRemoteCaptcha(payload)
+      } catch (error) {
+        this.captchaExpected = createCaptchaCode(5)
+        this.captchaChallenge = ''
+        this.captchaError = 'No se pudo conectar con el servicio de tracking.'
+      } finally {
+        this.captchaLoading = false
+      }
+    },
+    applyRemoteCaptcha(payload) {
+      this.captchaExpected = String(payload.pregunta || '').toUpperCase()
+      this.captchaChallenge = String(payload.challenge || '')
       this.captchaError = ''
-    },
-    isCaptchaValid() {
-      return this.captchaAnswer.toUpperCase() === this.captchaExpected
     },
     captchaCharStyle(index) {
       const rotations = [-12, 8, -6, 10, -9, 6]
