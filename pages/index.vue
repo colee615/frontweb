@@ -147,7 +147,7 @@ const FALLBACK_PAGE = {
     {
       key: 'announcement_modal',
       settings: {
-        enabled: true,
+        enabled: false,
         show_once: false,
         storage_key: 'cb-home-invitation-2026',
         modal_title: 'Invitacion oficial',
@@ -217,25 +217,7 @@ export default {
       }
     },
     announcementSlides() {
-      const items = this.getSectionItems('announcement_modal')
-
-      if (items.length) {
-        return items
-      }
-
-      const settings = this.getSectionSettings('announcement_modal')
-
-      if (!settings.poster_image) {
-        return []
-      }
-
-      return [{
-        title: settings.poster_title || 'Popup principal',
-        poster_image: settings.poster_image,
-        poster_alt: settings.poster_alt || 'Comunicado institucional',
-        poster_title: settings.poster_title || '',
-        poster_caption: settings.poster_caption || ''
-      }]
+      return this.getSectionItems('announcement_modal')
     },
     appBannerSlides() {
       const items = this.getSectionItems('app_banner')
