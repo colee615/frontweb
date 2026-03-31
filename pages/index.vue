@@ -1,13 +1,40 @@
 <template>
-  <div class="cb-page" :style="themeStyles">
-    <HomeAnnouncementModal :content="sectionSettings.announcement_modal" :slides="announcementSlides" />
-    <HomeHeader :logo-url="logoUrl" :icons="icons" :content="sectionSettings.header" :links="headerLinks" />
-    <HomeHero :icons="icons" :content="sectionSettings.hero" :slides="heroSlides" />
-    <HomeServices :services="services" :icons="icons" :content="sectionSettings.services" />
-    <HomeTools :icons="icons" :content="sectionSettings.tools" :offices="toolOffices" />
-    <HomeAppBanner :content="sectionSettings.app_banner" :slides="appBannerSlides" />
-    <HomeMarket :products="products" :icons="icons" :content="sectionSettings.market" />
-    <HomeFooter :logo-url="logoUrl" :icons="icons" :content="sectionSettings.footer" :links="footerLinks" />
+  <div class="cb-page" :style="themeStyles" :class="{ 'cb-page--ready': !isBootLoading }">
+    <transition name="cb-page-loader">
+      <div v-if="isBootLoading" class="cb-page-loader" aria-live="polite" aria-busy="true">
+        <div class="cb-page-loader__backdrop" />
+        <div class="cb-page-loader__panel">
+          <div class="cb-page-loader__brand">
+            <div class="cb-page-loader__logo">
+              <img v-if="logoUrl" :src="logoUrl" alt="Correos de Bolivia" />
+            </div>
+            <div class="cb-page-loader__copy">
+              <span class="cb-page-loader__eyebrow">Cargando contenido actualizado</span>
+              <h2>Estamos preparando tu experiencia</h2>
+              <p>Recuperamos la informacion del servidor para mostrar el sitio completo y sin saltos visuales.</p>
+            </div>
+          </div>
+          <div class="cb-page-loader__pulse">
+            <span />
+            <span />
+            <span />
+          </div>
+          <div class="cb-page-loader__bar">
+            <span />
+          </div>
+        </div>
+      </div>
+    </transition>
+    <div class="cb-page__content">
+      <HomeAnnouncementModal :content="sectionSettings.announcement_modal" :slides="announcementSlides" />
+      <HomeHeader :logo-url="logoUrl" :icons="icons" :content="sectionSettings.header" :links="headerLinks" />
+      <HomeHero :icons="icons" :content="sectionSettings.hero" :slides="heroSlides" />
+      <HomeServices :services="services" :icons="icons" :content="sectionSettings.services" />
+      <HomeTools :icons="icons" :content="sectionSettings.tools" :offices="toolOffices" />
+      <HomeAppBanner :content="sectionSettings.app_banner" :slides="appBannerSlides" />
+      <HomeMarket :products="products" :icons="icons" :content="sectionSettings.market" />
+      <HomeFooter :logo-url="logoUrl" :icons="icons" :content="sectionSettings.footer" :links="footerLinks" />
+    </div>
   </div>
 </template>
 
@@ -168,6 +195,11 @@ const FALLBACK_PAGE = {
 
 export default {
   name: 'IndexPage',
+  data() {
+    return {
+      isBootLoading: true
+    }
+  },
   async asyncData({ $api }) {
     try {
       const payload = await $api.$get('/api/site/pages/home')
@@ -180,6 +212,9 @@ export default {
         pageContent: normalizePageContent()
       }
     }
+  },
+  async mounted() {
+    await this.refreshPageContent()
   },
   computed: {
     logoUrl() {
@@ -272,6 +307,24 @@ export default {
     }
   },
   methods: {
+    async refreshPageContent() {
+      const startedAt = Date.now()
+
+      try {
+        const payload = await this.$api.$get('/api/site/pages/home')
+        this.pageContent = normalizePageContent(payload)
+      } catch (error) {
+        // Keep the rendered content already available and simply reveal it.
+      } finally {
+        const minimumRevealDelay = 900
+        const elapsed = Date.now() - startedAt
+        const remaining = Math.max(0, minimumRevealDelay - elapsed)
+
+        window.setTimeout(() => {
+          this.isBootLoading = false
+        }, remaining)
+      }
+    },
     getSectionSettings(key) {
       const section = this.pageContent.sections.find((item) => item.key === key)
       return section ? section.settings || {} : {}
