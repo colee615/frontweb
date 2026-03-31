@@ -1,27 +1,74 @@
 <template>
   <div class="cb-page" :style="themeStyles" :class="{ 'cb-page--ready': !isBootLoading }">
     <transition name="cb-page-loader">
-      <div v-if="isBootLoading" class="cb-page-loader" aria-live="polite" aria-busy="true">
-        <div class="cb-page-loader__backdrop" />
-        <div class="cb-page-loader__panel">
-          <div class="cb-page-loader__brand">
-            <div class="cb-page-loader__logo">
-              <img v-if="logoUrl" :src="logoUrl" alt="Correos de Bolivia" />
-            </div>
-            <div class="cb-page-loader__copy">
-              <span class="cb-page-loader__eyebrow">Actualizando contenido</span>
-              <p>Cargando informacion del sitio</p>
-            </div>
-          </div>
-          <div class="cb-page-loader__bar">
-            <span />
-          </div>
-        </div>
+      <div v-if="isBootLoading" class="cb-page-loading-line" aria-live="polite" aria-busy="true">
+        <span />
       </div>
     </transition>
-    <div class="cb-page__content">
+    <HomeHeader :logo-url="logoUrl" :icons="icons" :content="sectionSettings.header" :links="headerLinks" />
+    <div v-if="isBootLoading" class="cb-home-skeleton" aria-hidden="true">
+      <section class="cb-home-skeleton__hero">
+        <div class="cb-shell cb-home-skeleton__hero-grid">
+          <div class="cb-skeleton-card cb-skeleton-card--hero">
+            <div class="cb-skeleton cb-skeleton--eyebrow cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--title cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--title cb-skeleton--short cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--text cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--text cb-skeleton--medium cb-skeleton--wave" />
+          </div>
+          <div class="cb-skeleton-card cb-skeleton-card--panel">
+            <div class="cb-skeleton cb-skeleton--label cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--input cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--input cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--button cb-skeleton--wave" />
+          </div>
+        </div>
+      </section>
+
+      <section class="cb-section cb-section--tight">
+        <div class="cb-shell">
+          <div class="cb-home-skeleton__heading">
+            <div class="cb-skeleton cb-skeleton--section-title cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--section-text cb-skeleton--wave" />
+          </div>
+          <div class="cb-home-skeleton__services">
+            <div v-for="index in 8" :key="`service-${index}`" class="cb-skeleton-card cb-skeleton-card--service">
+              <div class="cb-skeleton cb-skeleton--icon cb-skeleton--wave" />
+              <div class="cb-skeleton cb-skeleton--label cb-skeleton--wave" />
+              <div class="cb-skeleton cb-skeleton--service-title cb-skeleton--wave" />
+              <div class="cb-skeleton cb-skeleton--text cb-skeleton--wave" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cb-section cb-section--tight">
+        <div class="cb-shell cb-home-skeleton__tools">
+          <div class="cb-skeleton-card cb-skeleton-card--tool">
+            <div class="cb-skeleton cb-skeleton--panel-title cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--map cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--button cb-skeleton--wave" />
+          </div>
+          <div class="cb-skeleton-card cb-skeleton-card--tool">
+            <div class="cb-skeleton cb-skeleton--panel-title cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--input cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--input cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--input cb-skeleton--wave" />
+            <div class="cb-skeleton cb-skeleton--button cb-skeleton--wave" />
+          </div>
+        </div>
+      </section>
+
+      <section class="cb-section cb-section--tight">
+        <div class="cb-shell">
+          <div class="cb-skeleton-card cb-skeleton-card--banner">
+            <div class="cb-skeleton cb-skeleton--banner cb-skeleton--wave" />
+          </div>
+        </div>
+      </section>
+    </div>
+    <div v-else class="cb-page__content">
       <HomeAnnouncementModal :content="sectionSettings.announcement_modal" :slides="announcementSlides" />
-      <HomeHeader :logo-url="logoUrl" :icons="icons" :content="sectionSettings.header" :links="headerLinks" />
       <HomeHero :icons="icons" :content="sectionSettings.hero" :slides="heroSlides" />
       <HomeServices :services="services" :icons="icons" :content="sectionSettings.services" />
       <HomeTools :icons="icons" :content="sectionSettings.tools" :offices="toolOffices" />
