@@ -34,7 +34,7 @@
               <img
                 class="cb-modal__stack-poster"
                 :src="slide.poster_image"
-                :alt="slide.poster_alt || 'Popup institucional'"
+                :alt="slide.poster_alt || ''"
               >
             </button>
           </div>
@@ -46,7 +46,7 @@
                 <img
                   class="cb-modal__poster"
                   :src="activeSlide.poster_image"
-                  :alt="activeSlide.poster_alt || content.modal_title || 'Invitacion destacada'"
+                  :alt="activeSlide.poster_alt || content.modal_title || ''"
                 >
               </div>
             </transition>
@@ -112,7 +112,7 @@ export default {
         .map((slide, index) => ({
           key: slide.id || slide.title || slide.poster_image || `slide-${index}`,
           poster_image: slide.poster_image,
-          poster_alt: slide.poster_alt || 'Comunicado institucional',
+          poster_alt: slide.poster_alt || '',
           poster_title: slide.poster_title || slide.title || '',
           poster_caption: slide.poster_caption || ''
         }))
