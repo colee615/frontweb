@@ -6,7 +6,32 @@
       </div>
     </transition>
 
-    <HomeHeader :logo-url="logoUrl" :icons="icons" :content="sectionSettings.header" :links="headerLinks" />
+    <div v-if="isBootLoading" class="cb-header-skeleton" aria-hidden="true">
+      <div class="cb-shell cb-header-skeleton__top">
+        <div class="cb-header-skeleton__meta">
+          <span class="cb-skeleton cb-skeleton--meta cb-skeleton--wave" />
+          <span class="cb-skeleton cb-skeleton--meta cb-skeleton--shorter cb-skeleton--wave" />
+          <span class="cb-skeleton cb-skeleton--meta cb-skeleton--tiny cb-skeleton--wave" />
+        </div>
+        <div class="cb-header-skeleton__meta cb-header-skeleton__meta--right">
+          <span class="cb-skeleton cb-skeleton--meta cb-skeleton--shorter cb-skeleton--wave" />
+          <span class="cb-skeleton cb-skeleton--meta cb-skeleton--tiny cb-skeleton--wave" />
+        </div>
+      </div>
+      <div class="cb-shell cb-header-skeleton__main">
+        <div class="cb-skeleton cb-skeleton--logo cb-skeleton--wave" />
+        <div class="cb-header-skeleton__nav">
+          <span class="cb-skeleton cb-skeleton--nav cb-skeleton--wave" />
+          <span class="cb-skeleton cb-skeleton--nav cb-skeleton--wave" />
+          <span class="cb-skeleton cb-skeleton--nav cb-skeleton--shorter cb-skeleton--wave" />
+        </div>
+        <div class="cb-header-skeleton__actions">
+          <span class="cb-skeleton cb-skeleton--search cb-skeleton--wave" />
+          <span class="cb-skeleton cb-skeleton--menu cb-skeleton--wave" />
+        </div>
+      </div>
+    </div>
+    <HomeHeader v-else :logo-url="logoUrl" :icons="icons" :content="sectionSettings.header" :links="headerLinks" />
 
     <div v-if="isBootLoading" class="cb-home-skeleton" aria-hidden="true">
       <section class="cb-home-skeleton__hero">
