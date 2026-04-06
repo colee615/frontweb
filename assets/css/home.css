@@ -2278,10 +2278,10 @@ a {
 .cb-app-banner-stage {
   position: relative;
   width: 100%;
-  min-height: 420px;
+  height: clamp(220px, 21.875vw, 420px);
   border-radius: 0;
   overflow: hidden;
-  background: linear-gradient(180deg, #0f2747, #173b67);
+  background: #eef3f8;
   border: 0;
   box-shadow: none;
 }
@@ -2289,10 +2289,10 @@ a {
 .cb-app-banner-slide {
   position: absolute;
   inset: 0;
-  background-position: center top;
+  background-position: center center;
   background-repeat: no-repeat;
-  background-size: contain;
-  background-color: #f8fbff;
+  background-size: cover;
+  background-color: #eef3f8;
 }
 
 .cb-app-banner-slide::after {
@@ -2838,7 +2838,7 @@ a {
   }
 
   .cb-app-banner-stage {
-    min-height: 340px;
+    height: 340px;
   }
 }
 
@@ -3148,7 +3148,7 @@ a {
   }
 
   .cb-app-banner-stage {
-    min-height: 280px;
+    height: 280px;
   }
 
   .cb-app-banner-controls {
@@ -3366,7 +3366,7 @@ a {
   }
 
   .cb-app-banner-stage {
-    min-height: 236px;
+    height: 236px;
   }
 
   .cb-app-banner-controls {
