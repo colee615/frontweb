@@ -2281,7 +2281,7 @@ a {
 .cb-app-banner-stage {
   position: relative;
   width: 100%;
-  height: clamp(185px, 15.5vw, 300px);
+  height: 300px;
   border-radius: 0;
   overflow: hidden;
   background: #eef3f8;
