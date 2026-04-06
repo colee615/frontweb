@@ -95,8 +95,13 @@
       </section>
     </div>
 
-    <div v-else class="cb-page__content">
-      <HomeAnnouncementModal :content="sectionSettings.announcement_modal" :slides="announcementSlides" />
+    <HomeAnnouncementModal
+      v-if="!isBootLoading"
+      :content="sectionSettings.announcement_modal"
+      :slides="announcementSlides"
+    />
+
+    <div v-if="!isBootLoading" class="cb-page__content">
       <HomeHero :icons="icons" :content="sectionSettings.hero" :slides="heroSlides" />
       <HomeServices :services="services" :icons="icons" :content="sectionSettings.services" />
       <HomeTools :icons="icons" :content="sectionSettings.tools" :offices="toolOffices" />

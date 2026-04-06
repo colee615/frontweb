@@ -34,12 +34,19 @@
 
     <div class="cb-navbar">
       <div class="cb-shell cb-navbar-inner">
-        <a class="cb-logo" href="#">
+        <nuxt-link class="cb-logo" to="/">
           <img :src="logoUrl" alt="Correos de Bolivia">
-        </a>
+        </nuxt-link>
 
         <nav class="cb-nav-links">
-          <a v-for="link in navLinks" :key="link.label" :href="link.url || '#'">{{ link.label }}</a>
+          <component
+            :is="isInternalRoute(link.url) ? 'nuxt-link' : 'a'"
+            v-for="link in navLinks"
+            :key="`${link.label}-${link.url}`"
+            v-bind="linkAttrs(link.url)"
+          >
+            {{ link.label }}
+          </component>
         </nav>
 
         <div class="cb-nav-actions">
@@ -81,7 +88,50 @@ export default {
   },
   computed: {
     navLinks() {
-      return this.links
+      return this.links.map((link) => ({
+        ...link,
+        url: this.resolveRoute(link)
+      }))
+    }
+  },
+  methods: {
+    resolveRoute(link) {
+      const label = this.normalizeLabel(link.label)
+      const url = typeof link.url === 'string' ? link.url.trim() : ''
+
+      if (url && url !== '#') {
+        return url
+      }
+
+      if (label.includes('quienes somos')) {
+        return '/quienes-somos'
+      }
+
+      return '#'
+    },
+    normalizeLabel(value) {
+      if (typeof value !== 'string') {
+        return ''
+      }
+
+      return value
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^\w\s]/g, ' ')
+        .replace(/_/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase()
+    },
+    isInternalRoute(url) {
+      return typeof url === 'string' && url.startsWith('/') && !url.startsWith('//')
+    },
+    linkAttrs(url) {
+      if (this.isInternalRoute(url)) {
+        return { to: url }
+      }
+
+      return { href: url || '#' }
     }
   }
 }

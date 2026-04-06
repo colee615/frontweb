@@ -1,0 +1,386 @@
+.cb-about-page {
+  background: #f6f8fc;
+}
+
+.cb-about-skeleton__hero-grid {
+  grid-template-columns: 1fr;
+}
+
+.cb-about-skeleton__hero-card {
+  min-height: 380px;
+}
+
+.cb-about-skeleton__mission,
+.cb-about-skeleton__history {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cb-about {
+  color: var(--cb-blue);
+}
+
+.cb-about-hero__media,
+.cb-about-story-slider__media,
+.cb-about-organigram__frame {
+  position: relative;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.cb-about-hero__media {
+  min-height: 540px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.cb-about-hero__veil,
+.cb-about-story-slider__veil,
+.cb-about-organigram__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(254, 204, 54, 0.18), rgba(32, 83, 154, 0.24)),
+    rgba(255, 255, 255, 0.42);
+}
+
+.cb-about-hero__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.cb-about-hero__copy {
+  max-width: 720px;
+  padding: 56px 24px 92px;
+}
+
+.cb-about-hero__copy h1,
+.cb-about-section__heading h2,
+.cb-about-mission__card h2,
+.cb-about-story h2 {
+  margin: 0;
+  color: var(--cb-blue);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.cb-about-hero__copy h1 {
+  font-size: clamp(2.8rem, 5vw, 4.4rem);
+}
+
+.cb-about-hero__copy p,
+.cb-about-section__heading p,
+.cb-about-mission__card p,
+.cb-about-story p,
+.cb-about-story-slider__copy p,
+.cb-about-principle-card p,
+.cb-about-organigram__copy p,
+.cb-about-objective p {
+  margin: 0;
+  color: rgba(32, 83, 154, 0.82);
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+
+.cb-about-hero__copy p {
+  margin-top: 18px;
+  font-size: 1.1rem;
+}
+
+.cb-about-eyebrow {
+  margin: 0 0 14px;
+  color: rgba(32, 83, 154, 0.72);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.cb-about-section {
+  padding: 76px 0;
+}
+
+.cb-about-mission {
+  background: #fff;
+}
+
+.cb-about-mission__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.cb-about-mission__card {
+  min-height: 250px;
+  padding: 38px 34px;
+  border-radius: 34px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 248, 252, 0.98));
+  box-shadow: 0 24px 60px rgba(26, 58, 112, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+
+.cb-about-mission__card h2 {
+  font-size: clamp(3rem, 5vw, 4.1rem);
+}
+
+.cb-about-history {
+  background: linear-gradient(180deg, #f6f8fc, #ffffff);
+}
+
+.cb-about-history__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 46px;
+  align-items: center;
+}
+
+.cb-about-story h2,
+.cb-about-section__heading h2 {
+  font-size: clamp(2.1rem, 4vw, 3.2rem);
+}
+
+.cb-about-story {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cb-about-story-slider__media {
+  min-height: 350px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 22px 60px rgba(23, 49, 97, 0.14);
+  border: 1px solid rgba(32, 83, 154, 0.12);
+}
+
+.cb-about-story-slider__copy,
+.cb-about-organigram__copy {
+  position: relative;
+  z-index: 1;
+  min-height: inherit;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 60px 90px;
+}
+
+.cb-about-story-slider__copy h3,
+.cb-about-organigram__copy h3,
+.cb-about-principle-card h3 {
+  margin: 0 0 12px;
+  color: var(--cb-blue);
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 800;
+}
+
+.cb-about-principles {
+  padding: 88px 0 96px;
+  background: linear-gradient(180deg, #ffc700 0%, #ffcb1b 100%);
+}
+
+.cb-about-section__heading {
+  margin-bottom: 34px;
+}
+
+.cb-about-section__heading--center {
+  text-align: center;
+}
+
+.cb-about-principles .cb-about-section__heading h2 {
+  color: #fff;
+}
+
+.cb-about-principles .cb-about-section__heading p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cb-about-principles__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 28px;
+}
+
+.cb-about-principle-card {
+  padding: 26px 24px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 16px 40px rgba(40, 48, 78, 0.12);
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.cb-about-principle-card__icon,
+.cb-about-objective__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--cb-blue);
+}
+
+.cb-about-principle-card__icon svg,
+.cb-about-objective__icon svg,
+.cb-about-carousel__arrow svg {
+  width: 22px;
+  height: 22px;
+}
+
+.cb-about-organigram {
+  background: #fff;
+}
+
+.cb-about-organigram__frame {
+  min-height: 380px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 2px solid rgba(32, 83, 154, 0.18);
+}
+
+.cb-about-objectives {
+  background: #f6f8fc;
+}
+
+.cb-about-objectives__list {
+  display: grid;
+  gap: 16px;
+}
+
+.cb-about-objective {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 22px;
+  border-left: 4px solid var(--cb-yellow);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(40, 48, 78, 0.08);
+}
+
+.cb-about-objective__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+}
+
+.cb-about-objective__icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.cb-about-carousel__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--cb-blue);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 12px 30px rgba(30, 54, 95, 0.14);
+  transform: translateY(-50%);
+}
+
+.cb-about-carousel__arrow--left {
+  left: 12px;
+}
+
+.cb-about-carousel__arrow--right {
+  right: 12px;
+}
+
+.cb-about-carousel__dots {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  gap: 10px;
+  transform: translateX(-50%);
+}
+
+.cb-about-carousel__dots--inside {
+  bottom: 16px;
+}
+
+.cb-about-carousel__dot {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.cb-about-carousel__dot--active {
+  width: 32px;
+  background: var(--cb-yellow);
+}
+
+@media (max-width: 991px) {
+  .cb-about-hero__media {
+    min-height: 440px;
+  }
+
+  .cb-about-skeleton__mission,
+  .cb-about-skeleton__history,
+  .cb-about-mission__grid,
+  .cb-about-history__grid,
+  .cb-about-principles__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cb-about-story-slider__copy,
+  .cb-about-organigram__copy {
+    padding: 44px 56px;
+  }
+}
+
+@media (max-width: 767px) {
+  .cb-about-section,
+  .cb-about-principles {
+    padding: 58px 0;
+  }
+
+  .cb-about-hero__copy {
+    padding: 48px 20px 82px;
+  }
+
+  .cb-about-mission__card {
+    min-height: auto;
+    padding: 28px 22px;
+    border-radius: 24px;
+  }
+
+  .cb-about-story-slider__media,
+  .cb-about-organigram__frame {
+    min-height: 300px;
+  }
+
+  .cb-about-story-slider__copy,
+  .cb-about-organigram__copy {
+    padding: 38px 26px 64px;
+  }
+
+  .cb-about-principle-card,
+  .cb-about-objective {
+    grid-template-columns: 1fr;
+  }
+}

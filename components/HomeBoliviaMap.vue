@@ -107,8 +107,10 @@ export default {
       const source = this.offices.length ? this.offices : FALLBACK_MARKERS
 
       return source
-        .filter((office) => office.dept && office.left && office.top)
-        .map((office, index) => ({
+        .map((office, index) => {
+          const coordinates = this.resolveCoordinates(office)
+
+          return {
           key: office.key || String(office.name || office.title || `office-${index}`).toLowerCase().replace(/[^a-z0-9]+/g, ''),
           dept: String(office.dept || '').toUpperCase(),
           name: office.name || office.title || `Oficina ${index + 1}`,
@@ -118,11 +120,13 @@ export default {
           hours: office.hours || '',
           weekdayHours: this.normalizeScheduleValue(office.weekday_hours || office.weekdayHours || office.hours || '', 'weekday'),
           saturdayHours: this.normalizeScheduleValue(office.saturday_hours || office.saturdayHours || '', 'saturday'),
-          left: office.left,
-          top: office.top,
+          left: coordinates.left,
+          top: coordinates.top,
           delay: office.delay || `${Math.min(index, 6) * 0.1}s`,
           mapsUrl: office.maps_url || office.mapsUrl || '#'
-        }))
+          }
+        })
+        .filter((office) => office.dept && office.left && office.top)
     },
     activeOffice() {
       return this.markers.find((marker) => marker.dept === this.activeDepartment) || null
@@ -260,6 +264,51 @@ export default {
     },
     openGoogleMaps(office) {
       this.openRoute(office.mapsUrl || '#')
+    },
+    resolveCoordinates(office) {
+      const leftValue = this.pickFirstDefined([
+        office.left,
+        office.position_left,
+        office.left_position,
+        office.leftPosition,
+        office.posicion_izquierda,
+        office.posicionIzquierda,
+        office.positionX,
+        office.position_x,
+        office.x
+      ])
+      const topValue = this.pickFirstDefined([
+        office.top,
+        office.position_top,
+        office.top_position,
+        office.topPosition,
+        office.posicion_arriba,
+        office.posicionArriba,
+        office.positionY,
+        office.position_y,
+        office.y
+      ])
+
+      return {
+        left: this.normalizePercentValue(leftValue),
+        top: this.normalizePercentValue(topValue)
+      }
+    },
+    pickFirstDefined(values) {
+      return values.find((value) => value !== null && typeof value !== 'undefined' && String(value).trim() !== '')
+    },
+    normalizePercentValue(value) {
+      if (value === null || typeof value === 'undefined') {
+        return ''
+      }
+
+      const text = String(value).trim()
+
+      if (!text) {
+        return ''
+      }
+
+      return text.endsWith('%') ? text : `${text}%`
     },
     normalizeScheduleValue(value, type) {
       const text = String(value || '').trim()

@@ -1275,25 +1275,26 @@ a {
 }
 
 .cb-service-icon {
-  width: 58px;
-  height: 58px;
+  width: 68px;
+  height: 68px;
   color: var(--cb-blue);
   display: grid;
   place-items: center;
   margin-bottom: 0;
   position: relative;
   z-index: 1;
-  background: linear-gradient(180deg, #fff8e1 0%, #fffdf6 100%);
-  border-radius: 18px;
-  box-shadow: inset 0 0 0 1px rgba(254, 204, 54, 0.16);
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .cb-service-icon img {
-  width: 48px;
-  height: 48px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
   object-position: center;
   display: block;
+  mix-blend-mode: multiply;
 }
 
 .cb-service-icon span {
@@ -1301,7 +1302,7 @@ a {
   width: 46px;
   height: 46px;
   border-radius: 14px;
-  background: var(--cb-yellow);
+  background: #fff;
   align-items: center;
   justify-content: center;
 }
@@ -1524,12 +1525,7 @@ a {
 
 .cb-bolivia-map-svg {
   width: 100%;
-  height: auto;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.cb-bolivia-map-svg {
+  height: 100%;
   display: block;
   color: var(--cb-blue);
   overflow: visible;
@@ -1601,42 +1597,6 @@ a {
   transition:
     opacity 0.18s ease,
     transform 0.18s ease;
-}
-
-.cb-map-marker--cobija .cb-map-marker__label {
-  transform: translateX(-2px) translateY(1px);
-}
-
-.cb-map-marker--lapaz .cb-map-marker__label {
-  transform: translateX(-1px) translateY(1px);
-}
-
-.cb-map-marker--trinidad .cb-map-marker__label {
-  transform: translateX(4px) translateY(1px);
-}
-
-.cb-map-marker--oruro .cb-map-marker__label {
-  transform: translateX(-2px) translateY(1px);
-}
-
-.cb-map-marker--cochabamba .cb-map-marker__label {
-  transform: translateX(5px) translateY(2px);
-}
-
-.cb-map-marker--santacruz .cb-map-marker__label {
-  transform: translateX(7px) translateY(1px);
-}
-
-.cb-map-marker--sucre .cb-map-marker__label {
-  transform: translateY(2px);
-}
-
-.cb-map-marker--potosi .cb-map-marker__label {
-  transform: translateX(-1px) translateY(2px);
-}
-
-.cb-map-marker--tarija .cb-map-marker__label {
-  transform: translateY(2px);
 }
 
 .cb-map-marker.is-active .cb-map-marker__label {
@@ -2064,22 +2024,37 @@ a {
 }
 
 .cb-calculator-extras {
-  display: grid;
-  gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
 }
 
 .cb-calculator-check {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   color: #27425f;
-  font-weight: 600;
+  font-weight: 500;
+  cursor: pointer;
 }
 
 .cb-calculator-check input {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   accent-color: var(--cb-blue);
+  flex: 0 0 auto;
+}
+
+.cb-calculator-check span {
+  white-space: nowrap;
+  line-height: 1.25;
 }
 
 .cb-calculator-feedback {
@@ -2938,14 +2913,15 @@ a {
   }
 
   .cb-service-icon {
-    width: 74px;
-    height: 74px;
-    border-radius: 24px;
+    width: 82px;
+    height: 82px;
+    border-radius: 0;
   }
 
   .cb-service-icon img {
-    width: 74px;
-    height: 74px;
+    width: 82px;
+    height: 82px;
+    mix-blend-mode: multiply;
   }
 
   .cb-service-card h3 {
@@ -2970,7 +2946,7 @@ a {
   }
 
   .cb-bolivia-map-svg {
-    max-height: 260px;
+    max-height: none;
   }
 
   .cb-map-marker {
@@ -3329,7 +3305,7 @@ a {
   }
 
   .cb-bolivia-map-svg {
-    max-height: 236px;
+    max-height: none;
   }
 
   .cb-calculator-dimensions {

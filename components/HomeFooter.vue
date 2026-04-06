@@ -4,12 +4,26 @@
       <div class="cb-footer-grid">
         <div>
           <h4>{{ content.help_title || '' }}</h4>
-          <a v-for="link in helpLinks" :key="link.label" :href="link.url || '#'">{{ link.label }}</a>
+          <component
+            :is="isInternalRoute(link.url) ? 'nuxt-link' : 'a'"
+            v-for="link in helpLinks"
+            :key="`${link.label}-${link.url}`"
+            v-bind="linkAttrs(link.url)"
+          >
+            {{ link.label }}
+          </component>
         </div>
 
         <div>
           <h4>{{ content.company_title || '' }}</h4>
-          <a v-for="link in companyLinks" :key="link.label" :href="link.url || '#'">{{ link.label }}</a>
+          <component
+            :is="isInternalRoute(link.url) ? 'nuxt-link' : 'a'"
+            v-for="link in companyLinks"
+            :key="`${link.label}-${link.url}`"
+            v-bind="linkAttrs(link.url)"
+          >
+            {{ link.label }}
+          </component>
         </div>
 
         <div>
@@ -38,9 +52,9 @@
       </div>
 
       <div class="cb-footer-bottom">
-        <a class="cb-logo cb-logo--footer" href="#">
+        <nuxt-link class="cb-logo cb-logo--footer" to="/">
           <img :src="logoUrl" alt="Correos de Bolivia">
-        </a>
+        </nuxt-link>
         <div class="cb-copyright">
           <p>{{ content.copyright || '' }}</p>
           <p>{{ content.legal_text || '' }}</p>
@@ -73,10 +87,14 @@ export default {
   },
   computed: {
     helpLinks() {
-      return this.links.filter((link) => link.group === 'help')
+      return this.links
+        .filter((link) => link.group === 'help')
+        .map((link) => ({ ...link, url: this.resolveRoute(link) }))
     },
     companyLinks() {
-      return this.links.filter((link) => link.group === 'company')
+      return this.links
+        .filter((link) => link.group === 'company')
+        .map((link) => ({ ...link, url: this.resolveRoute(link) }))
     },
     socialLinks() {
       return this.links.filter((link) => link.group === 'social')
@@ -89,6 +107,48 @@ export default {
     }
   },
   methods: {
+    resolveRoute(link) {
+      const label = this.normalizeLabel(link.label)
+      const url = typeof link.url === 'string' ? link.url.trim() : ''
+
+      if (url && url !== '#') {
+        return url
+      }
+
+      if (
+        label.includes('sobre nosotros') ||
+        label.includes('nuestra historia') ||
+        label.includes('quienes somos')
+      ) {
+        return '/quienes-somos'
+      }
+
+      return '#'
+    },
+    normalizeLabel(value) {
+      if (typeof value !== 'string') {
+        return ''
+      }
+
+      return value
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^\w\s]/g, ' ')
+        .replace(/_/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase()
+    },
+    isInternalRoute(url) {
+      return typeof url === 'string' && url.startsWith('/') && !url.startsWith('//')
+    },
+    linkAttrs(url) {
+      if (this.isInternalRoute(url)) {
+        return { to: url }
+      }
+
+      return { href: url || '#' }
+    },
     parseLines(value) {
       const parts = value.split('|')
       return parts.length >= 2 ? parts : [value, '']

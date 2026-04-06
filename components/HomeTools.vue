@@ -113,26 +113,11 @@
                 </div>
               </div>
 
-              <div class="cb-calculator-extras">
-                <label class="cb-calculator-check">
-                  <input v-model="form.certificado" type="checkbox" :disabled="isSubmitting">
-                  <span>Paquete Certificado</span>
-                </label>
-                <label class="cb-calculator-check">
-                  <input v-model="form.recibo" type="checkbox" :disabled="isSubmitting">
-                  <span>Aviso de Recibo</span>
-                </label>
-              </div>
-
               <p v-if="calculatorError" class="cb-calculator-feedback cb-calculator-feedback--error">
                 {{ calculatorError }}
               </p>
 
               <div class="cb-calculator-actions">
-                <p class="cb-calculator-actions__hint">
-                  La tarifa se mostrara en un resumen final.
-                </p>
-
                 <button type="submit" class="cb-primary-btn cb-primary-btn--full" :disabled="isSubmitting">
                   {{ isSubmitting ? 'Calculando...' : (content.calculate_button_label || 'Calcular Tarifa') }}
                 </button>
