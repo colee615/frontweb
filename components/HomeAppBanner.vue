@@ -5,10 +5,14 @@
         <div
           :key="activeSlideKey"
           class="cb-app-banner-slide"
-          :style="activeSlideStyle"
-          role="img"
-          :aria-label="activeSlide.title || 'Banner promocional'"
-        ></div>
+        >
+          <img
+            v-if="activeSlide.image"
+            class="cb-app-banner-image"
+            :src="activeSlide.image"
+            :alt="activeSlide.title || 'Banner promocional'"
+          >
+        </div>
       </transition>
 
       <div v-if="hasMultipleSlides" class="cb-app-banner-controls">
@@ -68,15 +72,6 @@ export default {
     },
     activeSlideKey() {
       return `${this.activeSlide.key}-${this.activeIndex}`
-    },
-    activeSlideStyle() {
-      if (!this.activeSlide.image) {
-        return {}
-      }
-
-      return {
-        backgroundImage: `url('${this.activeSlide.image}')`
-      }
     }
   },
   mounted() {
