@@ -32,7 +32,8 @@
     <div class="cb-shell cb-hero-content">
       <div class="cb-hero-copy">
         <h1 v-if="titleLines[0] || titleLines[1]">
-          {{ titleLines[0] }}<br v-if="titleLines[1]">{{ titleLines[1] }}
+          <span v-if="titleLines[0]" class="cb-hero-copy__line">{{ titleLines[0] }}</span>
+          <span v-if="titleLines[1]" class="cb-hero-copy__line">{{ titleLines[1] }}</span>
         </h1>
         <p v-if="content.subtitle">{{ content.subtitle }}</p>
       </div>
@@ -138,7 +139,16 @@ export default {
       if (lines.length >= 2) {
         return [lines[0], lines.slice(1).join(' ')]
       }
+
       const words = title.split(' ')
+
+      if (words.length >= 4) {
+        return [
+          words.slice(0, -2).join(' '),
+          words.slice(-2).join(' ')
+        ]
+      }
+
       const midpoint = Math.ceil(words.length / 2)
 
       return [
