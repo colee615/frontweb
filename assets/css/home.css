@@ -2289,7 +2289,7 @@ a {
 .cb-app-banner-slide {
   position: absolute;
   inset: 0;
-  background-position: center center;
+  background-position: center 35%;
   background-repeat: no-repeat;
   background-size: cover;
   background-color: #eef3f8;
@@ -3367,6 +3367,10 @@ a {
 
   .cb-app-banner-stage {
     height: 236px;
+  }
+
+  .cb-app-banner-slide {
+    background-position: center 42%;
   }
 
   .cb-app-banner-controls {
