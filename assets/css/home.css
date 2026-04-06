@@ -2289,9 +2289,10 @@ a {
 .cb-app-banner-slide {
   position: absolute;
   inset: 0;
-  background-position: center;
+  background-position: center top;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: contain;
+  background-color: #f8fbff;
 }
 
 .cb-app-banner-slide::after {
