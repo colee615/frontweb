@@ -4,6 +4,7 @@ const DEV_API_BASE_URL = 'http://127.0.0.1:8000'
 const API_BASE_URL = (process.env.API_BASE_URL || (process.env.NODE_ENV === 'development' ? DEV_API_BASE_URL : '')).replace(/\/+$/, '')
 const USER_API_BASE_URL = ((process.env.USER_API_BASE_URL || `${API_BASE_URL}/user`) || '/user').replace(/\/?$/, '/')
 const TRACKING_BASE_URL = (process.env.TRACKING_BASE_URL || 'https://trackingbo.correos.gob.bo:8100').replace(/\/+$/, '')
+const POSTAL_CALCULATOR_API_URL = (process.env.POSTAL_CALCULATOR_API_URL || 'https://postar.correos.gob.bo:8104/api/calcular').replace(/\/+$/, '')
 const CONNECT_SRC = ["'self'"]
 const IMG_SRC = ["'self'", 'data:', 'https:']
 const MEDIA_SRC = ["'self'", 'https:']
@@ -20,6 +21,10 @@ if (/^https?:\/\//i.test(API_BASE_URL)) {
 
 if (/^https?:\/\//i.test(TRACKING_BASE_URL)) {
   CONNECT_SRC.push(TRACKING_BASE_URL)
+}
+
+if (/^https?:\/\//i.test(POSTAL_CALCULATOR_API_URL)) {
+  CONNECT_SRC.push(getOrigin(POSTAL_CALCULATOR_API_URL))
 }
 
 if (process.env.NODE_ENV === 'development') {
@@ -55,10 +60,15 @@ export default {
     '~/plugins/api.js'
   ],
 
+  serverMiddleware: [
+    { path: '/api/calculator', handler: '~/server-middleware/calculator.js' }
+  ],
+
   publicRuntimeConfig: {
     apiBaseUrl: API_BASE_URL,
     userApiBaseUrl: USER_API_BASE_URL,
     trackingBaseUrl: TRACKING_BASE_URL,
+    postalCalculatorApiUrl: POSTAL_CALCULATOR_API_URL,
     axios: {
       browserBaseURL: API_BASE_URL || '/',
       baseURL: API_BASE_URL || '/'
@@ -107,5 +117,13 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  }
+}
+
+function getOrigin(url) {
+  try {
+    return new URL(url).origin
+  } catch (error) {
+    return url
   }
 }
