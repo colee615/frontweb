@@ -4,7 +4,7 @@
       <div class="cb-shell">
         <div class="cb-footer-grid">
           <div class="cb-footer-stack cb-footer-stack--meta">
-            <div class="cb-footer-column">
+            <div class="cb-footer-column cb-footer-column--desktop">
               <h4>{{ content.company_title || '' }}</h4>
               <component
                 :is="isInternalRoute(link.url) ? 'nuxt-link' : 'a'"
@@ -16,7 +16,7 @@
               </component>
             </div>
 
-            <div class="cb-footer-column">
+            <div class="cb-footer-column cb-footer-column--desktop">
               <h4>{{ content.help_title || '' }}</h4>
               <component
                 :is="isInternalRoute(link.url) ? 'nuxt-link' : 'a'"
@@ -30,7 +30,7 @@
           </div>
 
           <div class="cb-footer-links-area">
-            <div class="cb-footer-column cb-footer-column--alliances">
+            <div class="cb-footer-column cb-footer-column--alliances cb-footer-column--desktop">
               <h4>{{ alliancesTitle }}</h4>
               <ul class="cb-footer-list">
                 <li v-for="link in alliancesLinks" :key="`${link.label}-${link.url}`">
@@ -44,7 +44,7 @@
               </ul>
             </div>
 
-            <div class="cb-footer-column cb-footer-column--international">
+            <div class="cb-footer-column cb-footer-column--international cb-footer-column--desktop">
               <h4>{{ internationalTitle }}</h4>
               <ul class="cb-footer-list">
                 <li v-for="link in internationalLinks" :key="`${link.label}-${link.url}`">
@@ -59,7 +59,7 @@
             </div>
           </div>
 
-          <div class="cb-footer-stack cb-footer-stack--contact">
+          <div class="cb-footer-stack cb-footer-stack--contact cb-footer-column--desktop">
             <div class="cb-footer-column">
               <h4>{{ content.contact_title || '' }}</h4>
               <div class="cb-contact-line">
@@ -84,9 +84,75 @@
               </div>
             </div>
           </div>
+
+          <div class="cb-footer-mobile">
+            <div
+              v-for="section in mobileSections"
+              :key="section.key"
+              class="cb-footer-mobile__section"
+            >
+              <button
+                type="button"
+                class="cb-footer-mobile__toggle"
+                :aria-expanded="isMobileSectionOpen(section.key) ? 'true' : 'false'"
+                @click="toggleMobileSection(section.key)"
+              >
+                <span>{{ section.title }}</span>
+                <span class="cb-footer-mobile__chevron" :class="{ 'is-open': isMobileSectionOpen(section.key) }">⌄</span>
+              </button>
+
+              <div v-show="isMobileSectionOpen(section.key)" class="cb-footer-mobile__body">
+                <template v-if="section.type === 'links'">
+                  <component
+                    :is="isInternalRoute(link.url) ? 'nuxt-link' : 'a'"
+                    v-for="link in section.items"
+                    :key="`${section.key}-${link.label}-${link.url}`"
+                    v-bind="linkAttrs(link.url)"
+                    class="cb-footer-mobile__link"
+                  >
+                    {{ link.label }}
+                  </component>
+                </template>
+
+                <template v-else-if="section.type === 'contact'">
+                  <div class="cb-contact-line">
+                    <span class="cb-inline-icon" v-html="icons.pin"></span>
+                    <span>{{ addressLines[0] }}<br>{{ addressLines[1] }}</span>
+                  </div>
+                  <div class="cb-contact-line">
+                    <span class="cb-inline-icon" v-html="icons['phone-call']"></span>
+                    <span>{{ phoneLines[0] }}<br>{{ phoneLines[1] }}</span>
+                  </div>
+                  <div class="cb-contact-line">
+                    <span class="cb-inline-icon" v-html="icons.mail"></span>
+                    <span>{{ content.email || '' }}</span>
+                  </div>
+
+                  <div v-if="socialLinks.length" class="cb-footer-mobile__socials">
+                    <p v-if="content.social_text" class="cb-footer-copy">{{ content.social_text }}</p>
+                    <div class="cb-socials">
+                      <a v-for="social in socialLinks" :key="`mobile-${social.aria_label}`" :href="social.url || '#'" :aria-label="social.aria_label">{{ social.label }}</a>
+                    </div>
+                  </div>
+
+                </template>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="cb-footer-bottom">
+        <div class="cb-footer-mobile__bottom">
+          <div class="cb-footer-mobile__seal" v-if="sealLogoUrl">
+            <img class="cb-footer-mobile__seal-image" :src="sealLogoUrl" alt="">
+          </div>
+
+          <div class="cb-copyright cb-copyright--mobile">
+            <p>{{ content.copyright || '' }}</p>
+            <p>{{ content.legal_text || '' }}</p>
+          </div>
+        </div>
+
+        <div class="cb-footer-bottom cb-footer-bottom--desktop">
           <nuxt-link class="cb-logo cb-logo--footer" to="/">
             <img :src="logoUrl" alt="Correos de Bolivia">
           </nuxt-link>
@@ -98,7 +164,7 @@
       </div>
     </footer>
 
-    <div class="cb-footer-seal-bar" aria-hidden="true">
+    <div class="cb-footer-seal-bar cb-footer-seal-bar--desktop" aria-hidden="true">
       <div class="cb-footer-seal">
         <img class="cb-footer-seal__image" :src="sealLogoUrl" alt="">
       </div>
@@ -143,6 +209,11 @@ export default {
     links: {
       type: Array,
       default: () => []
+    }
+  },
+  data() {
+    return {
+      mobileOpenSections: ['company']
     }
   },
   computed: {
@@ -195,6 +266,40 @@ export default {
     },
     sealLogoUrl() {
       return this.content.seal_logo || this.logoUrl
+    },
+    mobileSections() {
+      return [
+        {
+          key: 'company',
+          title: this.content.company_title || '',
+          type: 'links',
+          items: this.companyLinks
+        },
+        {
+          key: 'help',
+          title: this.content.help_title || '',
+          type: 'links',
+          items: this.helpLinks
+        },
+        {
+          key: 'alliances',
+          title: this.alliancesTitle,
+          type: 'links',
+          items: this.alliancesLinks
+        },
+        {
+          key: 'international',
+          title: this.internationalTitle,
+          type: 'links',
+          items: this.internationalLinks
+        },
+        {
+          key: 'contact',
+          title: this.content.contact_title || '',
+          type: 'contact',
+          items: []
+        }
+      ].filter((section) => section.title)
     }
   },
   methods: {
@@ -239,6 +344,17 @@ export default {
       }
 
       return { href: url || '#' }
+    },
+    isMobileSectionOpen(key) {
+      return this.mobileOpenSections.includes(key)
+    },
+    toggleMobileSection(key) {
+      if (this.isMobileSectionOpen(key)) {
+        this.mobileOpenSections = this.mobileOpenSections.filter((sectionKey) => sectionKey !== key)
+        return
+      }
+
+      this.mobileOpenSections = [...this.mobileOpenSections, key]
     },
     parseLines(value) {
       const parts = value.split('|')

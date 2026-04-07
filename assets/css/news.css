@@ -551,6 +551,22 @@
     transition-duration: 0.5s;
   }
 
+  .cb-news-filters__chips {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .cb-news-chip {
+    min-height: 34px;
+    padding: 0 4px;
+    font-size: 0.7rem;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+  }
+
   .cb-news-featured {
     padding-top: 28px;
   }
