@@ -1,5 +1,5 @@
 <template>
-  <footer class="cb-footer">
+  <footer id="site-footer" class="cb-footer">
     <div class="cb-shell">
       <div class="cb-footer-grid">
         <div>

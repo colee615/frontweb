@@ -1,6 +1,10 @@
 <template>
-  <header class="cb-header">
-    <div class="cb-topbar cb-shell">
+  <header
+    ref="header"
+    :class="['cb-header', { 'cb-header--navbar-fixed': isNavbarPinned }]"
+    :style="{ '--cb-navbar-height': `${navbarHeight}px` }"
+  >
+    <div ref="topbar" class="cb-topbar cb-shell">
       <div class="cb-topbar-group cb-topbar-group--left">
         <button type="button" class="cb-top-link">
           <span class="cb-top-link__icon" v-html="icons.globe"></span>
@@ -12,27 +16,27 @@
             <strong>{{ content.language_secondary || '' }}</strong>
           </span>
         </button>
-        <button type="button" class="cb-top-link">
+        <button type="button" class="cb-top-link cb-top-link--hidden">
           <span class="cb-top-link__icon" v-html="icons.accessibility"></span>
           <span class="cb-top-link__text">{{ content.accessibility_label || '' }}</span>
         </button>
       </div>
 
       <div class="cb-topbar-group cb-topbar-group--right">
-        <button type="button" class="cb-top-link">
+        <button type="button" class="cb-top-link" @click="scrollToFooter">
           <span class="cb-top-link__icon" v-html="icons.help"></span>
           <span class="cb-top-link__text">
             <span>{{ content.help_label || '' }}</span>
           </span>
         </button>
-        <button type="button" class="cb-top-link">
+        <button type="button" class="cb-top-link cb-top-link--hidden">
           <span class="cb-top-link__icon" v-html="icons.login"></span>
           <span class="cb-top-link__text"><span>{{ content.login_label || '' }}</span></span>
         </button>
       </div>
     </div>
 
-    <div class="cb-navbar">
+    <div ref="navbar" :class="['cb-navbar', { 'cb-navbar--fixed': isNavbarPinned }]">
       <div class="cb-shell cb-navbar-inner">
         <nuxt-link class="cb-logo" to="/">
           <img :src="logoUrl" alt="Correos de Bolivia">
@@ -117,7 +121,9 @@ export default {
   data() {
     return {
       isMenuOpen: false,
-      searchTerm: ''
+      searchTerm: '',
+      isNavbarPinned: false,
+      navbarHeight: 64
     }
   },
   computed: {
@@ -136,6 +142,17 @@ export default {
   },
   mounted() {
     this.syncSearchFromRoute()
+    this.$nextTick(() => {
+      this.measureNavbar()
+      this.handleScroll()
+    })
+
+    window.addEventListener('scroll', this.handleScroll, { passive: true })
+    window.addEventListener('resize', this.handleResize, { passive: true })
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.handleScroll)
+    window.removeEventListener('resize', this.handleResize)
   },
   methods: {
     resolveRoute(link) {
@@ -186,6 +203,27 @@ export default {
     closeMenu() {
       this.isMenuOpen = false
     },
+    handleResize() {
+      this.measureNavbar()
+      this.handleScroll()
+    },
+    handleScroll() {
+      const topbar = this.$refs.topbar
+
+      if (!topbar || typeof window === 'undefined') {
+        this.isNavbarPinned = false
+        return
+      }
+
+      this.isNavbarPinned = window.scrollY > topbar.offsetHeight
+    },
+    measureNavbar() {
+      const navbar = this.$refs.navbar
+
+      if (navbar) {
+        this.navbarHeight = Math.max(Math.round(navbar.offsetHeight), 64)
+      }
+    },
     submitSearch() {
       const query = this.searchTerm.trim()
       const target = {
@@ -202,6 +240,13 @@ export default {
     },
     syncSearchFromRoute() {
       this.searchTerm = typeof this.$route.query.q === 'string' ? this.$route.query.q : ''
+    },
+    scrollToFooter() {
+      const footer = document.getElementById('site-footer')
+
+      if (footer) {
+        footer.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
     }
   }
 }

@@ -74,12 +74,26 @@
             </a>
           </article>
 
-          <article class="cb-news-featured__media cb-news-reveal is-visible" data-news-reveal style="--cb-news-delay: 120ms;" :style="featuredStyle">
+          <article class="cb-news-featured__media cb-news-reveal is-visible" data-news-reveal style="--cb-news-delay: 120ms;">
+            <template v-if="featuredMediaType === 'video' && featuredMediaUrl">
+              <video
+                class="cb-news-featured__asset"
+                :src="featuredMediaUrl"
+                :poster="featuredPoster || null"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="metadata"
+              ></video>
+            </template>
+            <img
+              v-else-if="featuredMediaUrl"
+              class="cb-news-featured__asset"
+              :src="featuredMediaUrl"
+              alt=""
+            >
             <div class="cb-news-featured__veil"></div>
-            <div class="cb-news-featured__placeholder">
-              <div class="cb-news-featured__placeholder-icon" v-html="icons.image"></div>
-              <span>{{ featuredItem.category || 'Imagen destacada' }}</span>
-            </div>
           </article>
         </div>
       </section>
@@ -122,9 +136,26 @@
                   data-news-reveal
                   :style="{ '--cb-news-delay': `${index * 70}ms` }"
                 >
-                  <div class="cb-news-card__media" :style="cardStyle(article.image)">
+                  <div class="cb-news-card__media">
+                    <template v-if="resolveMediaType(article) === 'video' && resolveMediaUrl(article)">
+                      <video
+                        class="cb-news-card__asset"
+                        :src="resolveMediaUrl(article)"
+                        :poster="article.poster_image || null"
+                        autoplay
+                        muted
+                        loop
+                        playsinline
+                        preload="metadata"
+                      ></video>
+                    </template>
+                    <img
+                      v-else-if="resolveMediaUrl(article)"
+                      class="cb-news-card__asset"
+                      :src="resolveMediaUrl(article)"
+                      alt=""
+                    >
                     <div class="cb-news-card__media-veil"></div>
-                    <div class="cb-news-card__icon" v-html="icons.news"></div>
                   </div>
                   <div class="cb-news-card__content">
                     <div class="cb-news-card__meta">
@@ -336,8 +367,14 @@ export default {
         }
       })
     },
-    featuredStyle() {
-      return createBackground(this.featuredItem.image)
+    featuredMediaType() {
+      return normalizeMediaType(this.featuredItem)
+    },
+    featuredMediaUrl() {
+      return this.featuredItem.media_url || this.featuredItem.image || ''
+    },
+    featuredPoster() {
+      return this.featuredItem.poster_image || ''
     },
     themeStyles() {
       const theme = this.homeContent.theme || {}
@@ -425,8 +462,11 @@ export default {
 
       this.currentPage = Math.min(pageNumber, this.totalPages)
     },
-    cardStyle(image) {
-      return createBackground(image)
+    resolveMediaUrl(item) {
+      return item.media_url || item.image || ''
+    },
+    resolveMediaType(item) {
+      return normalizeMediaType(item)
     },
     syncSearchFromRoute() {
       this.searchTerm = typeof this.$route.query.q === 'string' ? this.$route.query.q : ''
@@ -535,6 +575,16 @@ function createBackground(image) {
   return {
     backgroundImage: `linear-gradient(135deg, rgba(254, 204, 54, 0.24), rgba(32, 83, 154, 0.28)), url('${image}')`
   }
+}
+
+function normalizeMediaType(item = {}) {
+  if (item.media_type === 'video') {
+    return 'video'
+  }
+
+  const mediaUrl = item.media_url || item.image || ''
+
+  return /\.(mp4|webm)(\?.*)?$/i.test(mediaUrl) ? 'video' : 'image'
 }
 
 function buildIcons() {

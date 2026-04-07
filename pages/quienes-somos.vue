@@ -94,7 +94,26 @@
 
     <main v-else class="cb-about">
       <section class="cb-about-hero">
-        <div class="cb-about-hero__media" :style="heroSlideStyle">
+        <div class="cb-about-hero__media">
+          <template v-if="currentHeroMediaType === 'video' && currentHeroMediaUrl">
+            <video
+              :key="`hero-video-${heroIndex}-${currentHeroMediaUrl}`"
+              class="cb-about-hero__asset"
+              :src="currentHeroMediaUrl"
+              :poster="currentHeroPoster || null"
+              autoplay
+              muted
+              playsinline
+              preload="metadata"
+            ></video>
+          </template>
+          <img
+            v-else-if="currentHeroMediaUrl"
+            :key="`hero-image-${heroIndex}-${currentHeroMediaUrl}`"
+            class="cb-about-hero__asset"
+            :src="currentHeroMediaUrl"
+            alt=""
+          >
           <div class="cb-about-hero__veil"></div>
           <button
             v-if="heroSlides.length > 1"
@@ -106,14 +125,6 @@
             <span v-html="icons.chevronLeft"></span>
           </button>
 
-          <div class="cb-shell cb-about-hero__content">
-            <div class="cb-about-hero__copy cb-about-reveal is-visible" data-reveal>
-              <p v-if="currentHeroSlide.eyebrow" class="cb-about-eyebrow">{{ currentHeroSlide.eyebrow }}</p>
-              <h1>{{ currentHeroSlide.title || heroSettings.title }}</h1>
-              <p>{{ currentHeroSlide.text || heroSettings.subtitle }}</p>
-            </div>
-          </div>
-
           <button
             v-if="heroSlides.length > 1"
             type="button"
@@ -124,7 +135,7 @@
             <span v-html="icons.chevronRight"></span>
           </button>
 
-          <div v-if="heroSlides.length > 1" class="cb-about-carousel__dots">
+          <div v-if="heroSlides.length > 1" class="cb-about-carousel__dots cb-about-carousel__dots--hero">
             <button
               v-for="(slide, index) in heroSlides"
               :key="slide.id || `hero-dot-${index}`"
@@ -167,7 +178,26 @@
           </article>
 
           <article class="cb-about-story-slider cb-about-reveal" data-reveal style="--cb-delay: 120ms;">
-            <div class="cb-about-story-slider__media" :style="historySlideStyle">
+            <div class="cb-about-story-slider__media">
+              <template v-if="currentHistoryMediaType === 'video' && currentHistoryMediaUrl">
+                <video
+                  :key="`history-video-${historyIndex}-${currentHistoryMediaUrl}`"
+                  class="cb-about-story-slider__asset"
+                  :src="currentHistoryMediaUrl"
+                  :poster="currentHistoryPoster || null"
+                  autoplay
+                  muted
+                  playsinline
+                  preload="metadata"
+                ></video>
+              </template>
+              <img
+                v-else-if="currentHistoryMediaUrl"
+                :key="`history-image-${historyIndex}-${currentHistoryMediaUrl}`"
+                class="cb-about-story-slider__asset"
+                :src="currentHistoryMediaUrl"
+                alt=""
+              >
               <div class="cb-about-story-slider__veil"></div>
               <button
                 v-if="historySlides.length > 1"
@@ -178,11 +208,6 @@
               >
                 <span v-html="icons.chevronLeft"></span>
               </button>
-
-              <div class="cb-about-story-slider__copy">
-                <h3>{{ currentHistorySlide.title || historySettings.carousel_title }}</h3>
-                <p>{{ currentHistorySlide.text || historySettings.carousel_text }}</p>
-              </div>
 
               <button
                 v-if="historySlides.length > 1"
@@ -240,12 +265,26 @@
             <h2>{{ organigramSettings.title }}</h2>
           </div>
 
-          <article class="cb-about-organigram__frame cb-about-reveal" data-reveal style="--cb-delay: 100ms;" :style="organigramStyle">
+          <article class="cb-about-organigram__frame cb-about-reveal" data-reveal style="--cb-delay: 100ms;">
+            <template v-if="organigramMediaType === 'video' && organigramMediaUrl">
+              <video
+                class="cb-about-organigram__asset"
+                :src="organigramMediaUrl"
+                :poster="organigramPoster || null"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="metadata"
+              ></video>
+            </template>
+            <img
+              v-else-if="organigramMediaUrl"
+              class="cb-about-organigram__asset"
+              :src="organigramMediaUrl"
+              alt=""
+            >
             <div class="cb-about-organigram__veil"></div>
-            <div class="cb-about-organigram__copy">
-              <h3>{{ organigramSettings.card_title }}</h3>
-              <p>{{ organigramSettings.card_text }}</p>
-            </div>
           </article>
         </div>
       </section>
@@ -354,9 +393,6 @@ export default {
     footerLinks() {
       return this.getSectionItems(this.homeContent, 'footer')
     },
-    heroSettings() {
-      return this.getSectionSettings(this.aboutContent, 'hero_gallery')
-    },
     missionVisionSettings() {
       return this.getSectionSettings(this.aboutContent, 'mission_vision')
     },
@@ -384,20 +420,38 @@ export default {
     objectives() {
       return this.getSectionItems(this.aboutContent, 'objectives')
     },
-    currentHeroSlide() {
-      return this.heroSlides[this.heroIndex] || {}
-    },
     currentHistorySlide() {
       return this.historySlides[this.historyIndex] || {}
     },
-    heroSlideStyle() {
-      return createBackground(this.currentHeroSlide.image)
+    currentHeroSlide() {
+      return this.heroSlides[this.heroIndex] || {}
     },
-    historySlideStyle() {
-      return createBackground(this.currentHistorySlide.image)
+    currentHeroMediaType() {
+      return normalizeHeroMediaType(this.currentHeroSlide)
     },
-    organigramStyle() {
-      return createBackground(this.organigramSettings.image)
+    currentHeroMediaUrl() {
+      return resolveHeroMediaUrl(this.currentHeroSlide)
+    },
+    currentHeroPoster() {
+      return this.currentHeroSlide.poster_image || ''
+    },
+    currentHistoryMediaType() {
+      return normalizeHeroMediaType(this.currentHistorySlide)
+    },
+    currentHistoryMediaUrl() {
+      return resolveHeroMediaUrl(this.currentHistorySlide)
+    },
+    currentHistoryPoster() {
+      return this.currentHistorySlide.poster_image || ''
+    },
+    organigramMediaType() {
+      return normalizeHeroMediaType(this.organigramSettings)
+    },
+    organigramMediaUrl() {
+      return resolveHeroMediaUrl(this.organigramSettings)
+    },
+    organigramPoster() {
+      return this.organigramSettings.poster_image || ''
     },
     themeStyles() {
       const theme = this.homeContent.theme || {}
@@ -472,24 +526,26 @@ export default {
     startHero() {
       this.stopHero()
       if (this.heroSlides.length > 1) {
-        this.heroTimer = window.setInterval(() => this.stepHero(1), 5000)
+        const duration = normalizeDurationSeconds(this.currentHeroSlide.duration_seconds, 5)
+        this.heroTimer = window.setTimeout(() => this.stepHero(1), duration * 1000)
       }
     },
     stopHero() {
       if (this.heroTimer) {
-        window.clearInterval(this.heroTimer)
+        window.clearTimeout(this.heroTimer)
         this.heroTimer = null
       }
     },
     startHistory() {
       this.stopHistory()
       if (this.historySlides.length > 1) {
-        this.historyTimer = window.setInterval(() => this.stepHistory(1), 6000)
+        const duration = normalizeDurationSeconds(this.currentHistorySlide.duration_seconds, 6)
+        this.historyTimer = window.setTimeout(() => this.stepHistory(1), duration * 1000)
       }
     },
     stopHistory() {
       if (this.historyTimer) {
-        window.clearInterval(this.historyTimer)
+        window.clearTimeout(this.historyTimer)
         this.historyTimer = null
       }
     },
@@ -600,6 +656,30 @@ function createBackground(image) {
   return {
     backgroundImage: `linear-gradient(135deg, rgba(254, 204, 54, 0.28), rgba(32, 83, 154, 0.22)), url('${image}')`
   }
+}
+
+function normalizeHeroMediaType(slide = {}) {
+  if (slide.media_type === 'video') {
+    return 'video'
+  }
+
+  const mediaUrl = resolveHeroMediaUrl(slide)
+
+  return /\.(mp4|webm)(\?.*)?$/i.test(mediaUrl) ? 'video' : 'image'
+}
+
+function resolveHeroMediaUrl(slide = {}) {
+  return slide.media_url || slide.image || ''
+}
+
+function normalizeDurationSeconds(value, fallback) {
+  const parsed = Number.parseInt(value, 10)
+
+  if (Number.isFinite(parsed) && parsed >= 1 && parsed <= 300) {
+    return parsed
+  }
+
+  return fallback
 }
 
 function buildIcons() {

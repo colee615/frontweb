@@ -64,7 +64,7 @@
       <a
         v-if="content.view_all_label && content.view_all_url"
         :href="content.view_all_url"
-        class="cb-view-all cb-view-all--market-end"
+        class="cb-view-all cb-view-all--market-end cb-view-all--hidden"
       >
         {{ content.view_all_label }}
       </a>
