@@ -62,9 +62,9 @@
     </div>
 
     <main v-else class="cb-news">
-      <section class="cb-news-featured">
+      <section class="cb-news-featured cb-news-reveal is-visible" data-news-reveal>
         <div class="cb-shell cb-news-featured__grid">
-          <article class="cb-news-featured__copy">
+          <article class="cb-news-featured__copy cb-news-reveal is-visible" data-news-reveal>
             <span v-if="featuredItem.badge" class="cb-news-featured__badge">{{ featuredItem.badge }}</span>
             <h1>{{ featuredItem.title }}</h1>
             <p>{{ featuredItem.excerpt }}</p>
@@ -74,7 +74,7 @@
             </a>
           </article>
 
-          <article class="cb-news-featured__media" :style="featuredStyle">
+          <article class="cb-news-featured__media cb-news-reveal is-visible" data-news-reveal style="--cb-news-delay: 120ms;" :style="featuredStyle">
             <div class="cb-news-featured__veil"></div>
             <div class="cb-news-featured__placeholder">
               <div class="cb-news-featured__placeholder-icon" v-html="icons.image"></div>
@@ -84,7 +84,7 @@
         </div>
       </section>
 
-      <section class="cb-news-filters">
+      <section class="cb-news-filters cb-news-reveal" data-news-reveal>
         <div class="cb-shell cb-news-filters__inner">
           <div class="cb-news-filters__chips" role="tablist" aria-label="Categorias de noticias">
             <button
@@ -105,9 +105,9 @@
         </div>
       </section>
 
-      <section class="cb-news-grid-section">
+      <section class="cb-news-grid-section cb-news-reveal" data-news-reveal>
         <div class="cb-shell">
-          <div v-if="gridSettings.title || gridSettings.subtitle" class="cb-news-grid-section__heading">
+          <div v-if="gridSettings.title || gridSettings.subtitle" class="cb-news-grid-section__heading cb-news-reveal" data-news-reveal>
             <h2 v-if="gridSettings.title">{{ gridSettings.title }}</h2>
             <p v-if="gridSettings.subtitle">{{ gridSettings.subtitle }}</p>
           </div>
@@ -115,7 +115,13 @@
           <transition name="cb-news-page-switch" mode="out-in">
             <div :key="`${selectedCategory}-${searchTerm}-${currentPage}`">
               <div class="cb-news-grid">
-                <article v-for="article in visibleNews" :key="article.id || article.title" class="cb-news-card">
+                <article
+                  v-for="(article, index) in visibleNews"
+                  :key="article.id || article.title"
+                  class="cb-news-card cb-news-reveal"
+                  data-news-reveal
+                  :style="{ '--cb-news-delay': `${index * 70}ms` }"
+                >
                   <div class="cb-news-card__media" :style="cardStyle(article.image)">
                     <div class="cb-news-card__media-veil"></div>
                     <div class="cb-news-card__icon" v-html="icons.news"></div>
@@ -154,8 +160,8 @@
         </div>
       </section>
 
-      <section class="cb-news-newsletter">
-        <div class="cb-shell cb-news-newsletter__inner">
+      <section class="cb-news-newsletter cb-news-reveal" data-news-reveal>
+        <div class="cb-shell cb-news-newsletter__inner cb-news-reveal" data-news-reveal>
           <div class="cb-news-newsletter__icon" v-html="icons.mail"></div>
           <span v-if="newsletterSettings.badge" class="cb-news-newsletter__badge">{{ newsletterSettings.badge }}</span>
           <h2>{{ newsletterSettings.title }}</h2>
@@ -168,8 +174,8 @@
         </div>
       </section>
 
-      <section class="cb-news-pagination">
-        <div class="cb-shell cb-news-pagination__inner">
+      <section class="cb-news-pagination cb-news-reveal" data-news-reveal>
+        <div class="cb-shell cb-news-pagination__inner cb-news-reveal" data-news-reveal>
           <button v-if="hasMore" type="button" class="cb-news-pagination__load-more" @click="showMore">
             <span>{{ paginationSettings.load_more_label || 'Cargar mas noticias' }}</span>
             <span class="cb-news-inline-icon" v-html="icons.chevronDown"></span>
@@ -214,7 +220,8 @@ export default {
       searchTerm: '',
       selectedCategory: 'Todas',
       currentPage: 1,
-      pageSize: 6
+      pageSize: 6,
+      revealObserver: null
     }
   },
   async asyncData({ $api }) {
@@ -232,6 +239,10 @@ export default {
     await this.refreshPageContent()
     this.selectedCategory = this.defaultCategory
     this.syncSearchFromRoute()
+    this.setupRevealObserver()
+  },
+  beforeDestroy() {
+    this.destroyRevealObserver()
   },
   computed: {
     icons() {
@@ -368,6 +379,9 @@ export default {
 
         window.setTimeout(() => {
           this.isBootLoading = false
+          this.$nextTick(() => {
+            this.setupRevealObserver()
+          })
         }, remaining)
       }
     },
@@ -416,6 +430,38 @@ export default {
     },
     syncSearchFromRoute() {
       this.searchTerm = typeof this.$route.query.q === 'string' ? this.$route.query.q : ''
+    },
+    setupRevealObserver() {
+      this.destroyRevealObserver()
+
+      if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+        document.querySelectorAll('[data-news-reveal]').forEach((node) => node.classList.add('is-visible'))
+        return
+      }
+
+      this.revealObserver = new window.IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            this.revealObserver.unobserve(entry.target)
+          }
+        })
+      }, {
+        threshold: 0.16,
+        rootMargin: '0px 0px -8% 0px'
+      })
+
+      document.querySelectorAll('[data-news-reveal]').forEach((node) => {
+        if (!node.classList.contains('is-visible')) {
+          this.revealObserver.observe(node)
+        }
+      })
+    },
+    destroyRevealObserver() {
+      if (this.revealObserver) {
+        this.revealObserver.disconnect()
+        this.revealObserver = null
+      }
     }
   },
   head() {

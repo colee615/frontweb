@@ -107,7 +107,7 @@
           </button>
 
           <div class="cb-shell cb-about-hero__content">
-            <div class="cb-about-hero__copy">
+            <div class="cb-about-hero__copy cb-about-reveal is-visible" data-reveal>
               <p v-if="currentHeroSlide.eyebrow" class="cb-about-eyebrow">{{ currentHeroSlide.eyebrow }}</p>
               <h1>{{ currentHeroSlide.title || heroSettings.title }}</h1>
               <p>{{ currentHeroSlide.text || heroSettings.subtitle }}</p>
@@ -137,28 +137,36 @@
         </div>
       </section>
 
-      <section class="cb-about-section cb-about-mission">
+      <section class="cb-about-section cb-about-mission cb-about-reveal" data-reveal>
         <div class="cb-shell cb-about-mission__grid">
-          <article class="cb-about-mission__card">
-            <h2>{{ missionVisionSettings.mission_title }}</h2>
-            <p>{{ missionVisionSettings.mission_text }}</p>
+          <article class="cb-about-mission__card cb-about-reveal" data-reveal style="--cb-delay: 0ms;">
+            <div class="cb-about-mission__surface">
+              <h2>{{ missionVisionSettings.mission_title }}</h2>
+              <div class="cb-about-mission__body">
+                <p>{{ missionVisionSettings.mission_text }}</p>
+              </div>
+            </div>
           </article>
-          <article class="cb-about-mission__card">
-            <h2>{{ missionVisionSettings.vision_title }}</h2>
-            <p>{{ missionVisionSettings.vision_text }}</p>
+          <article class="cb-about-mission__card cb-about-reveal" data-reveal style="--cb-delay: 120ms;">
+            <div class="cb-about-mission__surface">
+              <h2>{{ missionVisionSettings.vision_title }}</h2>
+              <div class="cb-about-mission__body">
+                <p>{{ missionVisionSettings.vision_text }}</p>
+              </div>
+            </div>
           </article>
         </div>
       </section>
 
-      <section class="cb-about-section cb-about-history">
+      <section class="cb-about-section cb-about-history cb-about-reveal" data-reveal>
         <div class="cb-shell cb-about-history__grid">
-          <article class="cb-about-story">
+          <article class="cb-about-story cb-about-reveal" data-reveal style="--cb-delay: 0ms;">
             <p v-if="historySettings.kicker" class="cb-about-eyebrow">{{ historySettings.kicker }}</p>
             <h2>{{ historySettings.title }}</h2>
             <p>{{ historySettings.text }}</p>
           </article>
 
-          <article class="cb-about-story-slider">
+          <article class="cb-about-story-slider cb-about-reveal" data-reveal style="--cb-delay: 120ms;">
             <div class="cb-about-story-slider__media" :style="historySlideStyle">
               <div class="cb-about-story-slider__veil"></div>
               <button
@@ -201,15 +209,21 @@
         </div>
       </section>
 
-      <section class="cb-about-principles">
+      <section class="cb-about-principles cb-about-reveal" data-reveal>
         <div class="cb-shell">
-          <div class="cb-about-section__heading cb-about-section__heading--center">
+          <div class="cb-about-section__heading cb-about-section__heading--center cb-about-reveal" data-reveal>
             <h2>{{ principlesSettings.title }}</h2>
             <p v-if="principlesSettings.subtitle">{{ principlesSettings.subtitle }}</p>
           </div>
 
           <div class="cb-about-principles__grid">
-            <article v-for="principle in principles" :key="principle.id || principle.title" class="cb-about-principle-card">
+            <article
+              v-for="(principle, index) in principles"
+              :key="principle.id || principle.title"
+              class="cb-about-principle-card cb-about-reveal"
+              data-reveal
+              :style="{ '--cb-delay': `${index * 70}ms` }"
+            >
               <div class="cb-about-principle-card__icon" v-html="resolveIcon(principle.icon, 'heart')"></div>
               <div>
                 <h3>{{ principle.title }}</h3>
@@ -220,13 +234,13 @@
         </div>
       </section>
 
-      <section class="cb-about-section cb-about-organigram">
+      <section class="cb-about-section cb-about-organigram cb-about-reveal" data-reveal>
         <div class="cb-shell">
-          <div class="cb-about-section__heading cb-about-section__heading--center">
+          <div class="cb-about-section__heading cb-about-section__heading--center cb-about-reveal" data-reveal>
             <h2>{{ organigramSettings.title }}</h2>
           </div>
 
-          <article class="cb-about-organigram__frame" :style="organigramStyle">
+          <article class="cb-about-organigram__frame cb-about-reveal" data-reveal style="--cb-delay: 100ms;" :style="organigramStyle">
             <div class="cb-about-organigram__veil"></div>
             <div class="cb-about-organigram__copy">
               <h3>{{ organigramSettings.card_title }}</h3>
@@ -236,14 +250,20 @@
         </div>
       </section>
 
-      <section class="cb-about-section cb-about-objectives">
+      <section class="cb-about-section cb-about-objectives cb-about-reveal" data-reveal>
         <div class="cb-shell">
-          <div class="cb-about-section__heading">
+          <div class="cb-about-section__heading cb-about-reveal" data-reveal>
             <h2>{{ objectivesSettings.title }}</h2>
           </div>
 
           <div class="cb-about-objectives__list">
-            <article v-for="objective in objectives" :key="objective.id || objective.text" class="cb-about-objective">
+            <article
+              v-for="(objective, index) in objectives"
+              :key="objective.id || objective.text"
+              class="cb-about-objective cb-about-reveal"
+              data-reveal
+              :style="{ '--cb-delay': `${index * 65}ms` }"
+            >
               <div class="cb-about-objective__icon" v-html="resolveIcon(objective.icon, 'target')"></div>
               <p>{{ objective.text }}</p>
             </article>
@@ -289,7 +309,8 @@ export default {
       heroIndex: 0,
       historyIndex: 0,
       heroTimer: null,
-      historyTimer: null
+      historyTimer: null,
+      revealObserver: null
     }
   },
   async asyncData({ $api }) {
@@ -307,10 +328,12 @@ export default {
     await this.refreshPageContent()
     this.startHero()
     this.startHistory()
+    this.setupRevealObserver()
   },
   beforeDestroy() {
     this.stopHero()
     this.stopHistory()
+    this.destroyRevealObserver()
   },
   computed: {
     icons() {
@@ -406,6 +429,9 @@ export default {
 
         window.setTimeout(() => {
           this.isBootLoading = false
+          this.$nextTick(() => {
+            this.setupRevealObserver()
+          })
         }, remaining)
       }
     },
@@ -469,6 +495,38 @@ export default {
     },
     resolveIcon(icon, fallback) {
       return this.icons[icon] || this.icons[fallback]
+    },
+    setupRevealObserver() {
+      this.destroyRevealObserver()
+
+      if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+        document.querySelectorAll('[data-reveal]').forEach((node) => node.classList.add('is-visible'))
+        return
+      }
+
+      this.revealObserver = new window.IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            this.revealObserver.unobserve(entry.target)
+          }
+        })
+      }, {
+        threshold: 0.16,
+        rootMargin: '0px 0px -8% 0px'
+      })
+
+      document.querySelectorAll('[data-reveal]').forEach((node) => {
+        if (!node.classList.contains('is-visible')) {
+          this.revealObserver.observe(node)
+        }
+      })
+    },
+    destroyRevealObserver() {
+      if (this.revealObserver) {
+        this.revealObserver.disconnect()
+        this.revealObserver = null
+      }
     }
   },
   head() {
