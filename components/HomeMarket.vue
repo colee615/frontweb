@@ -5,8 +5,8 @@
         <div class="cb-panel-title cb-panel-title--market">
           <div class="cb-service-icon" v-html="icons.stamp"></div>
           <div>
-            <h3>{{ content.title || 'Correos Market / Filatelia' }}</h3>
-            <p>{{ content.subtitle || 'Descubre nuestra coleccion exclusiva de sellos y souvenirs' }}</p>
+            <h3 v-if="content.title">{{ content.title }}</h3>
+            <p v-if="content.subtitle">{{ content.subtitle }}</p>
           </div>
         </div>
       </div>
@@ -61,7 +61,13 @@
         </article>
       </div>
 
-      <a :href="content.view_all_url || '#'" class="cb-view-all cb-view-all--market-end">{{ content.view_all_label || 'Ver todos los productos ->' }}</a>
+      <a
+        v-if="content.view_all_label && content.view_all_url"
+        :href="content.view_all_url"
+        class="cb-view-all cb-view-all--market-end"
+      >
+        {{ content.view_all_label }}
+      </a>
     </div>
   </section>
 </template>

@@ -88,12 +88,6 @@
 </template>
 
 <script>
-const FALLBACK_MARKERS = [
-  { key: 'lapaz', dept: 'BOL', name: 'La Paz', officeName: 'Oficina Central La Paz', address: 'Av. Mariscal Santa Cruz, La Paz', phone: '+591 2 2312121', hours: 'Lun a Vie, 08:00 a 18:00', weekdayHours: '08:00 a 18:00', saturdayHours: '09:00 a 13:00', left: '29.6%', top: '46%', delay: '0.25s', mapsUrl: 'https://www.google.com/maps/search/?api=1&query=-16.4957,-68.1336' },
-  { key: 'cochabamba', dept: 'BOC', name: 'Cochabamba', officeName: 'Oficina Correos Cochabamba', address: 'Av. Ayacucho, Cochabamba', phone: '+591 4 4528001', hours: 'Lun a Vie, 08:00 a 17:30', weekdayHours: '08:00 a 17:30', saturdayHours: '09:00 a 12:30', left: '41.8%', top: '58.5%', delay: '0.35s', mapsUrl: 'https://www.google.com/maps/search/?api=1&query=-17.3895,-66.1568' },
-  { key: 'santacruz', dept: 'BOS', name: 'Santa Cruz', officeName: 'Oficina Correos Santa Cruz', address: 'Av. Irala, Santa Cruz de la Sierra', phone: '+591 3 3366001', hours: 'Lun a Vie, 08:00 a 17:30', weekdayHours: '08:00 a 17:30', saturdayHours: '09:00 a 12:30', left: '59.2%', top: '58%', delay: '0.55s', mapsUrl: 'https://www.google.com/maps/search/?api=1&query=-17.7833,-63.1821' }
-]
-
 export default {
   name: 'HomeBoliviaMap',
   props: {
@@ -104,7 +98,7 @@ export default {
   },
   computed: {
     markers() {
-      const source = this.offices.length ? this.offices : FALLBACK_MARKERS
+      const source = Array.isArray(this.offices) ? this.offices : []
 
       return source
         .map((office, index) => {
