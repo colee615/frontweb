@@ -50,17 +50,45 @@
         </nav>
 
         <div class="cb-nav-actions">
-          <button class="cb-search-pill" type="button">
+          <form class="cb-search-pill" @submit.prevent="submitSearch">
             <span class="cb-inline-icon" v-html="icons.search"></span>
-            <span>{{ content.search_placeholder || '' }}</span>
-          </button>
-          <button class="cb-menu-btn" type="button" aria-label="Abrir menu">
+            <input
+              v-model.trim="searchTerm"
+              type="search"
+              :placeholder="content.search_placeholder || 'Buscar...'"
+              aria-label="Buscar contenido"
+            >
+          </form>
+          <button
+            class="cb-menu-btn"
+            type="button"
+            :aria-expanded="isMenuOpen ? 'true' : 'false'"
+            aria-label="Abrir menu"
+            @click="toggleMenu"
+          >
             <span></span>
             <span></span>
             <span></span>
           </button>
         </div>
       </div>
+
+      <transition name="cb-mobile-menu">
+        <div v-if="isMenuOpen" class="cb-mobile-nav">
+          <div class="cb-shell cb-mobile-nav__inner">
+            <component
+              :is="isInternalRoute(link.url) ? 'nuxt-link' : 'a'"
+              v-for="link in navLinks"
+              :key="`mobile-${link.label}-${link.url}`"
+              class="cb-mobile-nav__link"
+              v-bind="linkAttrs(link.url)"
+              @click.native="closeMenu"
+            >
+              {{ link.label }}
+            </component>
+          </div>
+        </div>
+      </transition>
     </div>
   </header>
 </template>
@@ -86,6 +114,12 @@ export default {
       default: () => []
     }
   },
+  data() {
+    return {
+      isMenuOpen: false,
+      searchTerm: ''
+    }
+  },
   computed: {
     navLinks() {
       return this.links.map((link) => ({
@@ -93,6 +127,15 @@ export default {
         url: this.resolveRoute(link)
       }))
     }
+  },
+  watch: {
+    $route() {
+      this.syncSearchFromRoute()
+      this.closeMenu()
+    }
+  },
+  mounted() {
+    this.syncSearchFromRoute()
   },
   methods: {
     resolveRoute(link) {
@@ -105,6 +148,10 @@ export default {
 
       if (label.includes('quienes somos')) {
         return '/quienes-somos'
+      }
+
+      if (label.includes('noticias')) {
+        return '/noticias'
       }
 
       return '#'
@@ -132,6 +179,29 @@ export default {
       }
 
       return { href: url || '#' }
+    },
+    toggleMenu() {
+      this.isMenuOpen = !this.isMenuOpen
+    },
+    closeMenu() {
+      this.isMenuOpen = false
+    },
+    submitSearch() {
+      const query = this.searchTerm.trim()
+      const target = {
+        path: '/noticias',
+        query: query ? { q: query } : {}
+      }
+
+      if (this.$route.path === '/noticias' && (this.$route.query.q || '') === query) {
+        return
+      }
+
+      this.$router.push(target)
+      this.closeMenu()
+    },
+    syncSearchFromRoute() {
+      this.searchTerm = typeof this.$route.query.q === 'string' ? this.$route.query.q : ''
     }
   }
 }
