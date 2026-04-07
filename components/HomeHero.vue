@@ -142,10 +142,17 @@ export default {
 
       const words = title.split(' ')
 
-      if (words.length >= 4) {
+      if (words.length === 5) {
         return [
-          words.slice(0, -2).join(' '),
-          words.slice(-2).join(' ')
+          words.slice(0, 2).join(' '),
+          words.slice(2).join(' ')
+        ]
+      }
+
+      if (words.length === 4) {
+        return [
+          words.slice(0, 2).join(' '),
+          words.slice(2).join(' ')
         ]
       }
 
