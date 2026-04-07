@@ -506,7 +506,11 @@
 
   .cb-about-mission__card {
     min-height: auto;
-    padding: 0;
+    padding: 28px 22px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 248, 252, 0.98));
+    box-shadow: 0 24px 60px rgba(26, 58, 112, 0.08);
+    border: 1px solid rgba(32, 83, 154, 0.06);
   }
 
   .cb-about-mission__surface {
@@ -524,6 +528,9 @@
     display: block;
     padding: 0;
     width: 100%;
+    border-width: 1px;
+    border-color: rgba(32, 83, 154, 0.14);
+    box-shadow: none;
   }
 
   .cb-about-mission__body p {
