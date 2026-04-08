@@ -54,15 +54,58 @@
         </nav>
 
         <div class="cb-nav-actions">
-          <form class="cb-search-pill" @submit.prevent="submitSearch">
-            <span class="cb-inline-icon" v-html="icons.search"></span>
-            <input
-              v-model.trim="searchTerm"
-              type="search"
-              :placeholder="content.search_placeholder || 'Buscar...'"
-              aria-label="Buscar contenido"
-            >
-          </form>
+          <div ref="searchShell" class="cb-search-shell">
+            <form class="cb-search-pill" @submit.prevent="submitSearch">
+              <span class="cb-inline-icon" v-html="icons.search"></span>
+              <input
+                ref="searchInput"
+                v-model.trim="searchTerm"
+                type="search"
+                :placeholder="content.search_placeholder || 'Buscar...'"
+                aria-label="Buscar contenido"
+                :aria-expanded="isSearchOpen ? 'true' : 'false'"
+                aria-autocomplete="list"
+                @focus="handleSearchFocus"
+                @input="handleSearchInput"
+                @keydown.down.prevent="moveSearchSelection(1)"
+                @keydown.up.prevent="moveSearchSelection(-1)"
+                @keydown.enter.prevent="submitSearch"
+                @keydown.esc.prevent="closeSearch"
+              >
+            </form>
+
+            <transition name="cb-search-flyout">
+              <div v-if="isSearchOpen && searchResults.length" class="cb-search-dropdown">
+                <div class="cb-search-dropdown__head">
+                  <strong>Resultados sugeridos</strong>
+                  <span>{{ searchResults.length }} opcion{{ searchResults.length === 1 ? '' : 'es' }}</span>
+                </div>
+
+                <button
+                  v-for="(result, index) in searchResults"
+                  :key="result.id"
+                  type="button"
+                  :class="['cb-search-result', { 'is-active': index === activeSearchIndex }]"
+                  @mouseenter="activeSearchIndex = index"
+                  @mousedown.prevent="navigateToResult(result)"
+                >
+                  <span v-if="result.image" class="cb-search-result__thumb">
+                    <img :src="result.image" alt="">
+                  </span>
+                  <span v-else class="cb-search-result__icon">{{ result.type === 'Pagina' ? 'Pg' : (result.type === 'Noticia' ? 'Nt' : 'Ir') }}</span>
+                  <span class="cb-search-result__body">
+                    <span class="cb-search-result__meta">
+                      <span class="cb-search-result__pill">{{ result.type }}</span>
+                      <span>{{ result.section }}</span>
+                    </span>
+                    <strong v-html="highlightResult(result.label)"></strong>
+                    <small v-html="highlightResult(result.description)"></small>
+                  </span>
+                </button>
+              </div>
+            </transition>
+          </div>
+
           <button
             class="cb-menu-btn"
             type="button"
@@ -98,6 +141,8 @@
 </template>
 
 <script>
+import { buildSearchEntriesFromPayloads, highlightSearchMatch, searchSiteEntries } from '~/utils/siteSearch'
+
 export default {
   name: 'HomeHeader',
   props: {
@@ -122,6 +167,11 @@ export default {
     return {
       isMenuOpen: false,
       searchTerm: '',
+      isSearchOpen: false,
+      activeSearchIndex: 0,
+      searchEntries: [],
+      isSearchReady: false,
+      searchTimer: null,
       isNavbarPinned: false,
       navbarHeight: 64
     }
@@ -132,16 +182,37 @@ export default {
         ...link,
         url: this.resolveRoute(link)
       }))
+    },
+    searchResults() {
+      const query = this.searchTerm.trim()
+      const results = query
+        ? searchSiteEntries(query, this.searchEntries, this.$route.path)
+        : []
+
+      return results.map((result) => {
+        if (result.anchor === 'site-footer' && ['/', '/noticias', '/quienes-somos'].includes(this.$route.path)) {
+          return {
+            ...result,
+            route: this.$route.path
+          }
+        }
+
+        return result
+      })
     }
   },
   watch: {
     $route() {
-      this.syncSearchFromRoute()
       this.closeMenu()
+      this.closeSearch()
+      this.searchTerm = ''
+    },
+    searchResults() {
+      this.activeSearchIndex = 0
+      this.isSearchOpen = this.searchResults.length > 0 && this.searchTerm.trim().length > 0
     }
   },
   mounted() {
-    this.syncSearchFromRoute()
     this.$nextTick(() => {
       this.measureNavbar()
       this.handleScroll()
@@ -149,10 +220,16 @@ export default {
 
     window.addEventListener('scroll', this.handleScroll, { passive: true })
     window.addEventListener('resize', this.handleResize, { passive: true })
+    document.addEventListener('click', this.handleDocumentClick)
   },
   beforeDestroy() {
+    if (this.searchTimer) {
+      window.clearTimeout(this.searchTimer)
+    }
+
     window.removeEventListener('scroll', this.handleScroll)
     window.removeEventListener('resize', this.handleResize)
+    document.removeEventListener('click', this.handleDocumentClick)
   },
   methods: {
     resolveRoute(link) {
@@ -197,6 +274,138 @@ export default {
 
       return { href: url || '#' }
     },
+    handleSearchFocus() {
+      if (this.searchTerm.trim() && this.searchResults.length) {
+        this.isSearchOpen = true
+      }
+    },
+    handleSearchInput() {
+      if (this.searchTimer) {
+        window.clearTimeout(this.searchTimer)
+      }
+
+      const query = this.searchTerm.trim()
+
+      if (!query) {
+        this.closeSearch()
+        return
+      }
+
+      this.searchTimer = window.setTimeout(async () => {
+        await this.ensureSearchEntries()
+        this.activeSearchIndex = 0
+        this.isSearchOpen = this.searchResults.length > 0
+      }, 160)
+    },
+    closeSearch() {
+      this.isSearchOpen = false
+      this.activeSearchIndex = 0
+    },
+    handleDocumentClick(event) {
+      const shell = this.$refs.searchShell
+
+      if (!shell || shell.contains(event.target)) {
+        return
+      }
+
+      this.closeSearch()
+    },
+    moveSearchSelection(direction) {
+      if (!this.searchResults.length) {
+        return
+      }
+
+      this.isSearchOpen = true
+
+      const nextIndex = this.activeSearchIndex + direction
+
+      if (nextIndex < 0) {
+        this.activeSearchIndex = this.searchResults.length - 1
+        return
+      }
+
+      if (nextIndex >= this.searchResults.length) {
+        this.activeSearchIndex = 0
+        return
+      }
+
+      this.activeSearchIndex = nextIndex
+    },
+    highlightResult(text) {
+      return highlightSearchMatch(text, this.searchTerm)
+    },
+    async ensureSearchEntries() {
+      if (this.isSearchReady) {
+        return
+      }
+
+      try {
+        const payloads = await Promise.all([
+          this.$api.$get('/api/site/pages/home'),
+          this.$api.$get('/api/site/pages/quienes-somos'),
+          this.$api.$get('/api/site/pages/noticias')
+        ])
+
+        this.searchEntries = buildSearchEntriesFromPayloads(payloads)
+      } catch (error) {
+        this.searchEntries = []
+      } finally {
+        this.isSearchReady = true
+      }
+    },
+    async navigateToResult(result) {
+      const targetHash = result.anchor ? `#${result.anchor}` : ''
+      this.closeSearch()
+      this.closeMenu()
+
+      if (this.$route.path === result.route) {
+        if (targetHash) {
+          this.scrollToAnchor(result.anchor)
+        }
+        return
+      }
+
+      await this.$router.push({
+        path: result.route,
+        hash: targetHash
+      })
+
+      if (result.anchor) {
+        window.setTimeout(() => this.scrollToAnchor(result.anchor), 180)
+      }
+    },
+    scrollToAnchor(anchor) {
+      const tryScroll = (attempt = 0) => {
+        const target = document.getElementById(anchor)
+
+        if (!target) {
+          if (attempt < 10) {
+            window.setTimeout(() => tryScroll(attempt + 1), 140)
+          }
+          return
+        }
+
+        const offset = this.navbarHeight + 16
+        const top = target.getBoundingClientRect().top + window.pageYOffset - offset
+        window.scrollTo({ top, behavior: 'smooth' })
+        this.flashTarget(target)
+      }
+
+      tryScroll()
+    },
+    flashTarget(target) {
+      if (!target) {
+        return
+      }
+
+      target.classList.remove('cb-search-target-flash')
+      void target.offsetWidth
+      target.classList.add('cb-search-target-flash')
+
+      window.setTimeout(() => {
+        target.classList.remove('cb-search-target-flash')
+      }, 1800)
+    },
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen
     },
@@ -225,21 +434,12 @@ export default {
       }
     },
     submitSearch() {
-      const query = this.searchTerm.trim()
-      const target = {
-        path: '/noticias',
-        query: query ? { q: query } : {}
-      }
-
-      if (this.$route.path === '/noticias' && (this.$route.query.q || '') === query) {
+      if (!this.searchResults.length) {
         return
       }
 
-      this.$router.push(target)
-      this.closeMenu()
-    },
-    syncSearchFromRoute() {
-      this.searchTerm = typeof this.$route.query.q === 'string' ? this.$route.query.q : ''
+      const target = this.searchResults[this.activeSearchIndex] || this.searchResults[0]
+      this.navigateToResult(target)
     },
     scrollToFooter() {
       const footer = document.getElementById('site-footer')

@@ -93,7 +93,7 @@
     </div>
 
     <main v-else class="cb-about">
-      <section class="cb-about-hero">
+      <section id="about-hero" class="cb-about-hero">
         <div class="cb-about-hero__media">
           <template v-if="currentHeroMediaType === 'video' && currentHeroMediaUrl">
             <video
@@ -148,7 +148,7 @@
         </div>
       </section>
 
-      <section class="cb-about-section cb-about-mission cb-about-reveal" data-reveal>
+      <section id="about-mission" class="cb-about-section cb-about-mission cb-about-reveal" data-reveal>
         <div class="cb-shell cb-about-mission__grid">
           <article class="cb-about-mission__card cb-about-reveal" data-reveal style="--cb-delay: 0ms;">
             <div class="cb-about-mission__surface">
@@ -169,7 +169,7 @@
         </div>
       </section>
 
-      <section class="cb-about-section cb-about-history cb-about-reveal" data-reveal>
+      <section id="about-history" class="cb-about-section cb-about-history cb-about-reveal" data-reveal>
         <div class="cb-shell cb-about-history__grid">
           <article class="cb-about-story cb-about-reveal" data-reveal style="--cb-delay: 0ms;">
             <p v-if="historySettings.kicker" class="cb-about-eyebrow">{{ historySettings.kicker }}</p>
@@ -234,7 +234,7 @@
         </div>
       </section>
 
-      <section class="cb-about-principles cb-about-reveal" data-reveal>
+      <section id="about-principles" class="cb-about-principles cb-about-reveal" data-reveal>
         <div class="cb-shell">
           <div class="cb-about-section__heading cb-about-section__heading--center cb-about-reveal" data-reveal>
             <h2>{{ principlesSettings.title }}</h2>
@@ -245,6 +245,7 @@
             <article
               v-for="(principle, index) in principles"
               :key="principle.id || principle.title"
+              :id="`about-principle-item-${principle.id || index}`"
               class="cb-about-principle-card cb-about-reveal"
               data-reveal
               :style="{ '--cb-delay': `${index * 70}ms` }"
@@ -259,7 +260,7 @@
         </div>
       </section>
 
-      <section class="cb-about-section cb-about-organigram cb-about-reveal" data-reveal>
+      <section id="about-organigram" class="cb-about-section cb-about-organigram cb-about-reveal" data-reveal>
         <div class="cb-shell">
           <div class="cb-about-section__heading cb-about-section__heading--center cb-about-reveal" data-reveal>
             <h2>{{ organigramSettings.title }}</h2>
@@ -289,7 +290,7 @@
         </div>
       </section>
 
-      <section class="cb-about-section cb-about-objectives cb-about-reveal" data-reveal>
+      <section id="about-objectives" class="cb-about-section cb-about-objectives cb-about-reveal" data-reveal>
         <div class="cb-shell">
           <div class="cb-about-section__heading cb-about-reveal" data-reveal>
             <h2>{{ objectivesSettings.title }}</h2>
@@ -299,6 +300,7 @@
             <article
               v-for="(objective, index) in objectives"
               :key="objective.id || objective.text"
+              :id="`about-objective-item-${objective.id || index}`"
               class="cb-about-objective cb-about-reveal"
               data-reveal
               :style="{ '--cb-delay': `${index * 65}ms` }"

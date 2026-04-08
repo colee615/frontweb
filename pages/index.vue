@@ -102,11 +102,21 @@
     />
 
     <div v-if="!isBootLoading" class="cb-page__content">
-      <HomeHero :icons="icons" :content="sectionSettings.hero" :slides="heroSlides" />
-      <HomeServices :services="services" :icons="icons" :content="sectionSettings.services" />
-      <HomeTools :icons="icons" :content="sectionSettings.tools" :offices="toolOffices" />
-      <HomeAppBanner :content="sectionSettings.app_banner" :slides="appBannerSlides" />
-      <HomeMarket :products="products" :icons="icons" :content="sectionSettings.market" />
+      <section id="home-hero">
+        <HomeHero :icons="icons" :content="sectionSettings.hero" :slides="heroSlides" />
+      </section>
+      <section id="home-services">
+        <HomeServices :services="services" :icons="icons" :content="sectionSettings.services" />
+      </section>
+      <section id="home-tools">
+        <HomeTools :icons="icons" :content="sectionSettings.tools" :offices="toolOffices" />
+      </section>
+      <section id="home-app">
+        <HomeAppBanner :content="sectionSettings.app_banner" :slides="appBannerSlides" />
+      </section>
+      <section id="home-market">
+        <HomeMarket :products="products" :icons="icons" :content="sectionSettings.market" />
+      </section>
       <HomeFooter :logo-url="logoUrl" :icons="icons" :content="sectionSettings.footer" :links="footerLinks" />
     </div>
   </div>

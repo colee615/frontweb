@@ -62,7 +62,7 @@
     </div>
 
     <main v-else class="cb-news">
-      <section class="cb-news-featured cb-news-reveal is-visible" data-news-reveal>
+      <section id="news-featured" class="cb-news-featured cb-news-reveal is-visible" data-news-reveal>
         <div class="cb-shell cb-news-featured__grid">
           <article class="cb-news-featured__copy cb-news-reveal is-visible" data-news-reveal>
             <span v-if="featuredItem.badge" class="cb-news-featured__badge">{{ featuredItem.badge }}</span>
@@ -74,7 +74,7 @@
             </a>
           </article>
 
-          <article class="cb-news-featured__media cb-news-reveal is-visible" data-news-reveal style="--cb-news-delay: 120ms;">
+          <article :id="`news-featured-item-${featuredItem.id || 0}`" class="cb-news-featured__media cb-news-reveal is-visible" data-news-reveal style="--cb-news-delay: 120ms;">
             <template v-if="featuredMediaType === 'video' && featuredMediaUrl">
               <video
                 class="cb-news-featured__asset"
@@ -98,7 +98,7 @@
         </div>
       </section>
 
-      <section class="cb-news-filters cb-news-reveal" data-news-reveal>
+      <section id="news-filters" class="cb-news-filters cb-news-reveal" data-news-reveal>
         <div class="cb-shell cb-news-filters__inner">
           <div class="cb-news-filters__chips" role="tablist" aria-label="Categorias de noticias">
             <button
@@ -119,7 +119,7 @@
         </div>
       </section>
 
-      <section class="cb-news-grid-section cb-news-reveal" data-news-reveal>
+      <section id="news-grid" class="cb-news-grid-section cb-news-reveal" data-news-reveal>
         <div class="cb-shell">
           <div v-if="gridSettings.title || gridSettings.subtitle" class="cb-news-grid-section__heading cb-news-reveal" data-news-reveal>
             <h2 v-if="gridSettings.title">{{ gridSettings.title }}</h2>
@@ -132,6 +132,7 @@
                 <article
                   v-for="(article, index) in visibleNews"
                   :key="article.id || article.title"
+                  :id="`news-item-${article.id || index}`"
                   class="cb-news-card cb-news-reveal"
                   data-news-reveal
                   :style="{ '--cb-news-delay': `${index * 70}ms` }"
@@ -191,7 +192,7 @@
         </div>
       </section>
 
-      <section class="cb-news-newsletter cb-news-reveal" data-news-reveal>
+      <section id="news-newsletter" class="cb-news-newsletter cb-news-reveal" data-news-reveal>
         <div class="cb-shell cb-news-newsletter__inner cb-news-reveal" data-news-reveal>
           <div class="cb-news-newsletter__icon" v-html="icons.mail"></div>
           <span v-if="newsletterSettings.badge" class="cb-news-newsletter__badge">{{ newsletterSettings.badge }}</span>
@@ -270,6 +271,7 @@ export default {
     await this.refreshPageContent()
     this.selectedCategory = this.defaultCategory
     this.syncSearchFromRoute()
+    this.syncHashTarget()
     this.setupRevealObserver()
   },
   beforeDestroy() {
@@ -393,6 +395,9 @@ export default {
     },
     '$route.query.q'() {
       this.syncSearchFromRoute()
+    },
+    '$route.hash'() {
+      this.syncHashTarget()
     }
   },
   methods: {
@@ -417,6 +422,7 @@ export default {
         window.setTimeout(() => {
           this.isBootLoading = false
           this.$nextTick(() => {
+            this.syncHashTarget()
             this.setupRevealObserver()
           })
         }, remaining)
@@ -470,6 +476,43 @@ export default {
     },
     syncSearchFromRoute() {
       this.searchTerm = typeof this.$route.query.q === 'string' ? this.$route.query.q : ''
+    },
+    syncHashTarget() {
+      const hash = String(this.$route.hash || '').replace(/^#/, '')
+
+      if (!hash) {
+        return
+      }
+
+      if (hash.startsWith('news-item-')) {
+        const itemId = hash.replace('news-item-', '')
+        const itemIndex = this.newsItems.findIndex((item) => String(item.id) === itemId)
+
+        if (itemIndex >= 0) {
+          this.selectedCategory = 'Todas'
+          this.searchTerm = ''
+          this.currentPage = Math.max(1, Math.floor(itemIndex / this.pageSize) + 1)
+        }
+      }
+
+      this.$nextTick(() => {
+        this.scrollToHashTarget(hash)
+      })
+    },
+    scrollToHashTarget(hash, attempt = 0) {
+      const target = document.getElementById(hash)
+
+      if (!target) {
+        if (attempt < 12) {
+          window.setTimeout(() => this.scrollToHashTarget(hash, attempt + 1), 140)
+        }
+        return
+      }
+
+      const header = document.querySelector('.cb-navbar')
+      const offset = (header ? header.offsetHeight : 64) + 16
+      const top = target.getBoundingClientRect().top + window.pageYOffset - offset
+      window.scrollTo({ top, behavior: 'smooth' })
     },
     setupRevealObserver() {
       this.destroyRevealObserver()

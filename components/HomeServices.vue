@@ -7,7 +7,7 @@
       </div>
 
       <div class="cb-services-grid">
-        <article v-for="service in services" :key="service.title" class="cb-service-card">
+        <article v-for="(service, index) in services" :id="`home-service-item-${service.id || index}`" :key="service.title" class="cb-service-card">
           <div class="cb-service-card__top">
             <div class="cb-service-icon">
               <img

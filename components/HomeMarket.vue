@@ -15,6 +15,7 @@
         <article
           v-for="(product, index) in products"
           :key="product.title"
+          :id="`home-market-item-${product.id || index}`"
           class="cb-product-card"
           :class="{ 'is-flipped': flippedCard === index }"
         >

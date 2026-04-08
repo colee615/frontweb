@@ -855,6 +855,10 @@ a {
   gap: 12px;
 }
 
+.cb-search-shell {
+  position: relative;
+}
+
 .cb-search-pill {
   width: 164px;
   height: 36px;
@@ -870,6 +874,180 @@ a {
   font-weight: 400;
   box-shadow: 0 8px 20px rgba(32, 83, 154, 0.12);
   overflow: hidden;
+}
+
+.cb-search-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: min(420px, calc(100vw - 28px));
+  padding: 12px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(32, 83, 154, 0.12);
+  box-shadow: 0 26px 60px rgba(18, 38, 74, 0.18);
+  backdrop-filter: blur(16px);
+  z-index: 50;
+}
+
+.cb-search-dropdown__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 8px 10px;
+  color: rgba(47, 63, 92, 0.78);
+  font-size: 12px;
+}
+
+.cb-search-dropdown__head strong {
+  color: var(--cb-blue);
+  font-size: 13px;
+}
+
+.cb-search-result {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 12px 10px;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  text-align: left;
+  color: var(--cb-ink);
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.cb-search-result:hover,
+.cb-search-result.is-active {
+  background: linear-gradient(135deg, rgba(32, 83, 154, 0.08), rgba(254, 204, 54, 0.14));
+  transform: translateY(-1px);
+}
+
+.cb-search-result__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--cb-blue), #2c6ec8);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cb-search-result__thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(32, 83, 154, 0.08);
+}
+
+.cb-search-result__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cb-search-result__body {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.cb-search-result__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(47, 63, 92, 0.72);
+  font-size: 11px;
+}
+
+.cb-search-result__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(32, 83, 154, 0.1);
+  color: var(--cb-blue);
+  font-weight: 800;
+}
+
+.cb-search-result__body strong {
+  color: var(--cb-blue);
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.cb-search-result__body small {
+  color: rgba(47, 63, 92, 0.82);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.cb-search-result mark {
+  background: rgba(254, 204, 54, 0.48);
+  color: inherit;
+  border-radius: 6px;
+  padding: 0 2px;
+}
+
+.cb-search-target-flash {
+  animation: cbSearchTargetFlash 1.8s ease;
+}
+
+@keyframes cbSearchTargetFlash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(254, 204, 54, 0);
+    outline: 0 solid transparent;
+    transform: translateY(0);
+  }
+  18% {
+    box-shadow: 0 0 0 8px rgba(254, 204, 54, 0.18);
+    outline: 2px solid rgba(254, 204, 54, 0.9);
+    transform: translateY(-2px);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(254, 204, 54, 0);
+    outline: 0 solid transparent;
+    transform: translateY(0);
+  }
+}
+
+.cb-search-empty {
+  display: grid;
+  gap: 6px;
+  padding: 16px 12px 8px;
+  text-align: center;
+  color: rgba(47, 63, 92, 0.78);
+}
+
+.cb-search-empty strong {
+  color: var(--cb-blue);
+}
+
+.cb-search-flyout-enter-active,
+.cb-search-flyout-leave-active {
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.cb-search-flyout-enter,
+.cb-search-flyout-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 .cb-search-pill input {
@@ -3544,6 +3722,11 @@ a {
   .cb-nav-actions {
     width: auto;
     justify-content: flex-end;
+  }
+
+  .cb-search-dropdown {
+    right: -8px;
+    width: min(360px, calc(100vw - 24px));
   }
 
   .cb-app-banner {
