@@ -5,12 +5,12 @@ const API_BASE_URL = (process.env.API_BASE_URL || (process.env.NODE_ENV === 'dev
 const USER_API_BASE_URL = ((process.env.USER_API_BASE_URL || `${API_BASE_URL}/user`) || '/user').replace(/\/?$/, '/')
 const TRACKING_BASE_URL = (process.env.TRACKING_BASE_URL || 'https://trackingbo.correos.gob.bo:8100').replace(/\/+$/, '')
 const POSTAL_CALCULATOR_API_URL = (process.env.POSTAL_CALCULATOR_API_URL || 'https://postar.correos.gob.bo:8104/api/calcular').replace(/\/+$/, '')
-const CONNECT_SRC = ["'self'"]
+const CONNECT_SRC = ["'self'", 'https://www.google-analytics.com', 'https://analytics.google.com', 'https://www.googletagmanager.com']
 const IMG_SRC = ["'self'", 'data:', 'https:']
 const MEDIA_SRC = ["'self'", 'https:']
 const SCRIPT_SRC = process.env.NODE_ENV === 'development'
-  ? ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
-  : ["'self'", "'unsafe-inline'"]
+  ? ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://www.googletagmanager.com']
+  : ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com']
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development'
 
 if (/^https?:\/\//i.test(API_BASE_URL)) {
@@ -48,7 +48,26 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+    ],
+    script: [
+      {
+        async: true,
+        src: 'https://www.googletagmanager.com/gtag/js?id=G-0B0GGX8RWH'
+      },
+      {
+        hid: 'gtag-config',
+        innerHTML: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-0B0GGX8RWH');
+        `,
+        type: 'text/javascript'
+      }
+    ],
+    __dangerouslyDisableSanitizersByTagID: {
+      'gtag-config': ['innerHTML']
+    }
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
