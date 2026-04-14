@@ -121,6 +121,14 @@ export default {
   },
 
   render: {
+    static: {
+      maxAge: 0,
+      setHeaders(res, path) {
+        if (path && path.startsWith('/_nuxt/')) {
+          res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate')
+        }
+      }
+    },
     csp: IS_DEVELOPMENT
       ? false
       : {
@@ -142,6 +150,14 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    filenames: {
+      app: '[name].js',
+      chunk: '[name].js',
+      css: '[name].css',
+      img: '[path][name].[ext]',
+      font: '[path][name].[ext]',
+      video: '[path][name].[ext]'
+    }
   }
 }
 
