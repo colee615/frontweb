@@ -1,4 +1,4 @@
-require('dotenv').config()
+﻿require('dotenv').config()
 
 const DEV_API_BASE_URL = 'http://127.0.0.1:8000'
 const API_BASE_URL = normalizeBaseUrl(process.env.API_BASE_URL || (process.env.NODE_ENV === 'development' ? '/frontapi' : '/frontapi'))
@@ -49,8 +49,7 @@ export default {
       { hid: 'referrer', name: 'referrer', content: 'strict-origin-when-cross-origin' }
     ],
     link: [
-      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-      { rel: 'alternate icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg?v=3' }
     ],
     script: [
       {
@@ -187,3 +186,4 @@ function normalizeBaseUrl(value) {
 
   return trimmed.replace(/\/+$/, '')
 }
+
