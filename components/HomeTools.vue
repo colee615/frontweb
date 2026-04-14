@@ -556,7 +556,7 @@ export default {
       this.isSubmitting = true
 
       try {
-        const endpoint = (this.$config && this.$config.postalCalculatorApiUrl) || '/api/calculator'
+        const endpoint = (this.$config && this.$config.postalCalculatorApiUrl) || '/frontapi/api/calculator'
         const response = await window.fetch(endpoint, {
           method: 'POST',
           headers: {

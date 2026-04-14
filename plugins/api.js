@@ -6,8 +6,14 @@ export default function ({ $axios, $config, store }, inject) {
 
   const api = $axios.create({ headers: { common: defaultHeaders } })
 
-  const apiBaseUrl = ($config && $config.apiBaseUrl) || $axios.defaults.baseURL
-  const userApiBaseUrl = ($config && $config.userApiBaseUrl) || apiBaseUrl
+  const isServer = process.server
+  const serverBaseUrl = ($config && $config.axios && $config.axios.baseURL) || $axios.defaults.baseURL
+  const browserBaseUrl = ($config && ($config.apiBaseUrl || ($config.axios && $config.axios.browserBaseURL))) || $axios.defaults.baseURL
+  const apiBaseUrl = (isServer ? serverBaseUrl : browserBaseUrl) || serverBaseUrl || browserBaseUrl
+
+  const serverUserApiBaseUrl = serverBaseUrl ? String(serverBaseUrl).replace(/\/+$/, '') + '/user/' : ''
+  const browserUserApiBaseUrl = ($config && $config.userApiBaseUrl) || (browserBaseUrl ? String(browserBaseUrl).replace(/\/+$/, '') + '/user/' : '')
+  const userApiBaseUrl = (isServer ? serverUserApiBaseUrl : browserUserApiBaseUrl) || serverUserApiBaseUrl || browserUserApiBaseUrl || apiBaseUrl
 
   api.setBaseURL(apiBaseUrl)
 

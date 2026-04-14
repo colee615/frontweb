@@ -167,7 +167,7 @@ export default {
   },
   async asyncData({ $api }) {
     try {
-      const payload = await $api.$get('/api/site/pages/home')
+      const payload = await $api.$get('/frontapi/api/site/pages/home')
 
       return {
         pageContent: normalizePageContent(payload)
@@ -275,7 +275,7 @@ export default {
       const startedAt = Date.now()
 
       try {
-        const payload = await this.$api.$get('/api/site/pages/home')
+        const payload = await this.$api.$get('/frontapi/api/site/pages/home')
         this.pageContent = normalizePageContent(payload)
       } catch (error) {
       } finally {

@@ -1,7 +1,9 @@
 require('dotenv').config()
 
 const DEV_API_BASE_URL = 'http://127.0.0.1:8000'
-const API_BASE_URL = (process.env.API_BASE_URL || (process.env.NODE_ENV === 'development' ? DEV_API_BASE_URL : '')).replace(/\/+$/, '')
+const API_BASE_URL = normalizeBaseUrl(process.env.API_BASE_URL || (process.env.NODE_ENV === 'development' ? '/frontapi' : '/frontapi'))
+const INTERNAL_API_BASE_URL = normalizeBaseUrl(process.env.INTERNAL_API_BASE_URL || DEV_API_BASE_URL)
+const STORAGE_PROXY_BASE_URL = normalizeBaseUrl(process.env.STORAGE_PROXY_BASE_URL || INTERNAL_API_BASE_URL)
 const USER_API_BASE_URL = ((process.env.USER_API_BASE_URL || `${API_BASE_URL}/user`) || '/user').replace(/\/?$/, '/')
 const TRACKING_BASE_URL = (process.env.TRACKING_BASE_URL || 'https://trackingbo.correos.gob.bo:8100').replace(/\/+$/, '')
 const POSTAL_CALCULATOR_API_URL = (process.env.POSTAL_CALCULATOR_API_URL || 'https://postar.correos.gob.bo:8104/api/calcular').replace(/\/+$/, '')
@@ -80,17 +82,21 @@ export default {
   ],
 
   serverMiddleware: [
-    { path: '/api/calculator', handler: '~/server-middleware/calculator.js' }
+    { path: '/api/calculator', handler: '~/server-middleware/calculator.js' },
+    { path: '/frontapi', handler: '~/server-middleware/frontapiProxy.js' },
+    { path: '/frontstorage', handler: '~/server-middleware/frontstorageProxy.js' }
   ],
 
   publicRuntimeConfig: {
     apiBaseUrl: API_BASE_URL,
+    internalApiBaseUrl: INTERNAL_API_BASE_URL,
+    storageBaseUrl: '/frontstorage',
     userApiBaseUrl: USER_API_BASE_URL,
     trackingBaseUrl: TRACKING_BASE_URL,
     postalCalculatorApiUrl: POSTAL_CALCULATOR_API_URL,
     axios: {
       browserBaseURL: API_BASE_URL || '/',
-      baseURL: API_BASE_URL || '/'
+      baseURL: INTERNAL_API_BASE_URL || API_BASE_URL || '/'
     }
   },
 
@@ -109,7 +115,7 @@ export default {
   ],
 
   axios: {
-    baseURL: API_BASE_URL || '/',
+    baseURL: INTERNAL_API_BASE_URL || API_BASE_URL || '/',
     browserBaseURL: API_BASE_URL || '/',
     timeout: 15000
   },
@@ -145,4 +151,22 @@ function getOrigin(url) {
   } catch (error) {
     return url
   }
+}
+
+function normalizeBaseUrl(value) {
+  if (typeof value !== 'string') {
+    return ''
+  }
+
+  const trimmed = value.trim()
+
+  if (!trimmed) {
+    return ''
+  }
+
+  if (trimmed.startsWith('/')) {
+    return `/${trimmed.replace(/^\/+/, '').replace(/\/+$/, '')}`
+  }
+
+  return trimmed.replace(/\/+$/, '')
 }

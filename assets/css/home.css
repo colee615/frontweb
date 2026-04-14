@@ -1109,7 +1109,7 @@ a {
 .cb-hero {
   position: relative;
   min-height: 590px;
-  background: linear-gradient(90deg, rgba(32, 83, 154, 0.68) 0%, rgba(32, 83, 154, 0.62) 52%, rgba(32, 83, 154, 0.58) 100%);
+  background: transparent;
   overflow: hidden;
 }
 
@@ -1145,8 +1145,7 @@ a {
 .cb-hero-overlay {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(90deg, rgba(32, 83, 154, 0.68) 0%, rgba(32, 83, 154, 0.62) 52%, rgba(32, 83, 154, 0.58) 100%);
+  background: transparent;
 }
 
 .cb-hero-content {

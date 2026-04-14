@@ -341,9 +341,9 @@ export default {
 
       try {
         const payloads = await Promise.all([
-          this.$api.$get('/api/site/pages/home'),
-          this.$api.$get('/api/site/pages/quienes-somos'),
-          this.$api.$get('/api/site/pages/noticias')
+          this.$api.$get('/frontapi/api/site/pages/home'),
+          this.$api.$get('/frontapi/api/site/pages/quienes-somos'),
+          this.$api.$get('/frontapi/api/site/pages/noticias')
         ])
 
         this.searchEntries = buildSearchEntriesFromPayloads(payloads)

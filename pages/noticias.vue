@@ -258,7 +258,7 @@ export default {
   },
   async asyncData({ $api }) {
     const [homePayload, newsPayload] = await Promise.all([
-      safeGet($api, '/api/site/pages/home'),
+      safeGet($api, '/frontapi/api/site/pages/home'),
       fetchNews($api)
     ])
 
@@ -406,7 +406,7 @@ export default {
 
       try {
         const [homePayload, newsPayload] = await Promise.all([
-          safeGet(this.$api, '/api/site/pages/home'),
+          safeGet(this.$api, '/frontapi/api/site/pages/home'),
           fetchNews(this.$api)
         ])
 
@@ -559,7 +559,7 @@ export default {
 }
 
 async function fetchNews($api) {
-  const endpoints = ['/api/site/pages/noticias', '/api/site/pages/news']
+  const endpoints = ['/frontapi/api/site/pages/noticias', '/frontapi/api/site/pages/news']
   for (const endpoint of endpoints) {
     const payload = await safeGet($api, endpoint)
     if (payload) {
