@@ -3,11 +3,9 @@ const ASSET_KEYS = new Set([
   'background_image',
   'iconImage',
   'image',
-  'media_url',
   'src',
   'poster',
-  'poster_image',
-  'seal_logo'
+  'poster_image'
 ])
 
 const LINK_KEYS = new Set([
@@ -26,7 +24,7 @@ const COLOR_KEYS = new Set([
 ])
 
 export function sanitizeAssetUrl(value) {
-  return resolveAssetUrl(sanitizeUrl(value, { allowStorage: true, allowContact: false }))
+  return sanitizeUrl(value, { allowStorage: true, allowContact: false })
 }
 
 export function sanitizeLinkUrl(value) {
@@ -116,113 +114,4 @@ function sanitizeUrl(value, { allowStorage, allowContact }) {
   }
 
   return null
-}
-
-function resolveAssetUrl(value) {
-  if (!value) {
-    return value
-  }
-
-  const runtimeApiBaseUrl = getRuntimeApiBaseUrl()
-  const runtimeStorageBaseUrl = getRuntimeStorageBaseUrl() || runtimeApiBaseUrl
-
-  if (/^\/frontstorage\/storage\//i.test(value)) {
-    return value.replace(/^\/frontstorage\/storage\//i, '/frontstorage/')
-  }
-
-  if (/^\/storage\//i.test(value) && runtimeStorageBaseUrl) {
-    return `${runtimeStorageBaseUrl}${value.replace(/^\/storage/i, '')}`
-  }
-
-  if (/^http:\/\//i.test(value)) {
-    const upgraded = upgradeHttpAssetUrl(value, runtimeApiBaseUrl, runtimeStorageBaseUrl)
-    return upgraded || value
-  }
-
-  if (/^https?:\/\//i.test(value)) {
-    const rewritten = remapAbsoluteStorageUrl(value, runtimeStorageBaseUrl)
-    return rewritten || value
-  }
-
-  return value
-}
-
-function getRuntimeApiBaseUrl() {
-  if (typeof window === 'undefined') {
-    return ''
-  }
-
-  const nuxtConfig = window.__NUXT__ && window.__NUXT__.config
-  const apiBaseUrl = nuxtConfig && typeof nuxtConfig.apiBaseUrl === 'string'
-    ? nuxtConfig.apiBaseUrl.trim().replace(/\/+$/, '')
-    : ''
-
-  return /^https?:\/\//i.test(apiBaseUrl) ? apiBaseUrl : ''
-}
-
-function getRuntimeStorageBaseUrl() {
-  if (typeof window === 'undefined') {
-    return ''
-  }
-
-  const nuxtConfig = window.__NUXT__ && window.__NUXT__.config
-  const storageBaseUrl = nuxtConfig && typeof nuxtConfig.storageBaseUrl === 'string'
-    ? nuxtConfig.storageBaseUrl.trim().replace(/\/+$/, '')
-    : ''
-
-  if (!storageBaseUrl) {
-    return ''
-  }
-
-  if (storageBaseUrl.startsWith('/')) {
-    return storageBaseUrl
-  }
-
-  return /^https?:\/\//i.test(storageBaseUrl) ? storageBaseUrl : ''
-}
-
-function upgradeHttpAssetUrl(value, runtimeApiBaseUrl, runtimeStorageBaseUrl) {
-  if (typeof window === 'undefined' || window.location.protocol !== 'https:') {
-    return null
-  }
-
-  try {
-    const assetUrl = new URL(value)
-    const currentUrl = new URL(window.location.href)
-    const apiUrl = runtimeApiBaseUrl ? new URL(runtimeApiBaseUrl) : null
-
-    const isSameCurrentHost = assetUrl.hostname === currentUrl.hostname
-    const isSameApiHost = apiUrl ? assetUrl.hostname === apiUrl.hostname : false
-
-    if (!isSameCurrentHost && !isSameApiHost) {
-      return null
-    }
-
-    if (/^\/storage\//i.test(assetUrl.pathname) && runtimeStorageBaseUrl) {
-      return `${runtimeStorageBaseUrl}${assetUrl.pathname.replace(/^\/storage/i, '')}${assetUrl.search || ''}`
-    }
-
-    assetUrl.protocol = 'https:'
-    return assetUrl.toString()
-  } catch (error) {
-    return null
-  }
-}
-
-function remapAbsoluteStorageUrl(value, runtimeStorageBaseUrl) {
-  if (!runtimeStorageBaseUrl) {
-    return null
-  }
-
-  try {
-    const parsed = new URL(value)
-
-    if (!/^\/storage\//i.test(parsed.pathname)) {
-      return null
-    }
-
-    return `${runtimeStorageBaseUrl}${parsed.pathname.replace(/^\/storage/i, '')}${parsed.search || ''}`
-  } catch (error) {
-    return null
-  }
 }
