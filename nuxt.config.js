@@ -49,7 +49,8 @@ export default {
       { hid: 'referrer', name: 'referrer', content: 'strict-origin-when-cross-origin' }
     ],
     link: [
-      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg?v=3' }
+      { rel: 'icon', type: 'image/png', sizes: '64x64', href: '/favicon-64.png?v=4' },
+      { rel: 'shortcut icon', type: 'image/png', href: '/favicon-64.png?v=4' }
     ],
     script: [
       {
