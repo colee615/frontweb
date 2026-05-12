@@ -219,7 +219,8 @@ export default {
   },
   data() {
     return {
-      mobileOpenSections: ['company']
+      mobileOpenSections: ['company'],
+      chatbotForceTimer: null
     }
   },
   computed: {
@@ -309,6 +310,32 @@ export default {
     }
   },
   methods: {
+    forceFooterChatbotMobile() {
+      if (!process.client) {
+        return
+      }
+
+      const isMobile = window.matchMedia('(max-width: 767px)').matches
+      if (!isMobile) {
+        return
+      }
+
+      const candidates = document.querySelectorAll(
+        'iframe[src*="chatbot.correos.gob.bo:5000"], [id*="chatbot"], [class*="chatbot"]'
+      )
+
+      candidates.forEach((node) => {
+        if (!node || !node.style) {
+          return
+        }
+
+        node.style.display = 'block'
+        node.style.visibility = 'visible'
+        node.style.opacity = '1'
+        node.style.pointerEvents = 'auto'
+        node.style.zIndex = '2147483647'
+      })
+    },
     resolveRoute(link) {
       const label = this.normalizeLabel(link.label)
       const url = typeof link.url === 'string' ? link.url.trim() : ''
@@ -365,6 +392,18 @@ export default {
     parseLines(value) {
       const parts = value.split('|')
       return parts.length >= 2 ? parts : [value, '']
+    }
+  },
+  mounted() {
+    this.forceFooterChatbotMobile()
+    this.chatbotForceTimer = setInterval(() => {
+      this.forceFooterChatbotMobile()
+    }, 1500)
+  },
+  beforeDestroy() {
+    if (this.chatbotForceTimer) {
+      clearInterval(this.chatbotForceTimer)
+      this.chatbotForceTimer = null
     }
   }
 }
