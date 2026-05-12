@@ -10,6 +10,7 @@ const POSTAL_CALCULATOR_API_URL = (process.env.POSTAL_CALCULATOR_API_URL || 'htt
 const CONNECT_SRC = ["'self'", 'https://www.google-analytics.com', 'https://analytics.google.com', 'https://www.googletagmanager.com']
 const IMG_SRC = ["'self'", 'data:', 'https:']
 const MEDIA_SRC = ["'self'", 'https:']
+const FRAME_SRC = ["'self'", 'https://chatbot.correos.gob.bo:5000']
 const SCRIPT_SRC = process.env.NODE_ENV === 'development'
   ? ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo:5000']
   : ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo:5000']
@@ -141,6 +142,7 @@ export default {
             'object-src': ["'none'"],
             'img-src': IMG_SRC,
             'media-src': MEDIA_SRC,
+            'frame-src': FRAME_SRC,
             'font-src': ["'self'", 'data:', 'https:'],
             'style-src': ["'self'", "'unsafe-inline'", 'https:'],
             'script-src': SCRIPT_SRC,
