@@ -169,6 +169,12 @@
         <img class="cb-footer-seal__image" :src="sealLogoUrl" alt="">
       </div>
     </div>
+    <script
+      src="https://chatbot.correos.gob.bo:5000/widget-embed.js"
+      data-lang="es"
+      data-position="right"
+      defer>
+    </script>
   </div>
 </template>
 
