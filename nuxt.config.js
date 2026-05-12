@@ -11,8 +11,8 @@ const CONNECT_SRC = ["'self'", 'https://www.google-analytics.com', 'https://anal
 const IMG_SRC = ["'self'", 'data:', 'https:']
 const MEDIA_SRC = ["'self'", 'https:']
 const SCRIPT_SRC = process.env.NODE_ENV === 'development'
-  ? ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://www.googletagmanager.com']
-  : ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com']
+  ? ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo:5000']
+  : ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo:5000']
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development'
 
 if (/^https?:\/\//i.test(API_BASE_URL)) {
