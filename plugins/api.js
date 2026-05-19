@@ -21,7 +21,24 @@ export default function ({ $axios, $config, store }, inject) {
 
   userApi.setBaseURL(userApiBaseUrl)
 
+  function normalizeDuplicatedFrontapi(config, baseUrl) {
+    if (!config || typeof config.url !== 'string') {
+      return config
+    }
+
+    const normalizedBase = String(baseUrl || '').replace(/\/+$/, '')
+    const hasFrontapiBase = /\/frontapi$/i.test(normalizedBase)
+
+    if (hasFrontapiBase && /^\/frontapi\//i.test(config.url)) {
+      config.url = config.url.replace(/^\/frontapi/i, '')
+    }
+
+    return config
+  }
+
   api.interceptors.request.use((config) => {
+    normalizeDuplicatedFrontapi(config, apiBaseUrl)
+
     const token = store && store.state && store.state.auth ? store.state.auth.token : null
 
     if (token) {
@@ -32,6 +49,8 @@ export default function ({ $axios, $config, store }, inject) {
   })
 
   userApi.interceptors.request.use((config) => {
+    normalizeDuplicatedFrontapi(config, userApiBaseUrl)
+
     const token = store && store.state && store.state.auth ? store.state.auth.token : null
 
     if (token) {

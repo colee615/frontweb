@@ -23,7 +23,7 @@
       </div>
 
       <div class="cb-topbar-group cb-topbar-group--right">
-        <button type="button" class="cb-top-link" @click="scrollToFooter">
+        <button type="button" class="cb-top-link" @click="goToContact">
           <span class="cb-top-link__icon" v-html="icons.help"></span>
           <span class="cb-top-link__text">
             <span>{{ content.help_label || '' }}</span>
@@ -441,12 +441,13 @@ export default {
       const target = this.searchResults[this.activeSearchIndex] || this.searchResults[0]
       this.navigateToResult(target)
     },
-    scrollToFooter() {
-      const footer = document.getElementById('site-footer')
-
-      if (footer) {
-        footer.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    goToContact() {
+      if (this.$route.path === '/contacto') {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        return
       }
+
+      this.$router.push('/contacto')
     }
   }
 }

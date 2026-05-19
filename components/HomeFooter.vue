@@ -179,24 +179,6 @@
 </template>
 
 <script>
-const DEFAULT_ALLIANCES_TITLE = 'Ministerio de Obras Publicas, Servicio y Vivienda'
-const DEFAULT_ALLIANCES_LINKS = [
-  'Administradora Boliviana de Carreteras',
-  'Aduana Nacional',
-  'Agencia Boliviana Espacial',
-  'Autoridad de Fiscalizacion y Regulacion de Telecomunicaciones',
-  'Boliviana de Aviacion',
-  'Centro de Comunicaciones La Paz',
-  'Empresa Nacional de Telecomunicaciones',
-  'Empresa Mi Teleferico',
-  'Navegacion Aerea y Aeropuertos Bolivianos'
-]
-const DEFAULT_INTERNATIONAL_TITLE = 'Organizaciones Internacionales'
-const DEFAULT_INTERNATIONAL_LINKS = [
-  'Union Postal Universal',
-  'Union Postal de las Americas, Espana y Portugal'
-]
-
 export default {
   name: 'HomeFooter',
   props: {
@@ -235,26 +217,14 @@ export default {
         .map((link) => ({ ...link, url: this.resolveRoute(link) }))
     },
     alliancesLinks() {
-      const links = this.links
+      return this.links
         .filter((link) => link.group === 'alliances')
         .map((link) => ({ ...link, url: this.resolveRoute(link) }))
-
-      if (links.length) {
-        return links
-      }
-
-      return DEFAULT_ALLIANCES_LINKS.map((label) => ({ label, url: '#' }))
     },
     internationalLinks() {
-      const links = this.links
+      return this.links
         .filter((link) => link.group === 'international')
         .map((link) => ({ ...link, url: this.resolveRoute(link) }))
-
-      if (links.length) {
-        return links
-      }
-
-      return DEFAULT_INTERNATIONAL_LINKS.map((label) => ({ label, url: '#' }))
     },
     socialLinks() {
       return this.links.filter((link) => link.group === 'social')
@@ -266,13 +236,13 @@ export default {
       return this.parseLines(this.content.phone || '')
     },
     alliancesTitle() {
-      return this.content.alliances_title || DEFAULT_ALLIANCES_TITLE
+      return this.content.alliances_title || ''
     },
     internationalTitle() {
-      return this.content.international_title || DEFAULT_INTERNATIONAL_TITLE
+      return this.content.international_title || ''
     },
     sealLogoUrl() {
-      return this.content.seal_logo || this.logoUrl
+      return this.content.seal_logo || ''
     },
     mobileSections() {
       return [
