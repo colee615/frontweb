@@ -12,6 +12,7 @@
       <div class="cb-modal__dialog">
         <div class="cb-modal__poster-shell" :class="{ 'has-multiple': hasMultipleSlides }">
           <button
+            v-if="canClose"
             type="button"
             class="cb-modal__close"
             :aria-label="content.close_label || 'Cerrar mensaje'"
@@ -94,7 +95,8 @@ export default {
     return {
       isOpen: false,
       activeIndex: 0,
-      transitionName: 'cb-modal-card-next'
+      transitionName: 'cb-modal-card-next',
+      seenSlides: []
     }
   },
   computed: {
@@ -122,6 +124,12 @@ export default {
     },
     hasMultipleSlides() {
       return this.normalizedSlides.length > 1
+    },
+    canClose() {
+      return !this.hasMultipleSlides || this.hasSeenAllSlides
+    },
+    hasSeenAllSlides() {
+      return this.normalizedSlides.length > 0 && this.seenSlides.length >= this.normalizedSlides.length
     },
     activeSlide() {
       return this.normalizedSlides[this.activeIndex] || this.normalizedSlides[0] || {}
@@ -182,6 +190,7 @@ export default {
   methods: {
     syncVisibility() {
       this.activeIndex = 0
+      this.seenSlides = []
 
       if (!this.isEnabled || !this.hasSlides) {
         this.isOpen = false
@@ -194,6 +203,7 @@ export default {
       }
 
       this.isOpen = true
+      this.markSlideAsSeen(this.activeIndex)
     },
     handleClose() {
       this.isOpen = false
@@ -209,6 +219,7 @@ export default {
 
       this.transitionName = index > this.activeIndex ? 'cb-modal-card-next' : 'cb-modal-card-prev'
       this.activeIndex = index
+      this.markSlideAsSeen(index)
     },
     goNext() {
       this.goTo((this.activeIndex + 1) % this.normalizedSlides.length)
@@ -223,6 +234,15 @@ export default {
       ]
 
       return revealOffsets[index] || revealOffsets[revealOffsets.length - 1]
+    },
+    markSlideAsSeen(index) {
+      if (!Number.isInteger(index) || index < 0 || index >= this.normalizedSlides.length) {
+        return
+      }
+
+      if (!this.seenSlides.includes(index)) {
+        this.seenSlides = [...this.seenSlides, index]
+      }
     },
     toBoolean(value, fallback) {
       if (typeof value === 'boolean') {
