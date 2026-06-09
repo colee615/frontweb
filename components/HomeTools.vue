@@ -15,7 +15,7 @@
         </div>
 
         <button type="button" class="cb-secondary-btn" @click="goToContactPage">
-          Contactanos para consultas
+          ¿Tienes dudas? Contáctanos.
         </button>
       </article>
 

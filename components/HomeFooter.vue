@@ -318,7 +318,7 @@ export default {
 
       if (
         label.includes('contacto') ||
-        label.includes('contactanos') ||
+        label.includes('contáctanos') ||
         label.includes('consulta')
       ) {
         return CONTACT_ROUTE

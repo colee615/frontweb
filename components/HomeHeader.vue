@@ -183,7 +183,7 @@ export default {
       const normalizedLinks = this.links
         .filter((link) => {
           const normalizedLabel = this.normalizeLabel(link.label)
-          return !normalizedLabel.includes('contactanos')
+          return !normalizedLabel.includes('contáctanos')
         })
         .map((link) => {
         const resolvedUrl = this.resolveRoute(link)
@@ -207,7 +207,7 @@ export default {
       })
 
       normalizedLinks.push({
-        label: 'Contactanos',
+        label: 'Contáctanos',
         url: CONTACT_ROUTE
       })
 
@@ -272,7 +272,7 @@ export default {
 
       if (
         label.includes('contacto') ||
-        label.includes('contactanos') ||
+        label.includes('contáctanos') ||
         label.includes('consulta') ||
         label.includes('institucional')
       ) {
