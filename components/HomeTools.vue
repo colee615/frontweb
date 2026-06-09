@@ -14,7 +14,9 @@
           <HomeBoliviaMap :offices="offices" />
         </div>
 
-        <button type="button" class="cb-secondary-btn">{{ content.map_button_label || 'Ver Todas las Oficinas' }}</button>
+        <button type="button" class="cb-secondary-btn" @click="goToContactPage">
+          Contactanos para consultas
+        </button>
       </article>
 
       <article class="cb-panel cb-panel--calculator">
@@ -601,6 +603,9 @@ export default {
     },
     closeResultModal() {
       this.showResultModal = false
+    },
+    goToContactPage() {
+      window.location.href = 'https://www.correos.gob.bo/contacto'
     }
   }
 }

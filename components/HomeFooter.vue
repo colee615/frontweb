@@ -179,6 +179,8 @@
 </template>
 
 <script>
+const CONTACT_ROUTE = '/contacto'
+
 export default {
   name: 'HomeFooter',
   props: {
@@ -209,7 +211,7 @@ export default {
     helpLinks() {
       return this.links
         .filter((link) => link.group === 'help')
-        .map((link) => ({ ...link, url: this.resolveRoute(link) }))
+        .map((link) => ({ ...link, url: CONTACT_ROUTE }))
     },
     companyLinks() {
       return this.links
@@ -315,6 +317,14 @@ export default {
       }
 
       if (
+        label.includes('contacto') ||
+        label.includes('contactanos') ||
+        label.includes('consulta')
+      ) {
+        return CONTACT_ROUTE
+      }
+
+      if (
         label.includes('sobre nosotros') ||
         label.includes('nuestra historia') ||
         label.includes('quienes somos')
@@ -322,7 +332,7 @@ export default {
         return '/quienes-somos'
       }
 
-      return '#'
+      return CONTACT_ROUTE
     },
     normalizeLabel(value) {
       if (typeof value !== 'string') {

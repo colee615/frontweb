@@ -143,6 +143,8 @@
 <script>
 import { buildSearchEntriesFromPayloads, highlightSearchMatch, searchSiteEntries } from '~/utils/siteSearch'
 
+const CONTACT_ROUTE = '/contacto'
+
 export default {
   name: 'HomeHeader',
   props: {
@@ -178,10 +180,38 @@ export default {
   },
   computed: {
     navLinks() {
-      return this.links.map((link) => ({
-        ...link,
-        url: this.resolveRoute(link)
-      }))
+      const normalizedLinks = this.links
+        .filter((link) => {
+          const normalizedLabel = this.normalizeLabel(link.label)
+          return !normalizedLabel.includes('contactanos')
+        })
+        .map((link) => {
+        const resolvedUrl = this.resolveRoute(link)
+        const normalizedLabel = this.normalizeLabel(link.label)
+
+        if (
+          resolvedUrl === CONTACT_ROUTE &&
+          (normalizedLabel.includes('institucional') || !normalizedLabel)
+        ) {
+          return {
+            ...link,
+            label: 'Contactonos',
+            url: resolvedUrl
+          }
+        }
+
+        return {
+          ...link,
+          url: resolvedUrl
+        }
+      })
+
+      normalizedLinks.push({
+        label: 'Contactanos',
+        url: CONTACT_ROUTE
+      })
+
+      return normalizedLinks
     },
     searchResults() {
       const query = this.searchTerm.trim()
@@ -240,6 +270,15 @@ export default {
         return url
       }
 
+      if (
+        label.includes('contacto') ||
+        label.includes('contactanos') ||
+        label.includes('consulta') ||
+        label.includes('institucional')
+      ) {
+        return CONTACT_ROUTE
+      }
+
       if (label.includes('quienes somos')) {
         return '/quienes-somos'
       }
@@ -248,7 +287,7 @@ export default {
         return '/noticias'
       }
 
-      return '#'
+      return CONTACT_ROUTE
     },
     normalizeLabel(value) {
       if (typeof value !== 'string') {
