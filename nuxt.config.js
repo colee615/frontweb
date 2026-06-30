@@ -56,7 +56,7 @@ export default {
     script: [
       {
         async: true,
-        src: 'https://www.googletagmanager.com/gtag/js?id=G-0B0GGX8RWH'
+        src: 'https://www.googletagmanager.com/gtag/js?id=G-2N3EDZ0WQX'
       },
       {
         hid: 'gtag-config',
@@ -64,7 +64,7 @@ export default {
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', 'G-0B0GGX8RWH');
+          gtag('config', 'G-2N3EDZ0WQX');
         `,
         type: 'text/javascript'
       }
