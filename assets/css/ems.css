@@ -1,0 +1,986 @@
+.cb-ems-page {
+  background:
+    radial-gradient(circle at top left, rgba(254, 204, 54, 0.06), transparent 22%),
+    radial-gradient(circle at top right, rgba(32, 83, 154, 0.05), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #fbfdff 38%, #ffffff 100%);
+}
+
+.cb-ems {
+  position: relative;
+}
+
+.cb-ems-skeleton__hero,
+.cb-ems-skeleton__intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+}
+
+.cb-ems-skeleton__hero-card {
+  min-height: 250px;
+}
+
+.cb-ems-hero {
+  position: relative;
+  padding: 34px 0 54px;
+}
+
+.cb-ems-hero__frame {
+  position: relative;
+  min-height: 470px;
+  display: grid;
+  place-items: center;
+}
+
+.cb-ems-hero__corner {
+  position: absolute;
+  width: 84px;
+  height: 84px;
+  border-radius: 22px;
+  border: 2px solid rgba(254, 204, 54, 0.5);
+}
+
+.cb-ems-hero__corner--left {
+  top: 8px;
+  left: 0;
+}
+
+.cb-ems-hero__corner--right {
+  right: 0;
+  bottom: 74px;
+  border-color: rgba(32, 83, 154, 0.22);
+}
+
+.cb-ems-hero__watermark {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(140px, 24vw, 260px);
+  line-height: 0.85;
+  font-weight: 900;
+  letter-spacing: -0.08em;
+  color: rgba(32, 83, 154, 0.08);
+  user-select: none;
+}
+
+.cb-ems-hero__watermark::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 350px;
+  height: 210px;
+  transform: translate(-50%, -50%);
+  background:
+    linear-gradient(135deg, rgba(32, 83, 154, 0.07), rgba(32, 83, 154, 0.02));
+  clip-path: polygon(16% 38%, 42% 38%, 47% 21%, 70% 21%, 75% 38%, 98% 38%, 82% 69%, 66% 69%, 60% 91%, 41% 91%, 35% 69%, 16% 69%);
+}
+
+.cb-ems-hero__card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 760px);
+  padding: 18px 34px 18px;
+  text-align: center;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(32, 83, 154, 0.08);
+  box-shadow: 0 18px 38px rgba(24, 47, 84, 0.14);
+}
+
+.cb-ems-hero__eyebrow {
+  margin: 0 0 8px;
+  color: var(--cb-blue);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.cb-ems-hero__card h1 {
+  margin: 0;
+  color: #ffc300;
+  font-size: clamp(40px, 4.15vw, 56px);
+  line-height: 1.04;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (min-width: 768px) {
+  .cb-ems-hero__card h1 {
+    white-space: nowrap;
+  }
+}
+
+.cb-ems-intro {
+  padding: 10px 0 86px;
+}
+
+.cb-ems-intro__grid {
+  display: grid;
+  grid-template-columns: 618px 630px;
+  gap: 46px;
+  align-items: center;
+  justify-content: center;
+}
+
+.cb-ems-visual {
+  position: relative;
+  width: 620px;
+  height: 620px;
+  min-height: 620px;
+}
+
+.cb-ems-visual__surface {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 48px;
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 243, 203, 0.92), rgba(228, 236, 247, 0.98));
+  border: 1px solid rgba(32, 83, 154, 0.06);
+  box-shadow: 0 24px 44px rgba(20, 38, 71, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cb-ems-visual__surface::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  width: 172px;
+  height: 172px;
+  margin-left: -88px;
+  margin-top: -82px;
+  border: 7px solid rgba(255, 255, 255, 0.94);
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  transform: rotate(8deg);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  border-radius: 16px;
+}
+
+.cb-ems-visual__accent {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  border-radius: 22px;
+  z-index: 2;
+}
+
+.cb-ems-visual__accent--top {
+  top: 50px;
+  left: 48px;
+  background: linear-gradient(180deg, #ffd231, #ffd231);
+}
+
+.cb-ems-visual__accent--bottom {
+  right: 48px;
+  bottom: 48px;
+  background: linear-gradient(180deg, #3a66ba, #315bb0);
+}
+
+.cb-ems-visual__image {
+  position: relative;
+  z-index: 2;
+  max-width: 76%;
+  max-height: 380px;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 24px rgba(27, 54, 98, 0.18));
+}
+
+.cb-ems-visual__icon {
+  position: relative;
+  z-index: 2;
+  width: 174px;
+  height: 174px;
+  color: #fff;
+  opacity: 0.98;
+  transform: translate(-14px, 54px) rotate(0deg);
+}
+
+.cb-ems-visual__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.cb-ems-copy h2,
+.cb-ems-section-heading h2,
+.cb-ems-global__heading h2 {
+  margin: 0;
+  color: #0f4aad;
+  font-size: 44px;
+  line-height: 1.18;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.cb-ems-copy p.cb-ems-copy__highlight {
+  margin: 28px 0 26px;
+  max-width: 610px;
+  color: #ffc300;
+  font-size: 22px;
+  line-height: 1.42;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.cb-ems-copy p,
+.cb-ems-section-heading p,
+.cb-ems-national-card p,
+.cb-ems-global__heading p,
+.cb-ems-global-card p,
+.cb-ems-global__cta p {
+  color: #2b466f;
+  font-size: 18px;
+  line-height: 1.68;
+}
+
+.cb-ems-copy {
+  max-width: 630px;
+}
+
+.cb-ems-copy p {
+  margin: 0 0 16px;
+}
+
+.cb-ems-copy .cb-ems-btn {
+  margin-top: 14px;
+}
+
+.cb-ems-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 238px;
+  min-height: 58px;
+  padding: 0 26px;
+  border-radius: 22px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.cb-ems-btn:hover,
+.cb-ems-btn:focus {
+  transform: translateY(-2px);
+  filter: saturate(1.02);
+  text-decoration: none;
+}
+
+.cb-ems-btn--primary,
+.cb-ems-btn--secondary {
+  background: linear-gradient(180deg, #ffc909, #ffc300);
+  color: #0f4aad;
+  box-shadow: 0 10px 20px rgba(255, 196, 0, 0.18);
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.18s ease,
+    filter 0.18s ease;
+}
+
+.cb-ems-btn--primary:hover,
+.cb-ems-btn--primary:focus,
+.cb-ems-btn--secondary:hover,
+.cb-ems-btn--secondary:focus {
+  background: linear-gradient(180deg, #1450b9, #0f49ad);
+  color: #fff;
+  box-shadow: 0 14px 28px rgba(15, 74, 173, 0.28);
+}
+
+.cb-ems-benefits {
+  padding: 86px 0 96px;
+  background:
+    linear-gradient(180deg, rgba(11, 68, 165, 0.98), rgba(17, 70, 164, 0.98)),
+    #1146a4;
+}
+
+.cb-ems-section-heading {
+  text-align: center;
+  margin: 0 auto 42px;
+}
+
+.cb-ems-section-heading h2 {
+  color: #0f4aad;
+}
+
+.cb-ems-benefits .cb-ems-section-heading h2,
+.cb-ems-global__heading h2 {
+  color: #fff;
+}
+
+.cb-ems-section-heading--national h2 {
+  color: #0f4aad;
+}
+
+.cb-ems-section-heading--national p {
+  color: #38547f;
+  margin: 18px auto 0;
+  max-width: 880px;
+}
+
+.cb-ems-benefits .cb-ems-section-heading {
+  margin-bottom: 58px;
+}
+
+.cb-ems-benefits__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 30px;
+}
+
+.cb-ems-benefit-card {
+  position: relative;
+  min-height: 0;
+  padding: 30px 28px 22px;
+  border-radius: 24px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.11));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 8px 18px rgba(4, 18, 52, 0.08);
+  transform-origin: center bottom;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+}
+
+.cb-ems-benefit-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), transparent 36%, rgba(255, 204, 29, 0.12));
+  opacity: 0;
+  transition: opacity 0.24s ease;
+  pointer-events: none;
+}
+
+.cb-ems-benefit-card::after {
+  content: '';
+  position: absolute;
+  inset: auto -18% -42% auto;
+  width: 180px;
+  height: 180px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 204, 29, 0.24), transparent 68%);
+  opacity: 0;
+  transform: scale(0.72);
+  transition: opacity 0.24s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.cb-ems-benefit-card__icon,
+.cb-ems-global-card__icon {
+  width: 82px;
+  height: 82px;
+  margin: 0 auto 24px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #ffcc1d;
+  color: #0f4aad;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.cb-ems-global-card__icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 0 20px;
+  background: rgba(109, 132, 165, 0.72);
+  color: rgba(255, 255, 255, 0.96);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.cb-ems-benefit-card__icon svg,
+.cb-ems-global-card__icon svg,
+.cb-ems-national-card__icon svg {
+  width: 38px;
+  height: 38px;
+}
+
+.cb-ems-benefit-card h3,
+.cb-ems-global-card h3 {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1.22;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.cb-ems-benefit-card p,
+.cb-ems-global-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 400;
+}
+
+.cb-ems-benefit-card:hover,
+.cb-ems-benefit-card:focus-within {
+  transform: translateY(-16px) scale(1.04);
+  background: linear-gradient(180deg, rgba(87, 134, 215, 0.42), rgba(255, 255, 255, 0.18));
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow:
+    0 30px 46px rgba(4, 18, 52, 0.28),
+    0 14px 24px rgba(96, 154, 255, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.cb-ems-benefit-card:hover::before,
+.cb-ems-benefit-card:focus-within::before {
+  opacity: 1;
+}
+
+.cb-ems-benefit-card:hover::after,
+.cb-ems-benefit-card:focus-within::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.cb-ems-benefit-card:hover .cb-ems-benefit-card__icon,
+.cb-ems-benefit-card:focus-within .cb-ems-benefit-card__icon {
+  transform: scale(1.09) translateY(-2px);
+  box-shadow: 0 16px 30px rgba(255, 204, 29, 0.24);
+}
+
+.cb-ems-benefits .cb-ems-section-heading h2 {
+  font-size: 34px;
+  line-height: 1.18;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.cb-ems-national {
+  padding: 84px 0 82px;
+}
+
+.cb-ems-national__network {
+  position: relative;
+  padding: 8px 0 0;
+}
+
+.cb-ems-national__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.cb-ems-national__line {
+  position: absolute;
+  background: rgba(221, 228, 240, 0.9);
+  z-index: 0;
+}
+
+.cb-ems-national__line--vertical {
+  left: 50%;
+  top: 68px;
+  width: 2px;
+  height: 360px;
+  transform: translateX(-50%);
+}
+
+.cb-ems-national__line--horizontal {
+  left: 18%;
+  top: 212px;
+  width: 64%;
+  height: 2px;
+}
+
+.cb-ems-national__dot {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(236, 241, 248, 0.95);
+  z-index: 0;
+}
+
+.cb-ems-national__dot--top {
+  top: 54px;
+  left: calc(50% - 14px);
+}
+
+.cb-ems-national__dot--mid-left {
+  top: 198px;
+  left: calc(50% - 14px);
+}
+
+.cb-ems-national__dot--mid-right {
+  top: 342px;
+  left: calc(50% - 14px);
+}
+
+.cb-ems-national__dot--bottom {
+  top: 486px;
+  left: calc(50% - 14px);
+}
+
+.cb-ems-national-card {
+  min-height: 188px;
+  padding: 34px 34px 28px;
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(32, 83, 154, 0.09);
+  box-shadow: 0 14px 34px rgba(16, 37, 66, 0.09);
+  transform-origin: center center;
+  transition:
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.22s ease;
+}
+
+.cb-ems-national-card__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #0f4aad;
+  color: #fff;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cb-ems-national-card--featured {
+  border: 2px solid #ffc300;
+  box-shadow:
+    0 18px 38px rgba(16, 37, 66, 0.11),
+    0 8px 22px rgba(255, 195, 0, 0.12);
+}
+
+.cb-ems-national-card--featured .cb-ems-national-card__icon {
+  background: #ffc300;
+  color: #0f4aad;
+}
+
+.cb-ems-national-card h3 {
+  margin: 4px 0 10px;
+  color: #0f4aad;
+  font-size: 24px;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.cb-ems-national-card p {
+  margin: 0;
+}
+
+.cb-ems-national-card:hover,
+.cb-ems-national-card:focus-within {
+  transform: translateY(-8px) scale(1.01);
+  border-color: #ffc300;
+  box-shadow:
+    0 26px 42px rgba(16, 37, 66, 0.14),
+    0 10px 26px rgba(103, 136, 192, 0.11);
+}
+
+.cb-ems-national-card:hover .cb-ems-national-card__icon,
+.cb-ems-national-card:focus-within .cb-ems-national-card__icon {
+  background: #ffc300;
+  color: #0f4aad;
+  transform: scale(1.06);
+  box-shadow: 0 12px 26px rgba(255, 195, 0, 0.22);
+}
+
+.cb-ems-national__metric {
+  width: min(100%, 560px);
+  margin: 48px auto 0;
+  padding: 30px 30px 28px;
+  text-align: center;
+  border-radius: 24px;
+  background: #fff;
+  border: 4px solid #ffc300;
+  box-shadow: 0 18px 42px rgba(20, 38, 71, 0.09);
+  position: relative;
+  z-index: 1;
+}
+
+.cb-ems-national__metric p,
+.cb-ems-national__metric span {
+  margin: 0;
+  color: #2f4c78;
+}
+
+.cb-ems-national__metric strong {
+  display: block;
+  margin: 10px 0 8px;
+  color: #0f4aad;
+  font-size: clamp(46px, 4.2vw, 66px);
+  line-height: 0.98;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+}
+
+.cb-ems-national__metric span {
+  color: #ffc300;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.cb-ems-global {
+  position: relative;
+  padding: 56px 0 76px;
+  background:
+    linear-gradient(180deg, rgba(11, 56, 145, 0.97), rgba(11, 56, 145, 0.97)),
+    #0b3891;
+  overflow: hidden;
+}
+
+.cb-ems-global::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 204, 29, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 204, 29, 0.08) 1px, transparent 1px);
+  background-size: 260px 196px;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.cb-ems-global__heading {
+  position: relative;
+  z-index: 1;
+  max-width: 920px;
+  margin: 0 auto 34px;
+  text-align: center;
+}
+
+.cb-ems-global__heading h2 {
+  font-size: 38px;
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.cb-ems-global__heading p {
+  margin: 12px auto 0;
+  max-width: 860px;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: clamp(17px, 1.7vw, 22px);
+  line-height: 1.45;
+}
+
+.cb-ems-global__heading p span {
+  color: #ffcf1c;
+  font-weight: 800;
+}
+
+.cb-ems-global__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.cb-ems-global-card {
+  position: relative;
+  min-height: 248px;
+  padding: 18px 22px 18px;
+  border-radius: 22px;
+  background: rgba(61, 101, 180, 0.58);
+  border: 1px solid rgba(165, 190, 236, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 38px rgba(4, 15, 40, 0.14);
+  transition:
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.cb-ems-global-card__frame {
+  position: absolute;
+  inset: 12px 12px auto auto;
+  width: 24px;
+  height: 24px;
+  border-top: 2px solid rgba(173, 193, 230, 0.44);
+  border-right: 2px solid rgba(173, 193, 230, 0.44);
+  border-radius: 0 10px 0 0;
+}
+
+.cb-ems-global-card__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  margin-top: 12px;
+  padding: 0 13px;
+  border-radius: 999px;
+  background: #ffcc1d;
+  color: #0f4aad;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cb-ems-global-card h3 {
+  margin-bottom: 8px;
+  color: #ffffff;
+  font-size: 15px;
+  line-height: 1.16;
+  font-weight: 700;
+}
+
+.cb-ems-global-card p {
+  color: rgba(232, 240, 255, 0.92);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cb-ems-global-card:hover,
+.cb-ems-global-card:focus-within {
+  transform: translateY(-6px);
+  background: rgba(67, 109, 191, 0.64);
+  border-color: rgba(255, 204, 29, 0.85);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 20px 34px rgba(4, 15, 40, 0.18);
+}
+
+.cb-ems-global-card:hover .cb-ems-global-card__icon,
+.cb-ems-global-card:focus-within .cb-ems-global-card__icon {
+  transform: translateY(-1px) scale(1.03);
+}
+
+.cb-ems-global-card:hover .cb-ems-global-card__frame,
+.cb-ems-global-card:focus-within .cb-ems-global-card__frame {
+  border-top-color: rgba(255, 255, 255, 0.5);
+  border-right-color: rgba(255, 255, 255, 0.5);
+}
+
+.cb-ems-global__cta {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 770px);
+  margin: 38px auto 0;
+  padding: 28px 30px 30px;
+  text-align: center;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 20px 38px rgba(4, 15, 40, 0.15);
+}
+
+.cb-ems-global__cta p {
+  margin: 0 0 20px;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 17px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+.cb-ems-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s ease;
+  transition-delay: var(--cb-delay, 0ms);
+}
+
+.cb-ems-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 1180px) {
+  .cb-ems-benefits__grid,
+  .cb-ems-global__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cb-ems-intro__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cb-ems-visual {
+    width: 100%;
+    height: 520px;
+    min-height: 520px;
+  }
+}
+
+@media (max-width: 920px) {
+  .cb-ems-hero__frame {
+    min-height: 340px;
+  }
+
+  .cb-ems-hero__corner--right {
+    bottom: 28px;
+  }
+
+  .cb-ems-national__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cb-ems-national__line,
+  .cb-ems-national__dot {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .cb-ems-hero {
+    padding: 20px 0 22px;
+  }
+
+  .cb-ems-hero__frame {
+    min-height: 260px;
+  }
+
+  .cb-ems-hero__corner {
+    width: 62px;
+    height: 62px;
+    border-radius: 18px;
+  }
+
+  .cb-ems-hero__card {
+    padding: 14px 18px 16px;
+    border-radius: 20px;
+  }
+
+  .cb-ems-hero__eyebrow {
+    font-size: 16px;
+  }
+
+  .cb-ems-hero__card h1 {
+    font-size: clamp(32px, 8vw, 46px);
+    line-height: 1.02;
+  }
+
+  .cb-ems-intro,
+  .cb-ems-benefits,
+  .cb-ems-national,
+  .cb-ems-global {
+    padding-top: 52px;
+    padding-bottom: 56px;
+  }
+
+  .cb-ems-visual {
+    width: 100%;
+    height: 380px;
+    min-height: 380px;
+  }
+
+  .cb-ems-visual__surface {
+    padding: 30px;
+    border-radius: 28px;
+  }
+
+  .cb-ems-visual__accent {
+    width: 72px;
+    height: 72px;
+  }
+
+  .cb-ems-visual__accent--top {
+    top: 28px;
+    left: 28px;
+  }
+
+  .cb-ems-visual__accent--bottom {
+    right: 28px;
+    bottom: 28px;
+  }
+
+  .cb-ems-copy h2,
+  .cb-ems-section-heading h2,
+  .cb-ems-global__heading h2 {
+    font-size: clamp(34px, 8.2vw, 46px);
+    line-height: 1.04;
+  }
+
+  .cb-ems-copy p.cb-ems-copy__highlight {
+    max-width: none;
+    font-size: 20px;
+  }
+
+  .cb-ems-copy__highlight,
+  .cb-ems-copy p,
+  .cb-ems-section-heading p,
+  .cb-ems-national-card p,
+  .cb-ems-global__heading p,
+  .cb-ems-global-card p,
+  .cb-ems-global__cta p {
+    font-size: 16px;
+  }
+
+  .cb-ems-btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 58px;
+    font-size: 16px;
+  }
+
+  .cb-ems-benefits__grid,
+  .cb-ems-global__grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .cb-ems-benefit-card,
+  .cb-ems-global-card {
+    padding: 24px 20px 22px;
+  }
+
+  .cb-ems-benefit-card {
+    min-height: 0;
+  }
+
+  .cb-ems-national-card {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 24px 22px;
+  }
+
+  .cb-ems-national-card__icon {
+    width: 58px;
+    height: 58px;
+  }
+
+  .cb-ems-national-card h3 {
+    font-size: 22px;
+  }
+
+  .cb-ems-national__metric {
+    margin-top: 24px;
+    padding: 22px 18px;
+  }
+
+  .cb-ems-national__metric strong {
+    white-space: normal;
+    font-size: clamp(42px, 12vw, 58px);
+  }
+
+  .cb-ems-global__cta {
+    margin-top: 26px;
+    padding: 24px 20px;
+  }
+}

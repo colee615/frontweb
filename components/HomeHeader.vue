@@ -220,7 +220,7 @@ export default {
         : []
 
       return results.map((result) => {
-        if (result.anchor === 'site-footer' && ['/', '/noticias', '/quienes-somos'].includes(this.$route.path)) {
+        if (result.anchor === 'site-footer' && ['/', '/noticias', '/quienes-somos', '/ems', '/deliveryexpress'].includes(this.$route.path)) {
           return {
             ...result,
             route: this.$route.path
@@ -281,6 +281,14 @@ export default {
 
       if (label.includes('quienes somos')) {
         return '/quienes-somos'
+      }
+
+      if (label.includes('ems') || label.includes('express mail')) {
+        return '/ems'
+      }
+
+      if (label.includes('delivery express') || label.includes('delivery')) {
+        return '/deliveryexpress'
       }
 
       if (label.includes('noticias')) {
@@ -382,7 +390,8 @@ export default {
         const payloads = await Promise.all([
           this.$api.$get('/frontapi/api/site/pages/home'),
           this.$api.$get('/frontapi/api/site/pages/quienes-somos'),
-          this.$api.$get('/frontapi/api/site/pages/noticias')
+          this.$api.$get('/frontapi/api/site/pages/noticias'),
+          this.$api.$get('/frontapi/api/site/pages/deliveryexpress')
         ])
 
         this.searchEntries = buildSearchEntriesFromPayloads(payloads)

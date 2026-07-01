@@ -8,6 +8,12 @@
 
       <div class="cb-services-grid">
         <article v-for="(service, index) in services" :id="`home-service-item-${service.id || index}`" :key="service.title" class="cb-service-card">
+          <nuxt-link
+            v-if="resolveServiceRoute(service)"
+            class="cb-service-card__route"
+            :to="resolveServiceRoute(service)"
+            :aria-label="`Ir a ${service.title}`"
+          />
           <div class="cb-service-card__top">
             <div class="cb-service-icon">
               <img
@@ -46,6 +52,39 @@ export default {
       type: Object,
       default: () => ({})
     }
+  },
+  methods: {
+    resolveServiceRoute(service) {
+      const title = typeof service.title === 'string' ? service.title.toLowerCase() : ''
+      if (title.includes('ems')) {
+        return '/ems'
+      }
+
+      if (title.includes('delivery')) {
+        return '/deliveryexpress'
+      }
+
+      return ''
+    }
   }
 }
 </script>
+
+<style scoped>
+.cb-service-card {
+  position: relative;
+}
+
+.cb-service-card__route {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+}
+
+.cb-service-card__top,
+.cb-service-body {
+  position: relative;
+  z-index: 1;
+}
+</style>

@@ -1,13 +1,18 @@
 const ROUTE_BY_SLUG = {
   home: '/',
   'quienes-somos': '/quienes-somos',
-  noticias: '/noticias'
+  noticias: '/noticias',
+  deliveryexpress: '/deliveryexpress'
 }
 
 const ANCHOR_BY_SECTION = {
   home: {
     hero: 'home-hero',
     services: 'home-services',
+    ems_intro: 'ems-hero',
+    ems_benefits: 'ems-benefits',
+    ems_national: 'ems-national',
+    ems_international: 'ems-international',
     tools: 'home-tools',
     app_banner: 'home-app',
     market: 'home-market',
@@ -27,6 +32,15 @@ const ANCHOR_BY_SECTION = {
     category_filters: 'news-filters',
     news_grid: 'news-grid',
     newsletter: 'news-newsletter',
+    footer: 'site-footer'
+  },
+  deliveryexpress: {
+    delivery_hero: 'deliveryexpress-hero',
+    delivery_intro: 'deliveryexpress-intro',
+    delivery_advantages: 'deliveryexpress-advantages',
+    delivery_process: 'deliveryexpress-process',
+    delivery_info: 'deliveryexpress-info',
+    delivery_cta: 'deliveryexpress-cta',
     footer: 'site-footer'
   }
 }
@@ -72,19 +86,22 @@ function buildEntriesFromPage(payload = {}) {
   const sections = Array.isArray(payload.sections) ? payload.sections : []
   const entries = []
 
+  const pageRoute = resolveSectionRoute(slug, '', route)
+
   entries.push({
     id: `${slug}-page`,
     label: pageTitle,
     description: payload.meta_description || `Ir a ${pageTitle}.`,
     section: pageTitle,
     type: 'Pagina',
-    route,
+    route: pageRoute,
     anchor: sections.length ? (sectionAnchors[sections[0].key] || '') : '',
     haystack: [pageTitle, payload.meta_title, payload.meta_description, slug].filter(Boolean)
   })
 
   sections.forEach((section) => {
     const anchor = sectionAnchors[section.key] || ''
+    const sectionRoute = resolveSectionRoute(slug, section.key, route)
     const settings = section.settings || {}
     const items = Array.isArray(section.items) ? section.items : []
     const sectionLabel = resolveSectionLabel(section, settings)
@@ -97,7 +114,7 @@ function buildEntriesFromPage(payload = {}) {
         description: sectionDescription,
         section: pageTitle,
         type: 'Seccion',
-        route,
+        route: sectionRoute,
         anchor,
         haystack: [
           sectionLabel,
@@ -124,7 +141,7 @@ function buildEntriesFromPage(payload = {}) {
         description,
         section: sectionLabel || pageTitle,
         type: resolveItemType(slug, section.key),
-        route,
+        route: sectionRoute,
         anchor: resolveItemAnchor(slug, section.key, item, index, anchor),
         image: resolveItemImage(data),
         haystack: [
@@ -198,6 +215,14 @@ function resolveItemType(slug, sectionKey) {
     return 'Noticia'
   }
 
+  if (slug === 'home' && sectionKey.startsWith('ems_')) {
+    return 'EMS'
+  }
+
+  if (slug === 'deliveryexpress') {
+    return 'Delivery'
+  }
+
   return 'Contenido'
 }
 
@@ -229,6 +254,18 @@ function resolveItemAnchor(slug, sectionKey, item, index, fallbackAnchor) {
   }
 
   return fallbackAnchor
+}
+
+function resolveSectionRoute(slug, sectionKey, fallbackRoute) {
+  if (slug === 'home' && ['ems_intro', 'ems_benefits', 'ems_national', 'ems_international'].includes(sectionKey)) {
+    return '/ems'
+  }
+
+  if (slug === 'deliveryexpress') {
+    return '/deliveryexpress'
+  }
+
+  return fallbackRoute
 }
 
 function resolveItemImage(data = {}) {

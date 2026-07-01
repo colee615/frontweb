@@ -332,6 +332,14 @@ export default {
         return '/quienes-somos'
       }
 
+      if (label.includes('ems') || label.includes('express mail')) {
+        return '/ems'
+      }
+
+      if (label.includes('delivery express') || label.includes('delivery')) {
+        return '/deliveryexpress'
+      }
+
       return CONTACT_ROUTE
     },
     normalizeLabel(value) {
