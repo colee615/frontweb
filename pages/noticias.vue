@@ -67,9 +67,18 @@
           <article class="cb-news-featured__copy cb-news-reveal is-visible" data-news-reveal>
             <span v-if="featuredItem.badge" class="cb-news-featured__badge">{{ featuredItem.badge }}</span>
             <h1>{{ featuredItem.title }}</h1>
-            <p :class="['cb-news-featured__excerpt', { 'cb-news-featured__excerpt--expanded': isFeaturedExpanded }]">
-              {{ featuredItem.excerpt }}
-            </p>
+            <div
+              v-if="featuredExcerptParagraphs.length"
+              :class="['cb-news-featured__excerpt', { 'cb-news-featured__excerpt--expanded': isFeaturedExpanded }]"
+            >
+              <p
+                v-for="(paragraph, index) in visibleFeaturedExcerptParagraphs"
+                :key="`featured-paragraph-${index}`"
+                class="cb-news-featured__excerpt-paragraph"
+              >
+                {{ paragraph }}
+              </p>
+            </div>
             <button
               v-if="hasFeaturedExcerpt"
               type="button"
@@ -328,6 +337,16 @@ export default {
     hasFeaturedExcerpt() {
       return Boolean(String(this.featuredItem.excerpt || '').trim())
     },
+    featuredExcerptParagraphs() {
+      return this.splitExcerptIntoParagraphs(this.featuredItem.excerpt)
+    },
+    visibleFeaturedExcerptParagraphs() {
+      if (this.isFeaturedExpanded) {
+        return this.featuredExcerptParagraphs
+      }
+
+      return this.featuredExcerptParagraphs.slice(0, 1)
+    },
     categories() {
       const items = this.getSectionItems(this.newsContent, 'category_filters').filter((item) => item.label)
       return items.length ? items : [{ label: 'Todas', is_active: true }]
@@ -464,6 +483,12 @@ export default {
     },
     toggleFeaturedExpanded() {
       this.isFeaturedExpanded = !this.isFeaturedExpanded
+    },
+    splitExcerptIntoParagraphs(excerpt) {
+      return String(excerpt || '')
+        .split(/\r?\n\s*\r?\n|\r?\n/g)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean)
     },
     showMore() {
       if (this.currentPage < this.totalPages) {

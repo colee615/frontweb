@@ -113,14 +113,21 @@
 }
 
 .cb-news-featured__excerpt {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
-  overflow: hidden;
+  margin-top: 28px;
 }
 
 .cb-news-featured__excerpt--expanded {
   display: block;
+}
+
+.cb-news-featured__excerpt-paragraph {
+  max-width: 720px;
+  margin: 0 0 18px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cb-news-featured__excerpt-paragraph:last-child {
+  margin-bottom: 0;
 }
 
 .cb-news-featured__button {
