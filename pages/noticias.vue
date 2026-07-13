@@ -485,10 +485,27 @@ export default {
       this.isFeaturedExpanded = !this.isFeaturedExpanded
     },
     splitExcerptIntoParagraphs(excerpt) {
-      return String(excerpt || '')
+      const normalizedExcerpt = String(excerpt || '').trim()
+
+      if (!normalizedExcerpt) {
+        return []
+      }
+
+      const manualParagraphs = normalizedExcerpt
         .split(/\r?\n\s*\r?\n|\r?\n/g)
         .map((paragraph) => paragraph.trim())
         .filter(Boolean)
+
+      if (manualParagraphs.length > 1) {
+        return manualParagraphs
+      }
+
+      const sentenceParagraphs = normalizedExcerpt
+        .match(/[^.!?]+(?:[.!?]+|$)/g)
+        ?.map((paragraph) => paragraph.trim())
+        .filter(Boolean) || []
+
+      return sentenceParagraphs.length > 1 ? sentenceParagraphs : manualParagraphs
     },
     showMore() {
       if (this.currentPage < this.totalPages) {
