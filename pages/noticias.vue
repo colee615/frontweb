@@ -67,11 +67,18 @@
           <article class="cb-news-featured__copy cb-news-reveal is-visible" data-news-reveal>
             <span v-if="featuredItem.badge" class="cb-news-featured__badge">{{ featuredItem.badge }}</span>
             <h1>{{ featuredItem.title }}</h1>
-            <p>{{ featuredItem.excerpt }}</p>
-            <a :href="featuredItem.article_url || '#'" class="cb-news-featured__button">
-              <span>{{ featuredButtonLabel }}</span>
+            <p :class="['cb-news-featured__excerpt', { 'cb-news-featured__excerpt--expanded': isFeaturedExpanded }]">
+              {{ featuredItem.excerpt }}
+            </p>
+            <button
+              v-if="hasFeaturedExcerpt"
+              type="button"
+              class="cb-news-featured__button"
+              @click="toggleFeaturedExpanded"
+            >
+              <span>{{ isFeaturedExpanded ? 'Leer menos' : featuredButtonLabel }}</span>
               <span class="cb-news-inline-icon" v-html="icons.chevronRight"></span>
-            </a>
+            </button>
           </article>
 
           <article :id="`news-featured-item-${featuredItem.id || 0}`" class="cb-news-featured__media cb-news-reveal is-visible" data-news-reveal style="--cb-news-delay: 120ms;">
@@ -253,6 +260,7 @@ export default {
       selectedCategory: 'Todas',
       currentPage: 1,
       pageSize: 6,
+      isFeaturedExpanded: false,
       revealObserver: null
     }
   },
@@ -316,6 +324,9 @@ export default {
     },
     featuredButtonLabel() {
       return this.featuredSettings.button_label || 'Leer noticia completa'
+    },
+    hasFeaturedExcerpt() {
+      return Boolean(String(this.featuredItem.excerpt || '').trim())
     },
     categories() {
       const items = this.getSectionItems(this.newsContent, 'category_filters').filter((item) => item.label)
@@ -414,6 +425,7 @@ export default {
         this.newsContent = normalizePage(newsPayload || NEWS_PAGE, NEWS_PAGE)
         this.selectedCategory = this.defaultCategory
         this.currentPage = resolveInitialPage(this.getSectionItems(this.newsContent, 'pagination'))
+        this.isFeaturedExpanded = false
       } finally {
         const minimumRevealDelay = 900
         const elapsed = Date.now() - startedAt
@@ -449,6 +461,9 @@ export default {
     selectCategory(label) {
       this.selectedCategory = label
       this.currentPage = 1
+    },
+    toggleFeaturedExpanded() {
+      this.isFeaturedExpanded = !this.isFeaturedExpanded
     },
     showMore() {
       if (this.currentPage < this.totalPages) {
