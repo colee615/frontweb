@@ -815,7 +815,10 @@
 }
 
 .cb-delivery-info__panel {
+  display: flex;
+  flex-direction: column;
   padding: 54px 46px 40px;
+  min-height: 560px;
   border-radius: 32px;
   border: 2px solid #0f4aad;
   background: linear-gradient(135deg, rgba(255, 248, 232, 0.82), rgba(255, 255, 255, 0.96));
@@ -877,7 +880,7 @@
 }
 
 .cb-delivery-info__footnote {
-  margin: 28px 0 0;
+  margin: auto 0 0;
   text-align: center;
   color: #314d74;
   font-size: 15px;
@@ -885,33 +888,77 @@
 }
 
 .cb-delivery-cta {
-  padding: 76px 0 84px;
+  padding: 56px 0 62px;
   background: linear-gradient(180deg, #ffd11a, #ffc300);
 }
 
+.cb-delivery-cta .cb-delivery-section-heading {
+  max-width: 900px;
+  margin-bottom: 0;
+}
+
+.cb-delivery-cta .cb-delivery-section-heading h2 {
+  max-width: 760px;
+  margin: 0 auto;
+  font-size: 40px;
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.cb-delivery-cta .cb-delivery-section-heading p {
+  max-width: 690px;
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 1.42;
+}
+
 .cb-delivery-cta__grid {
-  margin-top: 42px;
+  margin-top: 30px;
+  gap: 28px;
+  align-items: start;
 }
 
 .cb-delivery-cta-card {
-  padding: 28px 30px 30px;
-  border-radius: 28px;
+  padding: 24px 28px 22px;
+  border-radius: 26px;
   background: #fff;
   box-shadow: 0 18px 34px rgba(180, 132, 0, 0.16);
+}
+
+.cb-delivery-cta-card h3 {
+  margin: 0 0 18px;
+  text-align: center;
+  font-size: 22px;
+  line-height: 1.18;
+  font-weight: 700;
+}
+
+.cb-delivery-cta-card:nth-child(1) {
+  min-height: 292px;
+  padding-top: 26px;
+}
+
+.cb-delivery-cta-card:nth-child(2) {
+  min-height: 338px;
+}
+
+.cb-delivery-cta-card:nth-child(3) {
+  min-height: 330px;
 }
 
 .cb-delivery-store-list,
 .cb-delivery-contact-list {
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .cb-delivery-store {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 74px;
-  border-radius: 18px;
+  min-height: 58px;
+  border-radius: 16px;
   background: #050505;
   color: #fff;
   font-size: 16px;
@@ -921,21 +968,21 @@
 
 .cb-delivery-store img {
   max-width: 100%;
-  max-height: 56px;
+  max-height: 46px;
   object-fit: contain;
 }
 
 .cb-delivery-qr {
   display: grid;
   place-items: center;
-  min-height: 248px;
-  border-radius: 24px;
+  min-height: 224px;
+  border-radius: 22px;
   background: #0f4aad;
 }
 
 .cb-delivery-qr img {
-  max-width: 74%;
-  max-height: 74%;
+  max-width: 62%;
+  max-height: 62%;
   object-fit: contain;
 }
 
@@ -956,11 +1003,11 @@
 
 .cb-delivery-contact-item {
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 14px;
   align-items: center;
-  min-height: 82px;
-  padding: 0 20px;
+  min-height: 72px;
+  padding: 0 12px;
   border-radius: 18px;
   background: #0f4aad;
   color: #fff;
@@ -970,8 +1017,8 @@
 }
 
 .cb-delivery-contact-item__icon {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   display: grid;
   place-items: center;
   border-radius: 999px;
@@ -979,12 +1026,48 @@
   color: #0f4aad;
 }
 
+.cb-delivery-contact-item__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.cb-delivery-contact-item__copy {
+  display: grid;
+  gap: 2px;
+}
+
+.cb-delivery-contact-item__copy small,
+.cb-delivery-contact-item__copy strong {
+  display: block;
+}
+
+.cb-delivery-contact-item__copy small {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.cb-delivery-contact-item__copy strong {
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.cb-delivery-cta-card__note {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
 .cb-delivery-cta__trust {
-  margin: 36px 0 0;
+  margin: 34px 0 0;
   text-align: center;
   color: #0f4aad;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .cb-delivery-reveal {

@@ -1,0 +1,829 @@
+.cb-encomienda-page {
+  background: #fff;
+  color: var(--cb-ink);
+}
+
+.cb-encomienda-hero,
+.cb-encomienda-intro,
+.cb-encomienda-features,
+.cb-encomienda-faq,
+.cb-encomienda-cta {
+  position: relative;
+  overflow: clip;
+}
+
+.cb-encomienda-hero {
+  min-height: 92vh;
+  padding: 88px 0 170px;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 4% 9%, rgba(255, 205, 28, 0.86) 0 1.1px, transparent 2.1px),
+    radial-gradient(circle at 8% 18%, rgba(255, 205, 28, 0.82) 0 1.6px, transparent 2.7px),
+    radial-gradient(circle at 11% 46%, rgba(255, 205, 28, 0.42) 0 0.95px, transparent 1.9px),
+    radial-gradient(circle at 14% 72%, rgba(255, 205, 28, 0.56) 0 1.35px, transparent 2.5px),
+    radial-gradient(circle at 18% 88%, rgba(255, 205, 28, 0.74) 0 1.2px, transparent 2.2px),
+    radial-gradient(circle at 22% 34%, rgba(255, 205, 28, 0.72) 0 1.6px, transparent 2.7px),
+    radial-gradient(circle at 27% 58%, rgba(255, 205, 28, 0.38) 0 0.9px, transparent 1.8px),
+    radial-gradient(circle at 31% 10%, rgba(255, 205, 28, 0.5) 0 1.2px, transparent 2.2px),
+    radial-gradient(circle at 34% 79%, rgba(255, 205, 28, 0.82) 0 1.05px, transparent 2px),
+    radial-gradient(circle at 39% 62%, rgba(255, 205, 28, 0.78) 0 1.7px, transparent 2.8px),
+    radial-gradient(circle at 44% 27%, rgba(255, 205, 28, 0.44) 0 0.9px, transparent 1.8px),
+    radial-gradient(circle at 49% 22%, rgba(255, 205, 28, 0.58) 0 1.3px, transparent 2.4px),
+    radial-gradient(circle at 53% 49%, rgba(255, 205, 28, 0.88) 0 1.15px, transparent 2.1px),
+    radial-gradient(circle at 56% 78%, rgba(255, 205, 28, 0.8) 0 1.65px, transparent 2.75px),
+    radial-gradient(circle at 61% 9%, rgba(255, 205, 28, 0.4) 0 0.9px, transparent 1.8px),
+    radial-gradient(circle at 66% 39%, rgba(255, 205, 28, 0.54) 0 1.2px, transparent 2.3px),
+    radial-gradient(circle at 69% 86%, rgba(255, 205, 28, 0.78) 0 1.1px, transparent 2.05px),
+    radial-gradient(circle at 74% 14%, rgba(255, 205, 28, 0.68) 0 1.55px, transparent 2.65px),
+    radial-gradient(circle at 79% 33%, rgba(255, 205, 28, 0.42) 0 0.95px, transparent 1.9px),
+    radial-gradient(circle at 83% 58%, rgba(255, 205, 28, 0.74) 0 1.5px, transparent 2.6px),
+    radial-gradient(circle at 86% 92%, rgba(255, 205, 28, 0.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 91% 26%, rgba(255, 205, 28, 0.52) 0 1.25px, transparent 2.3px),
+    radial-gradient(circle at 96% 74%, rgba(255, 205, 28, 0.76) 0 1.45px, transparent 2.55px),
+    radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.085) 0, rgba(255, 255, 255, 0.018) 22%, transparent 48%),
+    radial-gradient(circle at 77% 36%, rgba(255, 255, 255, 0.08) 0, rgba(255, 255, 255, 0.015) 24%, transparent 52%),
+    radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.08) 0, rgba(255, 255, 255, 0.025) 28%, transparent 58%),
+    linear-gradient(180deg, #07348a 0%, #0a43a9 46%, #0a40a2 100%);
+  box-shadow: inset 0 -40px 80px rgba(7, 25, 76, 0.22);
+  animation: cb-encomienda-sky-drift 22s ease-in-out infinite alternate;
+}
+
+.cb-encomienda-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.96;
+  background:
+    radial-gradient(circle at 7% 15%, rgba(255, 205, 28, 1) 0 1.2px, transparent 2px),
+    radial-gradient(circle at 10% 58%, rgba(255, 205, 28, 0.86) 0 1.45px, transparent 2.35px),
+    radial-gradient(circle at 17% 84%, rgba(255, 205, 28, 0.72) 0 1.1px, transparent 1.9px),
+    radial-gradient(circle at 24% 31%, rgba(255, 205, 28, 0.9) 0 1.35px, transparent 2.1px),
+    radial-gradient(circle at 33% 11%, rgba(255, 205, 28, 0.8) 0 1.1px, transparent 1.95px),
+    radial-gradient(circle at 37% 63%, rgba(255, 205, 28, 0.96) 0 1.5px, transparent 2.35px),
+    radial-gradient(circle at 43% 43%, rgba(255, 205, 28, 0.76) 0 1.15px, transparent 2px),
+    radial-gradient(circle at 52% 17%, rgba(255, 205, 28, 0.88) 0 1.4px, transparent 2.2px),
+    radial-gradient(circle at 59% 76%, rgba(255, 205, 28, 0.98) 0 1.55px, transparent 2.45px),
+    radial-gradient(circle at 64% 54%, rgba(255, 205, 28, 0.72) 0 1.2px, transparent 2.05px),
+    radial-gradient(circle at 71% 22%, rgba(255, 205, 28, 0.92) 0 1.45px, transparent 2.3px),
+    radial-gradient(circle at 77% 68%, rgba(255, 205, 28, 0.84) 0 1.3px, transparent 2.15px),
+    radial-gradient(circle at 83% 14%, rgba(255, 205, 28, 0.92) 0 1.35px, transparent 2.15px),
+    radial-gradient(circle at 89% 46%, rgba(255, 205, 28, 0.8) 0 1.15px, transparent 2px),
+    radial-gradient(circle at 94% 79%, rgba(255, 205, 28, 0.95) 0 1.4px, transparent 2.2px),
+    radial-gradient(circle at 96% 27%, rgba(255, 205, 28, 0.76) 0 1.15px, transparent 2px),
+    radial-gradient(circle at 6% 33%, rgba(255, 205, 28, 0.74) 0 0.95px, transparent 1.8px),
+    radial-gradient(circle at 15% 12%, rgba(255, 205, 28, 0.68) 0 1px, transparent 1.85px),
+    radial-gradient(circle at 21% 67%, rgba(255, 205, 28, 0.84) 0 1.05px, transparent 1.95px),
+    radial-gradient(circle at 28% 49%, rgba(255, 205, 28, 0.72) 0 0.95px, transparent 1.8px),
+    radial-gradient(circle at 41% 82%, rgba(255, 205, 28, 0.7) 0 1px, transparent 1.85px),
+    radial-gradient(circle at 47% 34%, rgba(255, 205, 28, 0.78) 0 1.05px, transparent 1.9px),
+    radial-gradient(circle at 58% 58%, rgba(255, 205, 28, 0.64) 0 0.9px, transparent 1.75px),
+    radial-gradient(circle at 63% 6%, rgba(255, 205, 28, 0.82) 0 1px, transparent 1.85px),
+    radial-gradient(circle at 76% 41%, rgba(255, 205, 28, 0.72) 0 1px, transparent 1.85px),
+    radial-gradient(circle at 82% 84%, rgba(255, 205, 28, 0.76) 0 0.95px, transparent 1.8px),
+    radial-gradient(circle at 92% 8%, rgba(255, 205, 28, 0.74) 0 1px, transparent 1.85px),
+    radial-gradient(circle at 12% 34%, rgba(255, 205, 28, 0.22) 0 18px, transparent 34px),
+    radial-gradient(circle at 79% 61%, rgba(255, 205, 28, 0.16) 0 16px, transparent 30px),
+    radial-gradient(circle at 62% 28%, rgba(255, 205, 28, 0.12) 0 24px, transparent 42px),
+    radial-gradient(circle at 26% 74%, rgba(255, 255, 255, 0.06) 0 48px, transparent 78px),
+    radial-gradient(circle at 72% 18%, rgba(255, 255, 255, 0.05) 0 42px, transparent 72px);
+  animation: cb-encomienda-stars-twinkle 5.8s ease-in-out infinite alternate;
+}
+
+.cb-encomienda-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto -1% -22px;
+  height: 54px;
+  background: #fff;
+  border-top-left-radius: 50% 18px;
+  border-top-right-radius: 50% 18px;
+}
+
+.cb-encomienda-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  align-content: start;
+}
+
+@keyframes cb-encomienda-sky-drift {
+  0% {
+    background-position:
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      50% 44%,
+      0 0;
+  }
+  100% {
+    background-position:
+      -8px 10px,
+      9px -7px,
+      -11px 6px,
+      8px 12px,
+      -10px -8px,
+      7px 9px,
+      -12px 10px,
+      10px -9px,
+      -8px 8px,
+      9px 7px,
+      -6px -8px,
+      7px 11px,
+      53% 47%,
+      0 0;
+  }
+}
+
+@keyframes cb-encomienda-stars-twinkle {
+  0% {
+    opacity: 0.52;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    opacity: 0.88;
+    transform: translate3d(4px, -3px, 0) scale(1.015);
+  }
+  100% {
+    opacity: 0.65;
+    transform: translate3d(-4px, 3px, 0) scale(0.995);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cb-encomienda-hero,
+  .cb-encomienda-hero::before {
+    animation: none;
+  }
+}
+
+.cb-encomienda-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 37px;
+  padding: 7px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 204, 24, 0.34);
+  background: rgba(43, 85, 165, 0.24);
+  color: #ffcc18;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.cb-encomienda-hero__badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffcc18;
+  flex: 0 0 auto;
+}
+
+.cb-encomienda-hero__icon-shell {
+  width: 96px;
+  height: 96px;
+  margin-top: 30px;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(61, 102, 181, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  display: grid;
+  place-items: center;
+}
+
+.cb-encomienda-hero__icon-mark,
+.cb-encomienda-hero__icon-image {
+  width: 42px;
+  height: 42px;
+}
+
+.cb-encomienda-hero__icon-image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.cb-encomienda-hero__icon-mark {
+  color: #ffcc18;
+}
+
+.cb-encomienda-hero__icon-mark svg {
+  width: 100%;
+  height: 100%;
+}
+
+.cb-encomienda-hero__copy {
+  width: min(100%, 890px);
+  margin-top: 34px;
+}
+
+.cb-encomienda-hero__copy h1 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(48px, 5.75vw, 76px);
+  line-height: 0.96;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+}
+
+.cb-encomienda-hero__copy h1 span {
+  display: block;
+}
+
+.cb-encomienda-hero__copy h1 span + span {
+  margin-top: -4px;
+}
+
+.cb-encomienda-hero__copy h1 em {
+  color: #ffcc18;
+  font-style: normal;
+}
+
+.cb-encomienda-hero__subtitle {
+  width: min(100%, 860px);
+  margin: 26px auto 0;
+  color: #ffcc18;
+  font-size: clamp(17px, 1.5vw, 22px);
+  line-height: 1.48;
+  font-weight: 700;
+}
+
+.cb-encomienda-hero__actions,
+.cb-encomienda-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.cb-encomienda-hero__actions {
+  margin-top: 34px;
+  gap: 16px;
+}
+
+.cb-encomienda-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 58px;
+  padding: 0 30px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1;
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.cb-encomienda-btn:hover {
+  transform: translateY(-4px);
+}
+
+.cb-encomienda-btn--primary {
+  background: #ffcc18;
+  color: #0b43ab;
+  box-shadow: 0 18px 34px rgba(255, 204, 24, 0.26);
+}
+
+.cb-encomienda-btn--ghost,
+.cb-encomienda-btn--ghost-alt,
+.cb-encomienda-btn--ghost-soft {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.cb-encomienda-btn--ghost-alt {
+  color: var(--cb-blue);
+  border-width: 2px;
+  border-color: var(--cb-blue);
+  background: rgba(255,255,255,0.9);
+}
+
+.cb-encomienda-btn--ghost-soft {
+  color: var(--cb-blue);
+  border-color: rgba(13, 71, 181, 0.2);
+  background: rgba(255,255,255,0.95);
+}
+
+.cb-encomienda-intro,
+.cb-encomienda-faq,
+.cb-encomienda-cta {
+  padding: 76px 0 110px;
+  background: #fff;
+}
+
+.cb-encomienda-intro__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 62px;
+}
+
+.cb-encomienda-intro__photo-shell {
+  position: relative;
+  border-radius: 30px;
+}
+
+.cb-encomienda-intro__photo {
+  display: block;
+  width: 100%;
+  min-height: 560px;
+  object-fit: cover;
+  border-radius: 30px;
+  border: 2px solid var(--cb-yellow);
+}
+
+.cb-encomienda-intro__placeholder {
+  min-height: 560px;
+  border-radius: 30px;
+  border: 2px solid var(--cb-yellow);
+  background: linear-gradient(135deg, rgba(24, 75, 168, 0.12), rgba(255, 198, 26, 0.1));
+  display: grid;
+  place-items: center;
+  color: rgba(13, 71, 181, 0.65);
+}
+
+.cb-encomienda-intro__placeholder svg {
+  width: 110px;
+  height: 110px;
+}
+
+.cb-encomienda-intro__floating-badge {
+  position: absolute;
+  right: -28px;
+  bottom: -22px;
+  min-width: 208px;
+  padding: 18px 22px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 22px 45px rgba(16, 36, 78, 0.18);
+}
+
+.cb-encomienda-intro__floating-badge small {
+  display: block;
+  margin-bottom: 4px;
+  color: #9fb0d8;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.cb-encomienda-intro__floating-badge strong {
+  display: inline-flex;
+  gap: 6px;
+  align-items: baseline;
+  color: var(--cb-blue);
+  font-size: 50px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.cb-encomienda-intro__floating-badge em {
+  color: var(--cb-yellow);
+  font-style: normal;
+}
+
+.cb-encomienda-heading__accent {
+  width: 44px;
+  height: 4px;
+  margin-bottom: 28px;
+  border-radius: 999px;
+  background: var(--cb-yellow);
+}
+
+.cb-encomienda-intro__copy h2,
+.cb-encomienda-heading h2 {
+  margin: 0;
+  color: var(--cb-blue);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+}
+
+.cb-encomienda-intro__copy h2 {
+  max-width: 620px;
+  font-size: clamp(42px, 4.3vw, 68px);
+  line-height: 0.96;
+}
+
+.cb-encomienda-intro__copy p,
+.cb-encomienda-faq__body p,
+.cb-encomienda-feature-card p,
+.cb-encomienda-heading p {
+  margin: 0;
+  color: color-mix(in srgb, var(--cb-ink) 92%, #7182ab 8%);
+  font-size: 18px;
+  line-height: 1.82;
+}
+
+.cb-encomienda-intro__copy p + p {
+  margin-top: 14px;
+}
+
+.cb-encomienda-intro__quote {
+  margin: 30px 0 34px;
+  padding: 8px 0 8px 20px;
+  border-left: 4px solid var(--cb-yellow);
+  color: var(--cb-blue);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.cb-encomienda-intro__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px 32px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(13, 71, 181, 0.14);
+}
+
+.cb-encomienda-intro__stat strong {
+  display: block;
+  color: var(--cb-blue);
+  font-size: 33px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.cb-encomienda-intro__stat span {
+  display: block;
+  margin-top: 6px;
+  color: #97abd6;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cb-encomienda-features {
+  padding: 96px 0 106px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,198,26,0.18) 0 2px, transparent 2.5px) 0 0/170px 170px,
+    radial-gradient(circle at 88% 10%, rgba(255,198,26,0.18) 0 2px, transparent 2.5px) 0 0/220px 220px,
+    linear-gradient(180deg, var(--cb-blue) 0%, color-mix(in srgb, var(--cb-blue) 95%, #16356d 5%) 100%);
+}
+
+.cb-encomienda-features::before {
+  content: "UPU";
+  position: absolute;
+  inset: auto 0 40px;
+  text-align: center;
+  color: rgba(255,255,255,0.03);
+  font-size: clamp(220px, 26vw, 520px);
+  font-weight: 900;
+  line-height: 0.8;
+  pointer-events: none;
+}
+
+.cb-encomienda-heading {
+  text-align: center;
+}
+
+.cb-encomienda-heading--light h2,
+.cb-encomienda-heading--light p {
+  color: #fff;
+}
+
+.cb-encomienda-heading h2 {
+  width: min(100%, 980px);
+  margin-inline: auto;
+  font-size: clamp(42px, 5vw, 66px);
+  line-height: 1.03;
+}
+
+.cb-encomienda-heading p {
+  width: min(100%, 760px);
+  margin: 24px auto 0;
+  color: #7c9ae0;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.cb-encomienda-heading--light p {
+  color: rgba(255,255,255,0.74);
+}
+
+.cb-encomienda-features__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 56px;
+}
+
+.cb-encomienda-feature-card {
+  min-height: 360px;
+  padding: 28px 28px 30px;
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: linear-gradient(180deg, rgba(64, 109, 193, 0.96), rgba(48, 91, 173, 0.96));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.cb-encomienda-feature-card:hover {
+  transform: translateY(-10px) scale(1.01);
+  border-color: rgba(255,255,255,0.26);
+  box-shadow: 0 24px 50px rgba(8, 22, 62, 0.28);
+}
+
+.cb-encomienda-feature-card__icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: var(--cb-yellow);
+  color: var(--cb-blue);
+}
+
+.cb-encomienda-feature-card__icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.cb-encomienda-feature-card h3 {
+  margin: 28px 0 16px;
+  color: #fff;
+  font-size: 25px;
+  font-weight: 900;
+  line-height: 1.18;
+  text-transform: uppercase;
+}
+
+.cb-encomienda-feature-card p {
+  color: rgba(255,255,255,0.72);
+}
+
+.cb-encomienda-faq__shell,
+.cb-encomienda-cta__inner {
+  position: relative;
+}
+
+.cb-encomienda-faq__list {
+  width: min(100%, 738px);
+  margin: 48px auto 0;
+}
+
+.cb-encomienda-faq__item + .cb-encomienda-faq__item {
+  margin-top: 18px;
+}
+
+.cb-encomienda-faq__item {
+  border: 1px solid rgba(124, 154, 224, 0.28);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(22, 41, 82, 0.06);
+}
+
+.cb-encomienda-faq__trigger {
+  width: 100%;
+  min-height: 84px;
+  padding: 16px 24px;
+  border: 0;
+  border-radius: 24px;
+  background: transparent;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cb-encomienda-faq__icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--cb-yellow);
+  color: var(--cb-blue);
+}
+
+.cb-encomienda-faq__icon svg {
+  width: 23px;
+  height: 23px;
+}
+
+.cb-encomienda-faq__trigger strong {
+  color: var(--cb-blue);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.cb-encomienda-faq__chevron {
+  color: #7c9ae0;
+  font-size: 24px;
+  line-height: 1;
+  transition: transform 180ms ease;
+}
+
+.cb-encomienda-faq__item.is-open .cb-encomienda-faq__chevron {
+  transform: rotate(180deg);
+}
+
+.cb-encomienda-faq__body {
+  padding: 0 24px 24px 88px;
+}
+
+.cb-encomienda-faq__tip {
+  width: min(100%, 738px);
+  margin: 32px auto 0;
+  padding: 22px 24px;
+  border-radius: 24px;
+  border: 1px solid rgba(124, 154, 224, 0.28);
+  background: #eef3ff;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.cb-encomienda-faq__tip-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--cb-yellow);
+}
+
+.cb-encomienda-faq__tip-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.cb-encomienda-faq__tip p {
+  margin: 0;
+  color: #5a7fca;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.cb-encomienda-faq__tip strong {
+  color: var(--cb-blue);
+}
+
+.cb-encomienda-cta {
+  padding-top: 88px;
+}
+
+.cb-encomienda-cta__inner {
+  text-align: center;
+}
+
+.cb-encomienda-cta__actions {
+  position: relative;
+  z-index: 1;
+  margin-top: 40px;
+}
+
+.cb-encomienda-cta__chips {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 44px;
+}
+
+.cb-encomienda-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(124, 154, 224, 0.38);
+  background: rgba(245, 248, 255, 0.96);
+  color: var(--cb-blue);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.cb-encomienda-chip__icon {
+  width: 18px;
+  height: 18px;
+  color: var(--cb-blue);
+}
+
+.cb-encomienda-chip__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.cb-encomienda-cta__footnote {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 46px;
+  color: #9ab0df;
+  font-size: 17px;
+}
+
+.cb-encomienda-cta__watermark {
+  position: absolute;
+  inset: 54px 50% auto;
+  transform: translateX(-50%);
+  color: rgba(18, 71, 177, 0.035);
+  font-size: clamp(190px, 22vw, 420px);
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  line-height: 0.85;
+  text-transform: uppercase;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.cb-encomienda-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 560ms ease, transform 560ms ease;
+  transition-delay: var(--cb-delay, 0ms);
+}
+
+.cb-encomienda-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 1240px) {
+  .cb-encomienda-features__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1040px) {
+  .cb-encomienda-intro__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cb-encomienda-intro__photo {
+    min-height: 460px;
+  }
+
+  .cb-encomienda-intro__placeholder {
+    min-height: 460px;
+  }
+
+  .cb-encomienda-intro__floating-badge {
+    right: 24px;
+    bottom: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cb-encomienda-hero {
+    min-height: auto;
+    padding: 106px 0 138px;
+  }
+
+  .cb-encomienda-hero__copy h1 {
+    font-size: clamp(46px, 14vw, 66px);
+  }
+
+  .cb-encomienda-hero__subtitle {
+    font-size: 22px;
+  }
+
+  .cb-encomienda-btn {
+    width: 100%;
+    font-size: 22px;
+  }
+
+  .cb-encomienda-features__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cb-encomienda-heading h2,
+  .cb-encomienda-intro__copy h2 {
+    font-size: clamp(36px, 10vw, 52px);
+  }
+
+  .cb-encomienda-faq__body {
+    padding-left: 24px;
+  }
+
+  .cb-encomienda-cta__watermark {
+    font-size: 164px;
+    top: 130px;
+  }
+}

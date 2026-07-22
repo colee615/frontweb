@@ -28,15 +28,6 @@
               >
                 {{ heroSettings.primary_button_label }}
               </component>
-
-              <component
-                v-if="heroSettings.secondary_button_label && heroSettings.secondary_button_url"
-                :is="isInternalRoute(heroSettings.secondary_button_url) ? 'nuxt-link' : 'a'"
-                class="cb-delivery-btn cb-delivery-btn--ghost"
-                v-bind="linkAttrs(heroSettings.secondary_button_url)"
-              >
-                {{ heroSettings.secondary_button_label }}
-              </component>
             </div>
           </article>
 
@@ -185,94 +176,6 @@
         </div>
       </section>
 
-      <section id="deliveryexpress-cta" class="cb-delivery-cta">
-        <div class="cb-shell">
-          <div class="cb-delivery-section-heading cb-delivery-reveal" data-reveal>
-            <h2 v-if="ctaSettings.title">{{ ctaSettings.title }}</h2>
-            <p v-if="ctaSettings.subtitle">{{ ctaSettings.subtitle }}</p>
-          </div>
-
-          <div class="cb-delivery-cta__grid">
-            <article class="cb-delivery-cta-card cb-delivery-reveal" data-reveal style="--cb-delay: 0ms;">
-              <h3 v-if="ctaSettings.app_title">{{ ctaSettings.app_title }}</h3>
-              <div class="cb-delivery-store-list">
-                <component
-                  :is="isInternalRoute(ctaSettings.app_store_url) ? 'nuxt-link' : 'a'"
-                  v-if="ctaSettings.app_store_label && ctaSettings.app_store_url"
-                  class="cb-delivery-store"
-                  v-bind="linkAttrs(ctaSettings.app_store_url)"
-                >
-                  <img v-if="ctaSettings.app_store_badge" :src="ctaSettings.app_store_badge" alt="">
-                  <span v-else>{{ ctaSettings.app_store_label }}</span>
-                </component>
-
-                <component
-                  :is="isInternalRoute(ctaSettings.play_store_url) ? 'nuxt-link' : 'a'"
-                  v-if="ctaSettings.play_store_label && ctaSettings.play_store_url"
-                  class="cb-delivery-store"
-                  v-bind="linkAttrs(ctaSettings.play_store_url)"
-                >
-                  <img v-if="ctaSettings.play_store_badge" :src="ctaSettings.play_store_badge" alt="">
-                  <span v-else>{{ ctaSettings.play_store_label }}</span>
-                </component>
-              </div>
-              <p v-if="ctaSettings.app_note" class="cb-delivery-cta-card__note">{{ ctaSettings.app_note }}</p>
-            </article>
-
-            <article class="cb-delivery-cta-card cb-delivery-reveal" data-reveal style="--cb-delay: 90ms;">
-              <h3 v-if="ctaSettings.register_title">{{ ctaSettings.register_title }}</h3>
-              <div class="cb-delivery-qr">
-                <img v-if="ctaSettings.register_qr_image" :src="ctaSettings.register_qr_image" alt="">
-                <div v-else class="cb-delivery-qr__placeholder">
-                  <span></span><span></span><span></span><span></span>
-                  <span></span><span></span><span></span><span></span>
-                  <span></span><span></span><span></span><span></span>
-                </div>
-              </div>
-              <p v-if="ctaSettings.register_text" class="cb-delivery-cta-card__note">{{ ctaSettings.register_text }}</p>
-            </article>
-
-            <article class="cb-delivery-cta-card cb-delivery-reveal" data-reveal style="--cb-delay: 180ms;">
-              <h3 v-if="ctaSettings.contact_title">{{ ctaSettings.contact_title }}</h3>
-              <div class="cb-delivery-contact-list">
-                <component
-                  :is="isInternalRoute(ctaSettings.contact_whatsapp_url) ? 'nuxt-link' : 'a'"
-                  v-if="ctaSettings.contact_whatsapp_label && ctaSettings.contact_whatsapp_url"
-                  class="cb-delivery-contact-item"
-                  v-bind="linkAttrs(ctaSettings.contact_whatsapp_url)"
-                >
-                  <span class="cb-delivery-contact-item__icon" v-html="icons.message-circle"></span>
-                  <span>{{ ctaSettings.contact_whatsapp_label }}</span>
-                </component>
-
-                <component
-                  :is="isInternalRoute(ctaSettings.contact_web_url) ? 'nuxt-link' : 'a'"
-                  v-if="ctaSettings.contact_web_label && ctaSettings.contact_web_url"
-                  class="cb-delivery-contact-item"
-                  v-bind="linkAttrs(ctaSettings.contact_web_url)"
-                >
-                  <span class="cb-delivery-contact-item__icon" v-html="icons.globe"></span>
-                  <span>{{ ctaSettings.contact_web_label }}</span>
-                </component>
-
-                <component
-                  :is="isInternalRoute(ctaSettings.contact_phone_url) ? 'nuxt-link' : 'a'"
-                  v-if="ctaSettings.contact_phone_label && ctaSettings.contact_phone_url"
-                  class="cb-delivery-contact-item"
-                  v-bind="linkAttrs(ctaSettings.contact_phone_url)"
-                >
-                  <span class="cb-delivery-contact-item__icon" v-html="icons.smartphone"></span>
-                  <span>{{ ctaSettings.contact_phone_label }}</span>
-                </component>
-              </div>
-            </article>
-          </div>
-
-          <p v-if="ctaSettings.trust_text" class="cb-delivery-cta__trust cb-delivery-reveal" data-reveal style="--cb-delay: 220ms;">
-            {{ ctaSettings.trust_text }}
-          </p>
-        </div>
-      </section>
     </main>
 
     <HomeFooter v-if="!isBootLoading" :logo-url="logoUrl" :icons="icons" :content="footerSettings" :links="footerLinks" />
@@ -465,6 +368,38 @@ export default {
       }
 
       return { href: url || '#' }
+    },
+    resolveContactLabel(value) {
+      const text = String(value || '').trim()
+
+      if (!text) {
+        return { eyebrow: '', main: '' }
+      }
+
+      if (/whatsapp$/i.test(text)) {
+        return {
+          eyebrow: text.replace(/\s+whatsapp$/i, '').trim(),
+          main: 'WhatsApp'
+        }
+      }
+
+      if (/p[aá]gina web$/i.test(text)) {
+        return {
+          eyebrow: text.replace(/\s+p[aá]gina web$/i, '').trim(),
+          main: 'Página Web'
+        }
+      }
+
+      if (/\d/.test(text)) {
+        const parts = text.split(/\s+/)
+
+        return {
+          eyebrow: parts.slice(0, -1).join(' '),
+          main: parts.slice(-1).join(' ')
+        }
+      }
+
+      return { eyebrow: '', main: text }
     },
     setupRevealObserver() {
       this.destroyRevealObserver()

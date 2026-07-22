@@ -2,7 +2,9 @@ const ROUTE_BY_SLUG = {
   home: '/',
   'quienes-somos': '/quienes-somos',
   noticias: '/noticias',
-  deliveryexpress: '/deliveryexpress'
+  deliveryexpress: '/deliveryexpress',
+  eca: '/eca',
+  encomienda: '/encomienda'
 }
 
 const ANCHOR_BY_SECTION = {
@@ -41,6 +43,23 @@ const ANCHOR_BY_SECTION = {
     delivery_process: 'deliveryexpress-process',
     delivery_info: 'deliveryexpress-info',
     delivery_cta: 'deliveryexpress-cta',
+    footer: 'site-footer'
+  },
+  eca: {
+    eca_hero: 'eca-hero',
+    eca_intro: 'eca-intro',
+    eca_rates: 'eca-rates',
+    eca_coverage: 'eca-coverage',
+    eca_solutions: 'eca-solutions',
+    eca_cta: 'eca-cta',
+    footer: 'site-footer'
+  },
+  encomienda: {
+    encomienda_hero: 'encomienda-hero',
+    encomienda_intro: 'encomienda-intro',
+    encomienda_features: 'encomienda-features',
+    encomienda_faq: 'encomienda-faq',
+    encomienda_cta: 'encomienda-cta',
     footer: 'site-footer'
   }
 }
@@ -223,6 +242,14 @@ function resolveItemType(slug, sectionKey) {
     return 'Delivery'
   }
 
+  if (slug === 'eca') {
+    return 'ECA'
+  }
+
+  if (slug === 'encomienda') {
+    return 'Encomienda'
+  }
+
   return 'Contenido'
 }
 
@@ -263,6 +290,10 @@ function resolveSectionRoute(slug, sectionKey, fallbackRoute) {
 
   if (slug === 'deliveryexpress') {
     return '/deliveryexpress'
+  }
+
+  if (slug === 'eca') {
+    return '/eca'
   }
 
   return fallbackRoute

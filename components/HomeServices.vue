@@ -64,6 +64,14 @@ export default {
         return '/deliveryexpress'
       }
 
+      if (title.includes('eca')) {
+        return '/eca'
+      }
+
+      if (title.includes('encomienda')) {
+        return '/encomienda'
+      }
+
       return ''
     }
   }

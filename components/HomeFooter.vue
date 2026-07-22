@@ -340,6 +340,14 @@ export default {
         return '/deliveryexpress'
       }
 
+      if (label.includes('eca')) {
+        return '/eca'
+      }
+
+      if (label.includes('encomienda')) {
+        return '/encomienda'
+      }
+
       return CONTACT_ROUTE
     },
     normalizeLabel(value) {
