@@ -33,8 +33,8 @@
 
           <article class="cb-delivery-hero__visual cb-delivery-reveal" data-reveal style="--cb-delay: 90ms;">
             <div class="cb-delivery-hero__visual-card">
-              <img v-if="heroSettings.visual_image" :src="heroSettings.visual_image" alt="" class="cb-delivery-hero__image">
-              <div v-else-if="heroSettings.visual_icon" class="cb-delivery-hero__icon" v-html="resolveIcon(heroSettings.visual_icon)"></div>
+              <img v-if="heroHasImage" :src="heroSettings.visual_image" alt="" class="cb-delivery-hero__image">
+              <div v-else-if="heroHasIcon" class="cb-delivery-hero__icon" v-html="resolveIcon(heroSettings.visual_icon)"></div>
               <span class="cb-delivery-hero__ring cb-delivery-hero__ring--top" aria-hidden="true"></span>
               <span class="cb-delivery-hero__ring cb-delivery-hero__ring--bottom" aria-hidden="true"></span>
               <div v-if="heroSettings.floating_icon" class="cb-delivery-hero__floating" v-html="resolveIcon(heroSettings.floating_icon)"></div>
@@ -60,8 +60,8 @@
 
           <article class="cb-delivery-intro__visual cb-delivery-reveal" data-reveal style="--cb-delay: 110ms;">
             <div class="cb-delivery-intro__visual-card">
-              <img v-if="introSettings.visual_image" :src="introSettings.visual_image" alt="" class="cb-delivery-intro__image">
-              <div v-else-if="introSettings.visual_icon" class="cb-delivery-intro__icon" v-html="resolveIcon(introSettings.visual_icon)"></div>
+              <img v-if="introHasImage" :src="introSettings.visual_image" alt="" class="cb-delivery-intro__image">
+              <div v-else-if="introHasIcon" class="cb-delivery-intro__icon" v-html="resolveIcon(introSettings.visual_icon)"></div>
               <span v-if="introSettings.visual_badge" class="cb-delivery-intro__badge">{{ introSettings.visual_badge }}</span>
             </div>
           </article>
@@ -245,8 +245,20 @@ export default {
     heroSettings() {
       return this.getSectionSettings('delivery_hero')
     },
+    heroHasImage() {
+      return this.hasAsset(this.heroSettings.visual_image)
+    },
+    heroHasIcon() {
+      return !this.heroHasImage && this.hasAsset(this.heroSettings.visual_icon)
+    },
     introSettings() {
       return this.getSectionSettings('delivery_intro')
+    },
+    introHasImage() {
+      return this.hasAsset(this.introSettings.visual_image)
+    },
+    introHasIcon() {
+      return !this.introHasImage && this.hasAsset(this.introSettings.visual_icon)
     },
     advantagesSettings() {
       return this.getSectionSettings('delivery_advantages')
@@ -358,6 +370,11 @@ export default {
     },
     resolveIcon(icon) {
       return this.icons[icon] || ''
+    },
+    hasAsset(value) {
+      const text = String(value || '').trim()
+
+      return text !== '' && text.toLowerCase() !== 'null' && text.toLowerCase() !== 'undefined'
     },
     isInternalRoute(url) {
       return typeof url === 'string' && url.startsWith('/') && !url.startsWith('//')
