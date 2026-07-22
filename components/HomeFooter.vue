@@ -149,6 +149,7 @@
           <div class="cb-copyright cb-copyright--mobile">
             <p>{{ content.copyright || '' }}</p>
             <p>{{ content.legal_text || '' }}</p>
+            <p><nuxt-link class="cb-footer-privacy-link" to="/politica-privacidad-trackingbo-app">Politica de privacidad TrackingBO App</nuxt-link></p>
           </div>
         </div>
 
@@ -159,6 +160,7 @@
           <div class="cb-copyright">
             <p>{{ content.copyright || '' }}</p>
             <p>{{ content.legal_text || '' }}</p>
+            <p><nuxt-link class="cb-footer-privacy-link" to="/politica-privacidad-trackingbo-app">Politica de privacidad TrackingBO App</nuxt-link></p>
           </div>
         </div>
       </div>
@@ -404,3 +406,16 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.cb-footer-privacy-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.cb-footer-privacy-link:hover,
+.cb-footer-privacy-link:focus-visible {
+  opacity: 0.82;
+}
+</style>
