@@ -32,12 +32,12 @@
           </article>
 
           <article class="cb-delivery-hero__visual cb-delivery-reveal" data-reveal style="--cb-delay: 90ms;">
-            <div class="cb-delivery-hero__visual-card">
+            <div :class="['cb-delivery-hero__visual-card', { 'cb-delivery-hero__visual-card--has-image': heroHasImage }]">
               <img v-if="heroHasImage" :src="heroSettings.visual_image" alt="" class="cb-delivery-hero__image">
               <div v-else-if="heroHasIcon" class="cb-delivery-hero__icon" v-html="resolveIcon(heroSettings.visual_icon)"></div>
-              <span class="cb-delivery-hero__ring cb-delivery-hero__ring--top" aria-hidden="true"></span>
-              <span class="cb-delivery-hero__ring cb-delivery-hero__ring--bottom" aria-hidden="true"></span>
-              <div v-if="heroSettings.floating_icon" class="cb-delivery-hero__floating" v-html="resolveIcon(heroSettings.floating_icon)"></div>
+              <span v-if="!heroHasImage" class="cb-delivery-hero__ring cb-delivery-hero__ring--top" aria-hidden="true"></span>
+              <span v-if="!heroHasImage" class="cb-delivery-hero__ring cb-delivery-hero__ring--bottom" aria-hidden="true"></span>
+              <div v-if="!heroHasImage && heroSettings.floating_icon" class="cb-delivery-hero__floating" v-html="resolveIcon(heroSettings.floating_icon)"></div>
             </div>
           </article>
         </div>
@@ -59,7 +59,7 @@
           </article>
 
           <article class="cb-delivery-intro__visual cb-delivery-reveal" data-reveal style="--cb-delay: 110ms;">
-            <div class="cb-delivery-intro__visual-card">
+            <div :class="['cb-delivery-intro__visual-card', { 'cb-delivery-intro__visual-card--has-image': introHasImage }]">
               <img v-if="introHasImage" :src="introSettings.visual_image" alt="" class="cb-delivery-intro__image">
               <div v-else-if="introHasIcon" class="cb-delivery-intro__icon" v-html="resolveIcon(introSettings.visual_icon)"></div>
               <span v-if="introSettings.visual_badge" class="cb-delivery-intro__badge">{{ introSettings.visual_badge }}</span>

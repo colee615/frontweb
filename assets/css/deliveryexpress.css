@@ -43,7 +43,7 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(520px, 600px) minmax(540px, 620px);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 64px;
   align-items: center;
   justify-content: space-between;
@@ -156,6 +156,11 @@
   overflow: hidden;
 }
 
+.cb-delivery-hero__visual-card--has-image,
+.cb-delivery-intro__visual-card--has-image {
+  background: linear-gradient(135deg, rgba(255, 251, 238, 0.92), rgba(235, 243, 255, 0.86));
+}
+
 .cb-delivery-hero__visual-card {
   min-height: 616px;
 }
@@ -166,6 +171,8 @@
 
 .cb-delivery-hero__image,
 .cb-delivery-intro__image {
+  position: relative;
+  z-index: 2;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -241,7 +248,8 @@
 }
 
 .cb-delivery-intro__copy {
-  width: 610px;
+  width: 100%;
+  max-width: 610px;
   padding-top: 8px;
 }
 
@@ -1089,10 +1097,24 @@
     grid-template-columns: 1fr;
   }
 
+  .cb-delivery-hero__grid,
+  .cb-delivery-intro__grid {
+    gap: 40px;
+  }
+
+  .cb-delivery-hero__copy,
+  .cb-delivery-intro__copy,
+  .cb-delivery-hero__subtitle,
+  .cb-delivery-intro__copy p,
+  .cb-delivery-intro__copy .cb-delivery-intro__highlight,
+  .cb-delivery-intro__copy .cb-delivery-intro__closing {
+    max-width: 100%;
+  }
+
   .cb-delivery-advantages__grid,
   .cb-delivery-info__grid,
   .cb-delivery-cta__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .cb-delivery-process__steps {
@@ -1101,6 +1123,9 @@
 }
 
 @media (max-width: 920px) {
+  .cb-delivery-advantages__grid,
+  .cb-delivery-info__grid,
+  .cb-delivery-cta__grid,
   .cb-delivery-process__steps {
     grid-template-columns: 1fr;
     gap: 34px;
@@ -1139,6 +1164,11 @@
     flex-direction: column;
   }
 
+  .cb-delivery-hero__grid,
+  .cb-delivery-intro__grid {
+    gap: 28px;
+  }
+
   .cb-delivery-btn {
     width: 100%;
     min-width: 0;
@@ -1160,6 +1190,14 @@
   .cb-delivery-info__panel,
   .cb-delivery-cta-card {
     padding: 24px 20px;
+  }
+
+  .cb-delivery-info__panel {
+    min-height: 0;
+  }
+
+  .cb-delivery-process__feature {
+    padding-top: 0;
   }
 
   .cb-delivery-info-card,
