@@ -321,6 +321,16 @@ export default {
           throw new Error('No se pudo generar el acceso al tracking.')
         }
 
+        if (this.$analytics && typeof this.$analytics.trackTrackingSearch === 'function') {
+          this.$analytics.trackTrackingSearch(code, {
+            pagePath: this.$route && this.$route.fullPath ? this.$route.fullPath : '/',
+            pageName: document.title,
+            metadata: {
+              source: 'hero_tracking'
+            }
+          })
+        }
+
         window.open(payload.redirect_url, '_blank', 'noopener')
         this.captchaAnswer = ''
         await this.generateCaptcha()

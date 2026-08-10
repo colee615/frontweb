@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div>
     <footer id="site-footer" class="cb-footer">
       <div class="cb-shell">
@@ -98,7 +98,7 @@
                 @click="toggleMobileSection(section.key)"
               >
                 <span>{{ section.title }}</span>
-                <span class="cb-footer-mobile__chevron" :class="{ 'is-open': isMobileSectionOpen(section.key) }">⌄</span>
+                <span class="cb-footer-mobile__chevron" :class="{ 'is-open': isMobileSectionOpen(section.key) }">âŒ„</span>
               </button>
 
               <div v-show="isMobileSectionOpen(section.key)" class="cb-footer-mobile__body">
@@ -314,18 +314,6 @@ export default {
       const label = this.normalizeLabel(link.label)
       const url = typeof link.url === 'string' ? link.url.trim() : ''
 
-      if (url && url !== '#') {
-        return url
-      }
-
-      if (
-        label.includes('contacto') ||
-        label.includes('contáctanos') ||
-        label.includes('consulta')
-      ) {
-        return CONTACT_ROUTE
-      }
-
       if (
         label.includes('sobre nosotros') ||
         label.includes('nuestra historia') ||
@@ -350,7 +338,24 @@ export default {
         return '/encomienda'
       }
 
-      return CONTACT_ROUTE
+      if (label.includes('noticias')) {
+        return '/noticias'
+      }
+
+      if (
+        label.includes('contacto') ||
+        label.includes('contactanos') ||
+        label.includes('consulta') ||
+        label.includes('reclamos')
+      ) {
+        return CONTACT_ROUTE
+      }
+
+      if (url && url !== '#') {
+        return url
+      }
+
+      return url || '#'
     },
     normalizeLabel(value) {
       if (typeof value !== 'string') {
@@ -419,3 +424,4 @@ export default {
   opacity: 0.82;
 }
 </style>
+

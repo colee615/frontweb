@@ -591,6 +591,18 @@ export default {
           return
         }
 
+        if (this.$analytics && typeof this.$analytics.trackCalculatorQuote === 'function') {
+          this.$analytics.trackCalculatorQuote({
+            pagePath: this.$route && this.$route.fullPath ? this.$route.fullPath : '/',
+            pageName: document.title,
+            metadata: {
+              service: this.form.category,
+              destination: this.form.destination,
+              weight
+            }
+          })
+        }
+
         this.calculatorResult = payload
         this.showResultModal = true
       } catch (error) {

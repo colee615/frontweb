@@ -80,7 +80,8 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '~/plugins/api.js'
+    '~/plugins/api.js',
+    { src: '~/plugins/analytics.js', ssr: false }
   ],
 
   serverMiddleware: [

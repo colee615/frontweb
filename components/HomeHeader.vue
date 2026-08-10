@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <header
     ref="header"
     :class="['cb-header', { 'cb-header--navbar-fixed': isNavbarPinned }]"
@@ -180,38 +180,60 @@ export default {
   },
   computed: {
     navLinks() {
-      const normalizedLinks = this.links
-        .filter((link) => {
-          const normalizedLabel = this.normalizeLabel(link.label)
-          return !normalizedLabel.includes('contáctanos')
-        })
-        .map((link) => {
-        const resolvedUrl = this.resolveRoute(link)
+      const sourceLinks = Array.isArray(this.links) ? this.links : []
+      const findLink = (keywords) => sourceLinks.find((link) => {
         const normalizedLabel = this.normalizeLabel(link.label)
+        return keywords.some((keyword) => normalizedLabel.includes(keyword))
+      })
+      const buildNavLink = ({ label, keywords, fallbackUrl, preferOriginalUrl = false }) => {
+        const sourceLink = findLink(keywords)
+        const originalUrl = sourceLink && typeof sourceLink.url === 'string'
+          ? sourceLink.url.trim()
+          : ''
 
-        if (
-          resolvedUrl === CONTACT_ROUTE &&
-          (normalizedLabel.includes('institucional') || !normalizedLabel)
-        ) {
-          return {
-            ...link,
-            label: 'Contactonos',
-            url: resolvedUrl
-          }
+        let resolvedUrl = fallbackUrl
+
+        if (sourceLink) {
+          resolvedUrl = preferOriginalUrl && originalUrl && originalUrl !== '#'
+            ? originalUrl
+            : this.resolveRoute(sourceLink)
         }
 
         return {
-          ...link,
-          url: resolvedUrl
+          ...(sourceLink || {}),
+          label,
+          url: resolvedUrl || fallbackUrl || '#'
         }
-      })
+      }
 
-      normalizedLinks.push({
-        label: 'Contáctanos',
-        url: CONTACT_ROUTE
-      })
-
-      return normalizedLinks
+      return [
+        buildNavLink({
+          label: '¿Quiénes somos?',
+          keywords: ['quienes somos'],
+          fallbackUrl: '/quienes-somos'
+        }),
+        buildNavLink({
+          label: 'Noticias',
+          keywords: ['noticias'],
+          fallbackUrl: '/noticias'
+        }),
+        buildNavLink({
+          label: 'Institucional',
+          keywords: ['institucional'],
+          fallbackUrl: '#',
+          preferOriginalUrl: true
+        }),
+        buildNavLink({
+          label: 'Delivery Express',
+          keywords: ['delivery express', 'delivery'],
+          fallbackUrl: '/deliveryexpress'
+        }),
+        buildNavLink({
+          label: 'Contáctanos',
+          keywords: ['contacto', 'contactanos', 'consulta'],
+          fallbackUrl: CONTACT_ROUTE
+        })
+      ]
     },
     searchResults() {
       const query = this.searchTerm.trim()
@@ -266,19 +288,6 @@ export default {
       const label = this.normalizeLabel(link.label)
       const url = typeof link.url === 'string' ? link.url.trim() : ''
 
-      if (url && url !== '#') {
-        return url
-      }
-
-      if (
-        label.includes('contacto') ||
-        label.includes('contáctanos') ||
-        label.includes('consulta') ||
-        label.includes('institucional')
-      ) {
-        return CONTACT_ROUTE
-      }
-
       if (label.includes('quienes somos')) {
         return '/quienes-somos'
       }
@@ -303,7 +312,19 @@ export default {
         return '/noticias'
       }
 
-      return CONTACT_ROUTE
+      if (
+        label.includes('contacto') ||
+        label.includes('contactanos') ||
+        label.includes('consulta')
+      ) {
+        return CONTACT_ROUTE
+      }
+
+      if (url && url !== '#') {
+        return url
+      }
+
+      return url || '#'
     },
     normalizeLabel(value) {
       if (typeof value !== 'string') {
@@ -510,3 +531,5 @@ export default {
   }
 }
 </script>
+
+
