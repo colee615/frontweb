@@ -4,6 +4,25 @@
     :class="['cb-header', { 'cb-header--navbar-fixed': isNavbarPinned }]"
     :style="{ '--cb-navbar-height': `${navbarHeight}px` }"
   >
+    <div v-if="headlineItems.length" ref="newsbar" class="cb-news-ticker">
+      <div :class="['cb-news-ticker__inner', { 'cb-news-ticker__inner--static': !isTickerAnimated }]">
+        <span v-if="tickerLabel" class="cb-news-ticker__badge">{{ tickerLabel }}</span>
+        <div :class="['cb-news-ticker__viewport', { 'cb-news-ticker__viewport--static': !isTickerAnimated }]" aria-live="polite">
+          <div class="cb-news-ticker__track">
+            <button
+              v-for="(item, index) in tickerItems"
+              :key="`headline-${index}`"
+              type="button"
+              class="cb-news-ticker__item"
+              @click="openHeadline(item)"
+            >
+              <span class="cb-news-ticker__item-text">{{ item.title }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div ref="topbar" class="cb-topbar cb-shell">
       <div class="cb-topbar-group cb-topbar-group--left">
         <button type="button" class="cb-top-link">
@@ -174,11 +193,23 @@ export default {
       searchEntries: [],
       isSearchReady: false,
       searchTimer: null,
+      headlineItems: [],
       isNavbarPinned: false,
       navbarHeight: 64
     }
   },
   computed: {
+    tickerLabel() {
+      return String(this.content.news_ticker_label || '').trim()
+    },
+    isTickerAnimated() {
+      return this.headlineItems.length > 1
+    },
+    tickerItems() {
+      return this.isTickerAnimated
+        ? [...this.headlineItems, ...this.headlineItems]
+        : this.headlineItems
+    },
     navLinks() {
       const sourceLinks = Array.isArray(this.links) ? this.links : []
       const findLink = (keywords) => sourceLinks.find((link) => {
@@ -270,6 +301,7 @@ export default {
       this.handleScroll()
     })
 
+    this.loadHeadlines()
     window.addEventListener('scroll', this.handleScroll, { passive: true })
     window.addEventListener('resize', this.handleResize, { passive: true })
     document.addEventListener('click', this.handleDocumentClick)
@@ -284,6 +316,50 @@ export default {
     document.removeEventListener('click', this.handleDocumentClick)
   },
   methods: {
+    async loadHeadlines() {
+      const configuredItems = Array.isArray(this.content.news_ticker_items)
+        ? this.content.news_ticker_items
+          .map((item, index) => {
+            const title = String((item && (item.title || item.label)) || '').trim()
+            const url = String((item && item.url) || '').trim() || '/noticias'
+
+            if (!title) {
+              return null
+            }
+
+            return {
+              id: item.id || `configured-${index}`,
+              title,
+              url
+            }
+          })
+          .filter(Boolean)
+        : []
+
+      this.headlineItems = configuredItems
+
+      this.$nextTick(() => {
+        this.handleScroll()
+      })
+    },
+    openHeadline(item) {
+      if (!item) {
+        return
+      }
+
+      const targetUrl = String(item.url || '').trim()
+
+      if (!targetUrl) {
+        return
+      }
+
+      if (this.isInternalRoute(targetUrl)) {
+        this.$router.push(targetUrl)
+        return
+      }
+
+      window.open(targetUrl, '_blank', 'noopener')
+    },
     resolveRoute(link) {
       const label = this.normalizeLabel(link.label)
       const url = typeof link.url === 'string' ? link.url.trim() : ''
@@ -496,14 +572,16 @@ export default {
       this.handleScroll()
     },
     handleScroll() {
+      const newsbar = this.$refs.newsbar
       const topbar = this.$refs.topbar
 
-      if (!topbar || typeof window === 'undefined') {
+      if ((!topbar && !newsbar) || typeof window === 'undefined') {
         this.isNavbarPinned = false
         return
       }
 
-      this.isNavbarPinned = window.scrollY > topbar.offsetHeight
+      const threshold = (newsbar ? newsbar.offsetHeight : 0) + (topbar ? topbar.offsetHeight : 0)
+      this.isNavbarPinned = window.scrollY > threshold
     },
     measureNavbar() {
       const navbar = this.$refs.navbar
