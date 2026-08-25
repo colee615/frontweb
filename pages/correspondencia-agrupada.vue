@@ -1,15 +1,41 @@
 <template>
-  <div class="cb-page cb-eca-page" :style="themeStyles" :class="{ 'cb-page--ready': !isBootLoading }">
+  <div class="cb-page cb-eca-page cb-correspondencia-page" :style="themeStyles" :class="{ 'cb-page--ready': !isBootLoading }">
     <transition name="cb-page-loader">
       <div v-if="isBootLoading" class="cb-page-loading-line" aria-live="polite" aria-busy="true">
         <span />
       </div>
     </transition>
 
+    <div v-if="isBootLoading" class="cb-header-skeleton" aria-hidden="true">
+      <div class="cb-shell cb-header-skeleton__top">
+        <div class="cb-header-skeleton__meta">
+          <span class="cb-skeleton cb-skeleton--meta cb-skeleton--wave" />
+          <span class="cb-skeleton cb-skeleton--meta cb-skeleton--shorter cb-skeleton--wave" />
+          <span class="cb-skeleton cb-skeleton--meta cb-skeleton--tiny cb-skeleton--wave" />
+        </div>
+        <div class="cb-header-skeleton__meta cb-header-skeleton__meta--right">
+          <span class="cb-skeleton cb-skeleton--meta cb-skeleton--shorter cb-skeleton--wave" />
+          <span class="cb-skeleton cb-skeleton--meta cb-skeleton--tiny cb-skeleton--wave" />
+        </div>
+      </div>
+      <div class="cb-shell cb-header-skeleton__main">
+        <div class="cb-skeleton cb-skeleton--logo cb-skeleton--wave" />
+        <div class="cb-header-skeleton__nav">
+          <span class="cb-skeleton cb-skeleton--nav cb-skeleton--wave" />
+          <span class="cb-skeleton cb-skeleton--nav cb-skeleton--wave" />
+          <span class="cb-skeleton cb-skeleton--nav cb-skeleton--shorter cb-skeleton--wave" />
+        </div>
+        <div class="cb-header-skeleton__actions">
+          <span class="cb-skeleton cb-skeleton--search cb-skeleton--wave" />
+          <span class="cb-skeleton cb-skeleton--menu cb-skeleton--wave" />
+        </div>
+      </div>
+    </div>
+
     <HomeHeader v-if="!isBootLoading" :logo-url="logoUrl" :icons="icons" :content="headerSettings" :links="headerLinks" />
 
     <main v-if="!isBootLoading" class="cb-page__content cb-eca">
-      <section id="eca-hero" class="cb-eca-hero">
+      <section id="correspondencia-hero" class="cb-eca-hero">
         <div class="cb-shell cb-eca-hero__grid">
           <article class="cb-eca-hero__copy cb-eca-reveal" data-reveal>
             <div v-if="heroSettings.badge" class="cb-eca-hero__badge">{{ heroSettings.badge }}</div>
@@ -56,7 +82,7 @@
         </div>
       </section>
 
-      <section id="eca-intro" class="cb-eca-intro">
+      <section id="correspondencia-intro" class="cb-eca-intro">
         <div class="cb-shell">
           <div class="cb-eca-heading cb-eca-reveal" data-reveal>
             <div class="cb-eca-heading__eyebrow">
@@ -84,7 +110,7 @@
         </div>
       </section>
 
-      <section id="eca-rates" class="cb-eca-rates">
+      <section id="correspondencia-rates" class="cb-eca-rates">
         <div class="cb-shell">
           <div class="cb-eca-heading cb-eca-heading--light cb-eca-reveal" data-reveal>
             <div class="cb-eca-heading__accent"></div>
@@ -130,7 +156,7 @@
         </div>
       </section>
 
-      <section id="eca-coverage" class="cb-eca-coverage">
+      <section id="correspondencia-coverage" class="cb-eca-coverage">
         <div class="cb-shell">
           <div class="cb-eca-heading cb-eca-reveal" data-reveal>
             <div class="cb-eca-heading__accent"></div>
@@ -173,7 +199,7 @@
         </div>
       </section>
 
-      <section id="eca-solutions" class="cb-eca-solutions">
+      <section id="correspondencia-solutions" class="cb-eca-solutions">
         <div class="cb-shell">
           <div class="cb-eca-heading cb-eca-reveal" data-reveal>
             <div class="cb-eca-heading__accent"></div>
@@ -197,62 +223,6 @@
         </div>
       </section>
 
-      <section id="eca-cta" class="cb-eca-cta">
-        <div class="cb-shell cb-eca-cta__grid">
-          <article class="cb-eca-cta__copy cb-eca-reveal" data-reveal>
-            <div class="cb-eca-heading__accent"></div>
-            <h2 v-if="ctaSettings.title">{{ ctaSettings.title }}</h2>
-            <p v-if="ctaSettings.text">{{ ctaSettings.text }}</p>
-
-            <div class="cb-eca-cta__contacts">
-              <div class="cb-eca-contact">
-                <div class="cb-eca-contact__icon" v-html="icons['phone-call']"></div>
-                <div>
-                  <small>{{ ctaSettings.phone_label }}</small>
-                  <strong>{{ ctaSettings.phone_value }}</strong>
-                </div>
-              </div>
-              <div class="cb-eca-contact">
-                <div class="cb-eca-contact__icon" v-html="icons.mail"></div>
-                <div>
-                  <small>{{ ctaSettings.email_label }}</small>
-                  <strong>{{ ctaSettings.email_value }}</strong>
-                </div>
-              </div>
-              <div class="cb-eca-contact">
-                <div class="cb-eca-contact__icon" v-html="icons.pin"></div>
-                <div>
-                  <small>{{ ctaSettings.address_label }}</small>
-                  <strong>{{ ctaSettings.address_value }}</strong>
-                </div>
-              </div>
-            </div>
-
-            <em v-if="ctaSettings.footnote" class="cb-eca-cta__footnote">{{ ctaSettings.footnote }}</em>
-          </article>
-
-          <article class="cb-eca-cta__card cb-eca-reveal" data-reveal style="--cb-delay: 110ms;">
-            <div class="cb-eca-cta__card-head">
-              <span v-html="icons.qr"></span>
-              <strong>{{ ctaSettings.qr_title }}</strong>
-            </div>
-            <div class="cb-eca-cta__qr">
-              <img v-if="ctaSettings.qr_image" :src="ctaSettings.qr_image" alt="">
-              <div v-else class="cb-eca-cta__qr-placeholder"></div>
-            </div>
-            <p v-if="ctaSettings.qr_text">{{ ctaSettings.qr_text }}</p>
-            <component
-              v-if="ctaSettings.button_label && ctaSettings.button_url"
-              :is="isInternalRoute(ctaSettings.button_url) ? 'nuxt-link' : 'a'"
-              class="cb-eca-btn cb-eca-btn--primary cb-eca-btn--full"
-              v-bind="linkAttrs(ctaSettings.button_url)"
-            >
-              {{ ctaSettings.button_label }}
-              <span aria-hidden="true">&rarr;</span>
-            </component>
-          </article>
-        </div>
-      </section>
     </main>
 
     <HomeFooter v-if="!isBootLoading" :logo-url="logoUrl" :icons="icons" :content="footerSettings" :links="footerLinks" />
@@ -262,30 +232,30 @@
 <script>
 import { sanitizeContentTree } from '~/utils/contentSecurity'
 
-const ECA_SOURCE_PAGE = {
+const CORRESPONDENCIA_SOURCE_PAGE = {
   meta_title: '',
   meta_description: '',
   theme: { logo_url: '', primary_color: '#20539a', secondary_color: '#2f3f5c', accent_color: '#fecc36' },
   sections: [
     { key: 'header', settings: {}, items: [] },
-    { key: 'eca_hero', settings: { badge: '', title_line_one_blue: '', title_line_one_yellow: '', title_line_two_yellow: '', title_line_three_blue: '', subtitle: '', primary_button_label: '', primary_button_url: '', secondary_button_label: '', secondary_button_url: '', visual_icon: '', visual_image: '' }, items: [] },
-    { key: 'eca_intro', settings: { eyebrow: '', title: '', paragraph_one: '', paragraph_two: '' }, items: [] },
-    { key: 'eca_rates', settings: { title: '', subtitle: '', note_title: '', note_text: '', primary_button_label: '', primary_button_url: '' }, items: [] },
-    { key: 'eca_coverage', settings: { title: '', subtitle: '', note_title: '', note_text: '' }, items: [] },
-    { key: 'eca_solutions', settings: { title: '', subtitle: '' }, items: [] },
-    { key: 'eca_cta', settings: { title: '', text: '', phone_label: '', phone_value: '', email_label: '', email_value: '', address_label: '', address_value: '', footnote: '', qr_title: '', qr_text: '', qr_image: '', button_label: '', button_url: '' }, items: [] },
+    { key: 'correspondencia_hero', settings: { badge: '', title_line_one_blue: '', title_line_one_yellow: '', title_line_two_yellow: '', title_line_three_blue: '', subtitle: '', primary_button_label: '', primary_button_url: '', secondary_button_label: '', secondary_button_url: '', visual_icon: '', visual_image: '' }, items: [] },
+    { key: 'correspondencia_intro', settings: { eyebrow: '', title: '', paragraph_one: '', paragraph_two: '' }, items: [] },
+    { key: 'correspondencia_rates', settings: { title: '', subtitle: '', note_title: '', note_text: '', primary_button_label: '', primary_button_url: '' }, items: [] },
+    { key: 'correspondencia_coverage', settings: { title: '', subtitle: '', note_title: '', note_text: '' }, items: [] },
+    { key: 'correspondencia_solutions', settings: { title: '', subtitle: '' }, items: [] },
+    { key: 'correspondencia_cta', settings: { title: '', text: '', phone_label: '', phone_value: '', email_label: '', email_value: '', address_label: '', address_value: '', footnote: '', qr_title: '', qr_text: '', qr_image: '', button_label: '', button_url: '' }, items: [] },
     { key: 'footer', settings: {}, items: [] }
   ]
 }
 
 export default {
-  name: 'EcaPage',
+  name: 'CorrespondenciaAgrupadaPage',
   data() {
     return { isBootLoading: true, revealObserver: null }
   },
   async asyncData({ $api }) {
     const payload = await fetchPage($api)
-    return { pageContent: normalizePage(payload || ECA_SOURCE_PAGE, ECA_SOURCE_PAGE) }
+    return { pageContent: normalizePage(payload || CORRESPONDENCIA_SOURCE_PAGE, CORRESPONDENCIA_SOURCE_PAGE) }
   },
   async mounted() {
     await this.refreshPageContent()
@@ -314,34 +284,34 @@ export default {
       return this.getSectionItems('footer')
     },
     heroSettings() {
-      return this.getSectionSettings('eca_hero')
+      return this.getSectionSettings('correspondencia_hero')
     },
     introSettings() {
-      return this.getSectionSettings('eca_intro')
+      return this.getSectionSettings('correspondencia_intro')
     },
     ratesSettings() {
-      return this.getSectionSettings('eca_rates')
+      return this.getSectionSettings('correspondencia_rates')
     },
     coverageSettings() {
-      return this.getSectionSettings('eca_coverage')
+      return this.getSectionSettings('correspondencia_coverage')
     },
     solutionsSettings() {
-      return this.getSectionSettings('eca_solutions')
+      return this.getSectionSettings('correspondencia_solutions')
     },
     ctaSettings() {
-      return this.getSectionSettings('eca_cta')
+      return this.getSectionSettings('correspondencia_cta')
     },
     introItems() {
-      return this.getSectionItems('eca_intro')
+      return this.getSectionItems('correspondencia_intro')
     },
     rateItems() {
-      return this.getSectionItems('eca_rates')
+      return this.getSectionItems('correspondencia_rates')
     },
     coverageItems() {
-      return this.getSectionItems('eca_coverage')
+      return this.getSectionItems('correspondencia_coverage')
     },
     solutionItems() {
-      return this.getSectionItems('eca_solutions')
+      return this.getSectionItems('correspondencia_solutions')
     },
     ratesNote() {
       const value = String(this.ratesSettings.note_text || '').trim()
@@ -366,7 +336,7 @@ export default {
       try {
         const payload = await fetchPage(this.$api)
         if (payload) {
-          this.pageContent = normalizePage(payload, ECA_SOURCE_PAGE)
+          this.pageContent = normalizePage(payload, CORRESPONDENCIA_SOURCE_PAGE)
         }
       } finally {
         const elapsed = Date.now() - startedAt
@@ -453,7 +423,7 @@ async function safeGet($api, endpoint) {
 }
 
 async function fetchPage($api) {
-  const endpoints = ['/frontapi/api/site/pages/eca', '/api/site/pages/eca']
+  const endpoints = ['/frontapi/api/site/pages/correspondencia-agrupada', '/api/site/pages/correspondencia-agrupada']
   for (const endpoint of endpoints) {
     const payload = await safeGet($api, endpoint)
     if (payload) {
@@ -463,7 +433,7 @@ async function fetchPage($api) {
   return null
 }
 
-function normalizePage(payload = {}, base = ECA_SOURCE_PAGE) {
+function normalizePage(payload = {}, base = CORRESPONDENCIA_SOURCE_PAGE) {
   const sectionMap = payload.section_map || {}
   const fallbackMap = base.sections.reduce((accumulator, section) => {
     accumulator[section.key] = section
@@ -523,3 +493,4 @@ function buildIcons() {
 
 <style src="~/assets/css/home.css"></style>
 <style src="~/assets/css/eca.css"></style>
+<style src="~/assets/css/correspondencia-agrupada.css"></style>

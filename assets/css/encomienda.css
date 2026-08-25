@@ -44,8 +44,7 @@
     radial-gradient(circle at 77% 36%, rgba(255, 255, 255, 0.08) 0, rgba(255, 255, 255, 0.015) 24%, transparent 52%),
     radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.08) 0, rgba(255, 255, 255, 0.025) 28%, transparent 58%),
     linear-gradient(180deg, #07348a 0%, #0a43a9 46%, #0a40a2 100%);
-  box-shadow: inset 0 -40px 80px rgba(7, 25, 76, 0.22);
-  animation: cb-encomienda-sky-drift 22s ease-in-out infinite alternate;
+  box-shadow: inset 0 -28px 56px rgba(7, 25, 76, 0.16);
 }
 
 .cb-encomienda-hero::before {
@@ -88,7 +87,6 @@
     radial-gradient(circle at 62% 28%, rgba(255, 205, 28, 0.12) 0 24px, transparent 42px),
     radial-gradient(circle at 26% 74%, rgba(255, 255, 255, 0.06) 0 48px, transparent 78px),
     radial-gradient(circle at 72% 18%, rgba(255, 255, 255, 0.05) 0 42px, transparent 72px);
-  animation: cb-encomienda-stars-twinkle 5.8s ease-in-out infinite alternate;
 }
 
 .cb-encomienda-hero::after {
@@ -108,65 +106,6 @@
   justify-items: center;
   text-align: center;
   align-content: start;
-}
-
-@keyframes cb-encomienda-sky-drift {
-  0% {
-    background-position:
-      0 0,
-      0 0,
-      0 0,
-      0 0,
-      0 0,
-      0 0,
-      0 0,
-      0 0,
-      0 0,
-      0 0,
-      0 0,
-      0 0,
-      50% 44%,
-      0 0;
-  }
-  100% {
-    background-position:
-      -8px 10px,
-      9px -7px,
-      -11px 6px,
-      8px 12px,
-      -10px -8px,
-      7px 9px,
-      -12px 10px,
-      10px -9px,
-      -8px 8px,
-      9px 7px,
-      -6px -8px,
-      7px 11px,
-      53% 47%,
-      0 0;
-  }
-}
-
-@keyframes cb-encomienda-stars-twinkle {
-  0% {
-    opacity: 0.52;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    opacity: 0.88;
-    transform: translate3d(4px, -3px, 0) scale(1.015);
-  }
-  100% {
-    opacity: 0.65;
-    transform: translate3d(-4px, 3px, 0) scale(0.995);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cb-encomienda-hero,
-  .cb-encomienda-hero::before {
-    animation: none;
-  }
 }
 
 .cb-encomienda-hero__badge {
@@ -754,15 +693,14 @@
 }
 
 .cb-encomienda-reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 560ms ease, transform 560ms ease;
-  transition-delay: var(--cb-delay, 0ms);
+  opacity: 1;
+  transform: none;
+  transition: none;
 }
 
 .cb-encomienda-reveal.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
 
 @media (max-width: 1240px) {

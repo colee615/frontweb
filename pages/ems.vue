@@ -68,7 +68,7 @@
             <span class="cb-ems-hero__corner cb-ems-hero__corner--right" aria-hidden="true"></span>
             <span v-if="introSettings.watermark_text" class="cb-ems-hero__watermark" aria-hidden="true">{{ introSettings.watermark_text }}</span>
             <div v-if="introSettings.eyebrow || introSettings.hero_title" class="cb-ems-hero__card">
-              <p v-if="introSettings.eyebrow" class="cb-ems-hero__eyebrow">{{ introSettings.eyebrow }}</p>
+              <p v-if="introSettings.eyebrow" class="cb-ems-hero__eyebrow text-lg">{{ introSettings.eyebrow }}</p>
               <h1 v-if="introSettings.hero_title">{{ introSettings.hero_title }}</h1>
             </div>
           </div>

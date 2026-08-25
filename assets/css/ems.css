@@ -1,3 +1,8 @@
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
 .cb-ems-page {
   background:
     radial-gradient(circle at top left, rgba(254, 204, 54, 0.06), transparent 22%),
@@ -91,7 +96,7 @@
 .cb-ems-hero__eyebrow {
   margin: 0 0 8px;
   color: var(--cb-blue);
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 400;
   letter-spacing: -0.01em;
 }
@@ -409,6 +414,8 @@
 .cb-ems-national-card__icon svg {
   width: 38px;
   height: 38px;
+  stroke: currentColor;
+  fill: none;
 }
 
 .cb-ems-benefit-card h3,
@@ -714,6 +721,7 @@
     box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.2s ease,
     background 0.2s ease;
+  cursor: pointer;
 }
 
 .cb-ems-global-card__frame {
@@ -756,23 +764,27 @@
 
 .cb-ems-global-card:hover,
 .cb-ems-global-card:focus-within {
-  transform: translateY(-6px);
-  background: rgba(67, 109, 191, 0.64);
-  border-color: rgba(255, 204, 29, 0.85);
+  transform: translateY(-8px) scale(1.01);
+  background: rgba(73, 114, 193, 0.78);
+  border-color: #ffde17;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 20px 34px rgba(4, 15, 40, 0.18);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 24px 40px rgba(4, 15, 40, 0.22),
+    0 0 0 1px rgba(255, 222, 23, 0.15);
 }
 
 .cb-ems-global-card:hover .cb-ems-global-card__icon,
 .cb-ems-global-card:focus-within .cb-ems-global-card__icon {
-  transform: translateY(-1px) scale(1.03);
+  transform: translateY(-1px) scale(1.04);
+  background: #ffcc1d;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(255, 204, 29, 0.18);
 }
 
 .cb-ems-global-card:hover .cb-ems-global-card__frame,
 .cb-ems-global-card:focus-within .cb-ems-global-card__frame {
-  border-top-color: rgba(255, 255, 255, 0.5);
-  border-right-color: rgba(255, 255, 255, 0.5);
+  border-top-color: rgba(173, 193, 230, 0.75);
+  border-right-color: rgba(173, 193, 230, 0.75);
 }
 
 .cb-ems-global__cta {

@@ -29,15 +29,15 @@
           <span class="cb-top-link__icon" v-html="icons.globe"></span>
           <span class="cb-top-link__text">
             <span class="cb-top-link__light-es">ES</span>
-            <strong>{{ content.language_primary || '' }}</strong>
+            <strong>{{ content.language_primary || 'Español' }}</strong>
             <span class="cb-top-link__sep">|</span>
             <span class="cb-top-link__light-us">US</span>
-            <strong>{{ content.language_secondary || '' }}</strong>
+            <strong>{{ content.language_secondary || 'English' }}</strong>
           </span>
         </button>
         <button type="button" class="cb-top-link cb-top-link--hidden">
           <span class="cb-top-link__icon" v-html="icons.accessibility"></span>
-          <span class="cb-top-link__text">{{ content.accessibility_label || '' }}</span>
+          <span class="cb-top-link__text">{{ content.accessibility_label || 'Accesibilidad' }}</span>
         </button>
       </div>
 
@@ -45,12 +45,12 @@
         <button type="button" class="cb-top-link" @click="goToContact">
           <span class="cb-top-link__icon" v-html="icons.help"></span>
           <span class="cb-top-link__text">
-            <span>{{ content.help_label || '' }}</span>
+            <span>{{ content.help_label || 'Ayuda / Contacto' }}</span>
           </span>
         </button>
         <button type="button" class="cb-top-link cb-top-link--hidden">
           <span class="cb-top-link__icon" v-html="icons.login"></span>
-          <span class="cb-top-link__text"><span>{{ content.login_label || '' }}</span></span>
+          <span class="cb-top-link__text"><span>{{ content.login_label || 'Iniciar sesion' }}</span></span>
         </button>
       </div>
     </div>
@@ -200,7 +200,7 @@ export default {
   },
   computed: {
     tickerLabel() {
-      return String(this.content.news_ticker_label || '').trim()
+      return String(this.content.news_ticker_label || 'NOVEDADES').trim()
     },
     isTickerAnimated() {
       return this.headlineItems.length > 1
@@ -336,7 +336,14 @@ export default {
           .filter(Boolean)
         : []
 
-      this.headlineItems = configuredItems
+      this.headlineItems = configuredItems.length
+        ? configuredItems
+        : [
+            { id: 'fallback-1', title: 'NOS EN NUESTRAS RRSS', url: '/noticias' },
+            { id: 'fallback-2', title: 'DELIVERY EXPRESS', url: '/deliveryexpress' },
+            { id: 'fallback-3', title: 'SIGUENOS EN NUESTRAS RRSS', url: '/noticias' },
+            { id: 'fallback-4', title: 'DELIVERY EXPRESS', url: '/deliveryexpress' }
+          ]
 
       this.$nextTick(() => {
         this.handleScroll()

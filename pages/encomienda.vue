@@ -196,23 +196,6 @@
             </component>
           </div>
 
-          <div class="cb-encomienda-cta__chips" v-if="ctaItems.length">
-            <article
-              v-for="(item, index) in ctaItems"
-              :key="item.id || item.text || index"
-              class="cb-encomienda-chip cb-encomienda-reveal"
-              data-reveal
-              :style="{ '--cb-delay': `${110 + index * 50}ms` }"
-            >
-              <span class="cb-encomienda-chip__icon" v-html="resolveIcon(item.icon || 'pin')"></span>
-              <strong>{{ item.text }}</strong>
-            </article>
-          </div>
-
-          <em v-if="ctaSettings.footnote" class="cb-encomienda-cta__footnote cb-encomienda-reveal" data-reveal style="--cb-delay: 240ms;">
-            {{ ctaSettings.footnote }}
-          </em>
-
           <div v-if="ctaSettings.watermark_text" class="cb-encomienda-cta__watermark" aria-hidden="true">
             {{ ctaSettings.watermark_text }}
           </div>
@@ -246,7 +229,7 @@ export default {
   name: 'EncomiendaPage',
   data() {
     return {
-      isBootLoading: true,
+      isBootLoading: false,
       revealObserver: null,
       activeFaqIndex: null
     }
@@ -256,8 +239,8 @@ export default {
     return { pageContent: normalizePage(payload || ENCOMIENDA_SOURCE_PAGE, ENCOMIENDA_SOURCE_PAGE) }
   },
   async mounted() {
-    await this.refreshPageContent()
     this.setupRevealObserver()
+    await this.refreshPageContent({ blockUi: !this.hasMeaningfulCmsContent() })
   },
   beforeDestroy() {
     this.destroyRevealObserver()
@@ -329,20 +312,37 @@ export default {
     }
   },
   methods: {
-    async refreshPageContent() {
-      const startedAt = Date.now()
+    hasMeaningfulCmsContent() {
+      const hero = this.getSectionSettings('encomienda_hero')
+
+      return Boolean(
+        this.pageContent?.theme?.logo_url ||
+        hero.badge ||
+        hero.title_line_one_white ||
+        hero.title_line_one_yellow ||
+        hero.title_line_two_white ||
+        hero.title_line_two_yellow ||
+        hero.subtitle
+      )
+    },
+    async refreshPageContent({ blockUi = false } = {}) {
+      if (blockUi) {
+        this.isBootLoading = true
+      }
       try {
         const payload = await fetchPage(this.$api)
         if (payload) {
           this.pageContent = normalizePage(payload, ENCOMIENDA_SOURCE_PAGE)
+          this.$nextTick(() => this.setupRevealObserver())
         }
       } finally {
-        const elapsed = Date.now() - startedAt
-        const remaining = Math.max(0, 700 - elapsed)
+        if (!blockUi) {
+          return
+        }
         window.setTimeout(() => {
           this.isBootLoading = false
           this.$nextTick(() => this.setupRevealObserver())
-        }, remaining)
+        }, 120)
       }
     },
     getSectionSettings(key) {
@@ -465,6 +465,10 @@ function buildIcons() {
   return {
     package: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 8 4.5v11L12 22 4 17.5v-11L12 2Z"></path><path d="M12 22V11"></path><path d="m20 6.5-8 4.5-8-4.5"></path><path d="m8 4.2 8 4.6"></path></svg>',
     globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a15 15 0 0 1 0 18"></path><path d="M12 3a15 15 0 0 0 0 18"></path></svg>',
+    accessibility: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="1.8"></circle><path d="M7 8h10"></path><path d="M12 8v5"></path><path d="m9 21 3-6 3 6"></path><path d="m8 12 4 2 4-2"></path></svg>',
+    help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-3 2-3 4"></path><path d="M12 17h.01"></path></svg>',
+    login: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path></svg>',
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="20" y1="20" x2="16.65" y2="16.65"></line></svg>',
     clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>',
     pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
     shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3Z"></path></svg>',
