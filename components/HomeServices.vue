@@ -8,10 +8,11 @@
 
       <div class="cb-services-grid">
         <article v-for="(service, index) in services" :id="`home-service-item-${service.id || index}`" :key="service.title" class="cb-service-card">
-          <nuxt-link
+          <component
             v-if="resolveServiceRoute(service)"
+            :is="isInternalRoute(resolveServiceRoute(service)) ? 'nuxt-link' : 'a'"
             class="cb-service-card__route"
-            :to="resolveServiceRoute(service)"
+            v-bind="linkAttrs(resolveServiceRoute(service))"
             :aria-label="`Ir a ${service.title}`"
           />
           <div class="cb-service-card__top">
@@ -55,7 +56,14 @@ export default {
   },
   methods: {
     resolveServiceRoute(service) {
-      const title = typeof service.title === 'string' ? service.title.toLowerCase() : ''
+      const configuredUrl = this.normalizeServiceUrl(service.url)
+
+      if (configuredUrl) {
+        return configuredUrl
+      }
+
+      const title = this.normalizeServiceTitle(service.title)
+
       if (title.includes('ems')) {
         return '/ems'
       }
@@ -64,15 +72,47 @@ export default {
         return '/deliveryexpress'
       }
 
-      if (title.includes('eca')) {
-        return '/eca'
+      if (title.includes('correspondencia') || title.includes('eca')) {
+        return '/correspondencia-agrupada'
       }
 
       if (title.includes('encomienda')) {
         return '/encomienda'
       }
 
+      if (title.includes('casilla')) {
+        return '/casillas'
+      }
+
+      if (title.includes('prioritario') || title.includes('prioritaria')) {
+        return '/eca'
+      }
+
       return ''
+    },
+    normalizeServiceTitle(value) {
+      return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+    },
+    normalizeServiceUrl(value) {
+      const url = String(value || '').trim()
+      return url && url !== '#' ? url : ''
+    },
+    isInternalRoute(url) {
+      return /^\/(?!\/)/.test(url)
+    },
+    linkAttrs(url) {
+      if (this.isInternalRoute(url)) {
+        return { to: url }
+      }
+
+      return {
+        href: url,
+        target: '_blank',
+        rel: 'noopener noreferrer'
+      }
     }
   }
 }
