@@ -80,7 +80,10 @@
               <h4>{{ content.social_title || '' }}</h4>
               <p class="cb-footer-copy">{{ content.social_text || '' }}</p>
               <div class="cb-socials">
-                <a v-for="social in socialLinks" :key="social.aria_label" :href="social.url || '#'" :aria-label="social.aria_label">{{ social.label }}</a>
+                <a v-for="social in socialLinks" :key="social.aria_label" :href="social.url || '#'" :aria-label="social.aria_label || social.label">
+                  <img v-if="social.image" :src="social.image" :alt="social.aria_label || social.label">
+                  <span v-else>{{ social.label }}</span>
+                </a>
               </div>
             </div>
           </div>
@@ -131,7 +134,10 @@
                   <div v-if="socialLinks.length" class="cb-footer-mobile__socials">
                     <p v-if="content.social_text" class="cb-footer-copy">{{ content.social_text }}</p>
                     <div class="cb-socials">
-                      <a v-for="social in socialLinks" :key="`mobile-${social.aria_label}`" :href="social.url || '#'" :aria-label="social.aria_label">{{ social.label }}</a>
+                      <a v-for="social in socialLinks" :key="`mobile-${social.aria_label}`" :href="social.url || '#'" :aria-label="social.aria_label || social.label">
+                        <img v-if="social.image" :src="social.image" :alt="social.aria_label || social.label">
+                        <span v-else>{{ social.label }}</span>
+                      </a>
                     </div>
                   </div>
 

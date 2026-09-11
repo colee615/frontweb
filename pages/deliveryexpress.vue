@@ -55,6 +55,13 @@
                 {{ heroSettings.primary_button_label }}
               </component>
             </div>
+
+            <div v-if="heroHighlights.length" class="cb-delivery-hero__highlights">
+              <article v-for="(item, index) in heroHighlights" :key="item.id || item.title || index">
+                <span v-if="item.icon" v-html="resolveIcon(item.icon)"></span>
+                <strong>{{ item.title }}</strong>
+              </article>
+            </div>
           </article>
 
           <article class="cb-delivery-hero__visual cb-delivery-reveal" data-reveal style="--cb-delay: 90ms;">
@@ -66,6 +73,14 @@
               <div v-if="!heroHasImage && heroSettings.floating_icon" class="cb-delivery-hero__floating" v-html="resolveIcon(heroSettings.floating_icon)"></div>
             </div>
           </article>
+        </div>
+      </section>
+
+      <section class="cb-delivery-motion-strip" aria-hidden="true">
+        <div class="cb-delivery-motion-strip__road">
+          <span class="cb-delivery-motion-strip__speed cb-delivery-motion-strip__speed--one"></span>
+          <span class="cb-delivery-motion-strip__speed cb-delivery-motion-strip__speed--two"></span>
+          <img src="/moto.png" alt="" class="cb-delivery-motion-bike">
         </div>
       </section>
 
@@ -152,17 +167,30 @@
             <div class="cb-delivery-tracker">
               <div class="cb-delivery-tracker__head">
                 <strong>{{ processSettings.tracker_title }}</strong>
-                <span v-if="processSettings.tracker_status">{{ processSettings.tracker_status }}</span>
+                <span>PROGRESO EN VIVO</span>
               </div>
               <div class="cb-delivery-tracker__map">
-                <div class="cb-delivery-tracker__pulse"></div>
-                <div class="cb-delivery-tracker__state">
-                  <span class="cb-delivery-tracker__state-icon" v-html="icons.package"></span>
-                  <strong>{{ processSettings.tracker_stage }}</strong>
+                <div class="cb-delivery-tracker__events">
+                  <article
+                    v-for="(event, index) in trackerEvents"
+                    :key="event.label"
+                    :title="`${event.label}: ${event.caption}`"
+                    :class="`cb-delivery-tracker__event-node--${index + 1}`"
+                  >
+                    <span class="cb-delivery-tracker__event-image">
+                      <img :src="event.image" alt="">
+                    </span>
+                    <strong>{{ event.label }}</strong>
+                    <small>{{ event.caption }}</small>
+                  </article>
                 </div>
               </div>
               <div class="cb-delivery-tracker__timeline">
-                <article v-for="event in processTimeline" :key="event.title + event.time" :class="{ 'is-muted': !event.title }">
+                <article
+                  v-for="(event, index) in trackerTimeline"
+                  :key="event.title + event.time"
+                  :class="[`cb-delivery-tracker__event--${index + 1}`, { 'is-muted': !event.title }]"
+                >
                   <span></span>
                   <div>
                     <strong>{{ event.title }}</strong>
@@ -301,8 +329,33 @@ export default {
     advantageItems() {
       return this.getSectionItems('delivery_advantages')
     },
+    heroHighlights() {
+      return this.advantageItems.slice(0, 3).filter((item) => String(item.title || '').trim() !== '')
+    },
     processItems() {
       return this.getSectionItems('delivery_process')
+    },
+    trackerEvents() {
+      return [
+        { label: 'ADMISION', caption: 'RECIBIDO', image: '/eventos/admision.png' },
+        { label: 'DESPACHO', caption: 'LISTO', image: '/eventos/despacho.png' },
+        { label: 'EXPEDICION', caption: 'EN RUTA', image: '/eventos/expedision.png' },
+        { label: 'VENTANILLA', caption: 'CONTROL', image: '/eventos/ventanilla.png' },
+        { label: 'CARTERO', caption: 'REPARTO', image: '/eventos/cartero.png' },
+        { label: 'ENTREGADO', caption: 'FINAL', image: '/eventos/entregado.png' }
+      ]
+    },
+    trackerTimeline() {
+      const timeline = this.processTimeline
+      const first = timeline[0] || {}
+      const second = timeline[1] || {}
+      const third = timeline[2] || {}
+
+      return [
+        { title: first.title || 'Recogida confirmada', time: first.time || 'Hoy, 10:30 AM' },
+        { title: second.title || 'En camino', time: second.time || 'Hoy, 11:15 AM' },
+        { title: third.title || 'Entrega programada', time: third.time || 'Hoy, 14:00' }
+      ]
     },
     infoItems() {
       return this.getSectionItems('delivery_info')

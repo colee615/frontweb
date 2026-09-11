@@ -51,26 +51,6 @@
 
             <p v-if="heroSettings.subtitle" class="cb-eca-hero__subtitle">{{ heroSettings.subtitle }}</p>
 
-            <div class="cb-eca-hero__actions">
-              <component
-                v-if="heroSettings.primary_button_label && heroSettings.primary_button_url"
-                :is="isInternalRoute(heroSettings.primary_button_url) ? 'nuxt-link' : 'a'"
-                class="cb-eca-btn cb-eca-btn--primary"
-                v-bind="linkAttrs(heroSettings.primary_button_url)"
-              >
-                {{ heroSettings.primary_button_label }}
-                <span aria-hidden="true">&rarr;</span>
-              </component>
-
-              <component
-                v-if="heroSettings.secondary_button_label && heroSettings.secondary_button_url"
-                :is="isInternalRoute(heroSettings.secondary_button_url) ? 'nuxt-link' : 'a'"
-                class="cb-eca-btn cb-eca-btn--ghost"
-                v-bind="linkAttrs(heroSettings.secondary_button_url)"
-              >
-                {{ heroSettings.secondary_button_label }}
-              </component>
-            </div>
           </article>
 
           <article class="cb-eca-hero__visual cb-eca-reveal" data-reveal style="--cb-delay: 100ms;">
@@ -110,6 +90,14 @@
         </div>
       </section>
 
+      <section class="cb-correspondencia-walk" aria-hidden="true">
+        <div class="cb-correspondencia-walk__path">
+          <span class="cb-correspondencia-walk__line cb-correspondencia-walk__line--one"></span>
+          <span class="cb-correspondencia-walk__line cb-correspondencia-walk__line--two"></span>
+          <img src="/cartero.png" alt="" class="cb-correspondencia-walk__postman">
+        </div>
+      </section>
+
       <section id="correspondencia-rates" class="cb-eca-rates">
         <div class="cb-shell">
           <div class="cb-eca-heading cb-eca-heading--light cb-eca-reveal" data-reveal>
@@ -143,16 +131,6 @@
             </div>
           </div>
 
-          <div v-if="ratesSettings.primary_button_label && ratesSettings.primary_button_url" class="cb-eca-rates__cta cb-eca-reveal" data-reveal style="--cb-delay: 220ms;">
-            <component
-              :is="isInternalRoute(ratesSettings.primary_button_url) ? 'nuxt-link' : 'a'"
-              class="cb-eca-btn cb-eca-btn--primary cb-eca-btn--wide"
-              v-bind="linkAttrs(ratesSettings.primary_button_url)"
-            >
-              {{ ratesSettings.primary_button_label }}
-              <span aria-hidden="true">&rarr;</span>
-            </component>
-          </div>
         </div>
       </section>
 

@@ -1,5 +1,5 @@
 <template>
-  <section class="cb-section cb-section--tight">
+  <section class="cb-section cb-section--tight cb-services-section">
     <div class="cb-shell">
       <div class="cb-section-heading">
         <h2>{{ content.title || '' }}</h2>

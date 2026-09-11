@@ -62,38 +62,12 @@
     </div>
 
     <main v-else class="cb-news">
-      <section id="news-featured" class="cb-news-featured cb-news-reveal is-visible" data-news-reveal>
-        <div class="cb-shell cb-news-featured__grid">
-          <article class="cb-news-featured__copy cb-news-reveal is-visible" data-news-reveal>
-            <span v-if="featuredItem.badge" class="cb-news-featured__badge">{{ featuredItem.badge }}</span>
-            <h1>{{ featuredItem.title }}</h1>
-            <div
-              v-if="featuredExcerptParagraphs.length"
-              :class="['cb-news-featured__excerpt', { 'cb-news-featured__excerpt--expanded': isFeaturedExpanded }]"
-            >
-              <p
-                v-for="(paragraph, index) in visibleFeaturedExcerptParagraphs"
-                :key="`featured-paragraph-${index}`"
-                class="cb-news-featured__excerpt-paragraph"
-              >
-                {{ paragraph }}
-              </p>
-            </div>
-            <button
-              v-if="hasFeaturedExcerpt"
-              type="button"
-              class="cb-news-featured__button"
-              @click="toggleFeaturedExpanded"
-            >
-              <span>{{ isFeaturedExpanded ? 'Leer menos' : featuredButtonLabel }}</span>
-              <span class="cb-news-inline-icon" v-html="icons.chevronRight"></span>
-            </button>
-          </article>
-
-          <article :id="`news-featured-item-${featuredItem.id || 0}`" class="cb-news-featured__media cb-news-reveal is-visible" data-news-reveal style="--cb-news-delay: 120ms;">
+      <section id="news-featured" class="cb-news-landing cb-news-reveal is-visible" data-news-reveal>
+        <div class="cb-shell cb-news-landing__grid">
+          <article :id="`news-featured-item-${featuredItem.id || 0}`" class="cb-news-hero-card">
             <template v-if="featuredMediaType === 'video' && featuredMediaUrl">
               <video
-                class="cb-news-featured__asset"
+                class="cb-news-hero-card__asset"
                 :src="featuredMediaUrl"
                 :poster="featuredPoster || null"
                 autoplay
@@ -105,12 +79,58 @@
             </template>
             <img
               v-else-if="featuredMediaUrl"
-              class="cb-news-featured__asset"
+              class="cb-news-hero-card__asset"
               :src="featuredMediaUrl"
               alt=""
             >
-            <div class="cb-news-featured__veil"></div>
+            <div class="cb-news-hero-card__veil"></div>
+            <div class="cb-news-hero-card__content">
+              <span v-if="featuredItem.badge" class="cb-news-featured__badge">{{ featuredItem.badge }}</span>
+              <h1>{{ featuredItem.title }}</h1>
+              <p v-if="featuredExcerptParagraphs.length">{{ featuredExcerptParagraphs[0] }}</p>
+              <nuxt-link :to="articleLink(featuredItem)" class="cb-news-featured__button">
+                <span>{{ featuredButtonLabel }}</span>
+                <span class="cb-news-inline-icon" v-html="icons.chevronRight"></span>
+              </nuxt-link>
+            </div>
+            <div v-if="featuredItems.length > 1" class="cb-news-hero-card__dots" aria-label="Noticias destacadas">
+              <button
+                v-for="(item, index) in featuredItems"
+                :key="item.id || `${item.title}-${index}`"
+                type="button"
+                :class="['cb-news-hero-card__dot', { 'is-active': index === activeFeaturedIndex }]"
+                :aria-label="`Ver destacado ${index + 1}`"
+                @click="selectFeatured(index)"
+              ></button>
+            </div>
           </article>
+
+          <aside v-if="importantNotices.length" class="cb-news-alerts" aria-label="Avisos importantes">
+            <div class="cb-news-alerts__head">
+              <div class="cb-news-alerts__title">
+                <span class="cb-news-alerts__icon" v-html="icons.megaphone"></span>
+                <h2>{{ importantNoticeSettings.title || 'Avisos importantes' }}</h2>
+              </div>
+              <a v-if="importantNoticeSettings.view_all_url" :href="importantNoticeSettings.view_all_url">
+                {{ importantNoticeSettings.view_all_label || 'Ver todos' }}
+                <span class="cb-news-inline-icon" v-html="icons.chevronRight"></span>
+              </a>
+            </div>
+
+            <a
+              v-for="(notice, index) in importantNotices"
+              :key="notice.id || `${notice.title}-${index}`"
+              :href="notice.url || '#'"
+              :class="['cb-news-alert', noticeToneClass(notice)]"
+            >
+              <span class="cb-news-alert__status" v-html="noticeIcon(notice)"></span>
+              <span class="cb-news-alert__body">
+                <strong>{{ notice.title }}</strong>
+                <span>{{ notice.text }}</span>
+                <small v-if="notice.date">{{ notice.date }}</small>
+              </span>
+            </a>
+          </aside>
         </div>
       </section>
 
@@ -137,9 +157,8 @@
 
       <section id="news-grid" class="cb-news-grid-section cb-news-reveal" data-news-reveal>
         <div class="cb-shell">
-          <div v-if="gridSettings.title || gridSettings.subtitle" class="cb-news-grid-section__heading cb-news-reveal" data-news-reveal>
+          <div v-if="gridSettings.title" class="cb-news-grid-section__heading cb-news-reveal" data-news-reveal>
             <h2 v-if="gridSettings.title">{{ gridSettings.title }}</h2>
-            <p v-if="gridSettings.subtitle">{{ gridSettings.subtitle }}</p>
           </div>
 
           <transition name="cb-news-page-switch" mode="out-in">
@@ -149,8 +168,7 @@
                   v-for="(article, index) in visibleNews"
                   :key="article.id || article.title"
                   :id="`news-item-${article.id || index}`"
-                  class="cb-news-card cb-news-reveal"
-                  data-news-reveal
+                  class="cb-news-card"
                   :style="{ '--cb-news-delay': `${index * 70}ms` }"
                 >
                   <div class="cb-news-card__media">
@@ -181,10 +199,10 @@
                     </div>
                     <h3>{{ article.title }}</h3>
                     <p>{{ article.excerpt }}</p>
-                    <a :href="article.article_url || '#'" class="cb-news-card__link">
+                    <nuxt-link :to="articleLink(article)" class="cb-news-card__link">
                       {{ gridSettings.cta_label || 'Leer mas' }}
                       <span class="cb-news-inline-icon" v-html="icons.chevronRight"></span>
-                    </a>
+                    </nuxt-link>
                   </div>
                 </article>
               </div>
@@ -208,28 +226,6 @@
         </div>
       </section>
 
-      <section id="news-newsletter" class="cb-news-newsletter cb-news-reveal" data-news-reveal>
-        <div class="cb-shell cb-news-newsletter__inner cb-news-reveal" data-news-reveal>
-          <div class="cb-news-newsletter__icon" v-html="icons.mail"></div>
-          <span v-if="newsletterSettings.badge" class="cb-news-newsletter__badge">{{ newsletterSettings.badge }}</span>
-          <h2>{{ newsletterSettings.title }}</h2>
-          <p>{{ newsletterSettings.text }}</p>
-          <form class="cb-news-newsletter__form" @submit.prevent>
-            <input type="email" :placeholder="newsletterSettings.placeholder || 'tu@email.com'">
-            <button type="submit">{{ newsletterSettings.button_label || 'Unirse' }}</button>
-          </form>
-          <small v-if="newsletterSettings.legal_text">{{ newsletterSettings.legal_text }}</small>
-        </div>
-      </section>
-
-      <section class="cb-news-pagination cb-news-reveal" data-news-reveal>
-        <div class="cb-shell cb-news-pagination__inner cb-news-reveal" data-news-reveal>
-          <button v-if="hasMore" type="button" class="cb-news-pagination__load-more" @click="showMore">
-            <span>{{ paginationSettings.load_more_label || 'Cargar mas noticias' }}</span>
-            <span class="cb-news-inline-icon" v-html="icons.chevronDown"></span>
-          </button>
-        </div>
-      </section>
     </main>
 
     <HomeFooter v-if="!isBootLoading" :logo-url="logoUrl" :icons="icons" :content="footerSettings" :links="footerLinks" />
@@ -253,6 +249,7 @@ const NEWS_PAGE = {
   theme: { logo_url: '', primary_color: '#20539a', secondary_color: '#2f3f5c', accent_color: '#fecc36' },
   sections: [
     { key: 'featured_story', settings: { button_label: 'Leer noticia completa' }, items: [] },
+    { key: 'important_notices', settings: { title: 'Avisos importantes', view_all_label: 'Ver todos', view_all_url: '/noticias' }, items: [] },
     { key: 'category_filters', settings: { search_placeholder: 'Buscar noticias...' }, items: [] },
     { key: 'news_grid', settings: { title: '', subtitle: '', cta_label: 'Leer mas' }, items: [] },
     { key: 'newsletter', settings: { badge: '', title: '', text: '', placeholder: '', button_label: '', legal_text: '' }, items: [] },
@@ -268,14 +265,15 @@ export default {
       searchTerm: '',
       selectedCategory: 'Todas',
       currentPage: 1,
-      pageSize: 6,
+      pageSize: 3,
+      activeFeaturedIndex: 0,
       isFeaturedExpanded: false,
       revealObserver: null
     }
   },
   async asyncData({ $api }) {
     const [homePayload, newsPayload] = await Promise.all([
-      safeGet($api, '/frontapi/api/site/pages/home'),
+      fetchHome($api),
       fetchNews($api)
     ])
 
@@ -316,6 +314,9 @@ export default {
     featuredSettings() {
       return this.getSectionSettings(this.newsContent, 'featured_story')
     },
+    importantNoticeSettings() {
+      return this.getSectionSettings(this.newsContent, 'important_notices')
+    },
     categorySettings() {
       return this.getSectionSettings(this.newsContent, 'category_filters')
     },
@@ -329,7 +330,10 @@ export default {
       return this.getSectionSettings(this.newsContent, 'pagination')
     },
     featuredItem() {
-      return this.getSectionItems(this.newsContent, 'featured_story')[0] || {}
+      return this.featuredItems[this.activeFeaturedIndex] || this.featuredItems[0] || {}
+    },
+    featuredItems() {
+      return this.getSectionItems(this.newsContent, 'featured_story').filter((item) => item.title)
     },
     featuredButtonLabel() {
       return this.featuredSettings.button_label || 'Leer noticia completa'
@@ -356,7 +360,11 @@ export default {
       return activeItem ? activeItem.label : ((this.categories[0] && this.categories[0].label) || 'Todas')
     },
     newsItems() {
-      return this.getSectionItems(this.newsContent, 'news_grid')
+      const configuredItems = this.getSectionItems(this.newsContent, 'news_grid').filter((item) => item.title)
+      return configuredItems
+    },
+    importantNotices() {
+      return this.getSectionItems(this.newsContent, 'important_notices').filter((item) => item.title)
     },
     filteredNews() {
       const normalizedQuery = this.searchTerm.trim().toLowerCase()
@@ -380,24 +388,53 @@ export default {
       return this.currentPage < this.totalPages
     },
     paginationItems() {
-      const configuredItems = this.getSectionItems(this.newsContent, 'pagination')
-
-      if (!configuredItems.length) {
-        return Array.from({ length: this.totalPages }, (_, index) => ({
-          label: String(index + 1),
-          is_active: index + 1 === this.currentPage,
-          is_ellipsis: false
-        }))
+      if (this.totalPages <= 1) {
+        return []
       }
 
-      return configuredItems.map((item) => {
-        const pageNumber = parsePageNumber(item.label)
+      const pages = []
+      const addPage = (pageNumber) => {
+        pages.push({
+          label: String(pageNumber),
+          page_number: pageNumber,
+          is_active: pageNumber === this.currentPage,
+          is_ellipsis: false
+        })
+      }
 
-        return {
-          ...item,
-          is_active: !item.is_ellipsis && pageNumber === this.currentPage
-        }
-      })
+      if (this.totalPages <= 5) {
+        return Array.from({ length: this.totalPages }, (_, index) => {
+          const pageNumber = index + 1
+
+          return {
+            label: String(pageNumber),
+            page_number: pageNumber,
+            is_active: pageNumber === this.currentPage,
+            is_ellipsis: false
+          }
+        })
+      }
+
+      addPage(1)
+
+      if (this.currentPage > 3) {
+        pages.push({ label: '...', is_ellipsis: true })
+      }
+
+      const start = Math.max(2, this.currentPage - 1)
+      const end = Math.min(this.totalPages - 1, this.currentPage + 1)
+
+      for (let pageNumber = start; pageNumber <= end; pageNumber += 1) {
+        addPage(pageNumber)
+      }
+
+      if (this.currentPage < this.totalPages - 2) {
+        pages.push({ label: '...', is_ellipsis: true })
+      }
+
+      addPage(this.totalPages)
+
+      return pages
     },
     featuredMediaType() {
       return normalizeMediaType(this.featuredItem)
@@ -436,7 +473,7 @@ export default {
 
       try {
         const [homePayload, newsPayload] = await Promise.all([
-          safeGet(this.$api, '/frontapi/api/site/pages/home'),
+          fetchHome(this.$api),
           fetchNews(this.$api)
         ])
 
@@ -444,6 +481,7 @@ export default {
         this.newsContent = normalizePage(newsPayload || NEWS_PAGE, NEWS_PAGE)
         this.selectedCategory = this.defaultCategory
         this.currentPage = resolveInitialPage(this.getSectionItems(this.newsContent, 'pagination'))
+        this.activeFeaturedIndex = 0
         this.isFeaturedExpanded = false
       } finally {
         const minimumRevealDelay = 900
@@ -480,9 +518,31 @@ export default {
     selectCategory(label) {
       this.selectedCategory = label
       this.currentPage = 1
+      this.scrollNewsGridIntoView()
+    },
+    selectFeatured(index) {
+      this.activeFeaturedIndex = index
+      this.isFeaturedExpanded = false
     },
     toggleFeaturedExpanded() {
       this.isFeaturedExpanded = !this.isFeaturedExpanded
+    },
+    noticeToneClass(notice) {
+      const tone = String(notice.tone || '').toLowerCase()
+      if (['danger', 'warning', 'success', 'info'].includes(tone)) {
+        return `cb-news-alert--${tone}`
+      }
+      return 'cb-news-alert--info'
+    },
+    noticeIcon(notice) {
+      const tone = String(notice.tone || '').toLowerCase()
+      if (tone === 'danger' || tone === 'warning') {
+        return this.icons.alert
+      }
+      if (tone === 'success') {
+        return this.icons.checkCircle
+      }
+      return this.icons.infoCircle
     },
     splitExcerptIntoParagraphs(excerpt) {
       const normalizedExcerpt = String(excerpt || '').trim()
@@ -517,13 +577,18 @@ export default {
         return
       }
 
-      const pageNumber = parsePageNumber(page.label)
+      const pageNumber = page.page_number || parsePageNumber(page.label)
 
       if (!pageNumber) {
         return
       }
 
       this.currentPage = Math.min(pageNumber, this.totalPages)
+      this.scrollNewsGridIntoView()
+    },
+    articleLink(item = {}) {
+      const id = item.slug || item.id || slugify(item.title || 'noticia')
+      return `/noticias/${encodeURIComponent(id)}`
     },
     resolveMediaUrl(item) {
       return item.media_url || item.image || ''
@@ -533,6 +598,20 @@ export default {
     },
     syncSearchFromRoute() {
       this.searchTerm = typeof this.$route.query.q === 'string' ? this.$route.query.q : ''
+    },
+    scrollNewsGridIntoView() {
+      this.$nextTick(() => {
+        const target = document.getElementById('news-grid')
+        const header = document.querySelector('.cb-navbar')
+
+        if (!target) {
+          return
+        }
+
+        const offset = (header ? header.offsetHeight : 64) + 18
+        const top = target.getBoundingClientRect().top + window.pageYOffset - offset
+        window.scrollTo({ top, behavior: 'smooth' })
+      })
     },
     syncHashTarget() {
       const hash = String(this.$route.hash || '').replace(/^#/, '')
@@ -616,13 +695,33 @@ export default {
 }
 
 async function fetchNews($api) {
-  const endpoints = ['/frontapi/api/site/pages/noticias', '/frontapi/api/site/pages/news']
+  const endpoints = [
+    '/api/site/pages/noticias',
+    '/frontapi/api/site/pages/noticias',
+    '/api/site/pages/news',
+    '/frontapi/api/site/pages/news'
+  ]
+
   for (const endpoint of endpoints) {
     const payload = await safeGet($api, endpoint)
     if (payload) {
       return payload
     }
   }
+  return null
+}
+
+async function fetchHome($api) {
+  const endpoints = ['/api/site/pages/home', '/frontapi/api/site/pages/home']
+
+  for (const endpoint of endpoints) {
+    const payload = await safeGet($api, endpoint)
+
+    if (payload) {
+      return payload
+    }
+  }
+
   return null
 }
 
@@ -690,6 +789,10 @@ function normalizeMediaType(item = {}) {
 function buildIcons() {
   return {
     search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="20" y1="20" x2="16.65" y2="16.65"></line></svg>',
+    alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>',
+    infoCircle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 8h.01"></path></svg>',
+    checkCircle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="m8.5 12.5 2.4 2.4 4.8-5.2"></path></svg>',
+    megaphone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 14-5v12L3 13v-2Z"></path><path d="M7 14.4V19a1 1 0 0 0 1 1h1.3a1 1 0 0 0 1-.75l.7-2.75"></path><path d="M21 9v6"></path></svg>',
     calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4"></path><path d="M8 3v4"></path><path d="M3 11h18"></path></svg>',
     tag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m20 13-7 7-10-10V3h7l10 10Z"></path><path d="M7 7h.01"></path></svg>',
     mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>',
@@ -709,6 +812,15 @@ function buildIcons() {
 function parsePageNumber(label) {
   const pageNumber = Number.parseInt(label, 10)
   return Number.isFinite(pageNumber) ? pageNumber : null
+}
+
+function slugify(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'noticia'
 }
 
 function resolveInitialPage(items = []) {

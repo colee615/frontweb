@@ -53,27 +53,6 @@
             <p v-if="heroSettings.lead_text" class="cb-ps-hero__lead">{{ heroSettings.lead_text }}</p>
             <p v-if="heroSettings.subtitle" class="cb-ps-hero__subtitle">{{ heroSettings.subtitle }}</p>
 
-            <div class="cb-ps-hero__actions">
-              <component
-                v-if="heroSettings.primary_button_label && heroSettings.primary_button_url"
-                :is="isInternalRoute(heroSettings.primary_button_url) ? 'nuxt-link' : 'a'"
-                class="cb-ps-btn cb-ps-btn--primary"
-                v-bind="linkAttrs(heroSettings.primary_button_url)"
-              >
-                {{ heroSettings.primary_button_label }}
-                <span aria-hidden="true">&rsaquo;</span>
-              </component>
-
-              <component
-                v-if="heroSettings.secondary_button_label && heroSettings.secondary_button_url"
-                :is="isInternalRoute(heroSettings.secondary_button_url) ? 'nuxt-link' : 'a'"
-                class="cb-ps-btn cb-ps-btn--ghost"
-                v-bind="linkAttrs(heroSettings.secondary_button_url)"
-              >
-                {{ heroSettings.secondary_button_label }}
-              </component>
-            </div>
-
             <div v-if="heroFeatureItems.length" class="cb-ps-hero__stats">
               <article v-for="(item, index) in heroFeatureItems" :key="item.id || item.value || index" class="cb-ps-hero__stat">
                 <span class="cb-ps-hero__stat-icon" v-html="icons.star"></span>
@@ -104,8 +83,25 @@
             <p v-if="introSettings.paragraph_two" class="cb-ps-intro__copy">{{ introSettings.paragraph_two }}</p>
           </div>
 
-          <div v-if="marketChips.length" class="cb-ps-intro__chips">
-            <span v-for="(item, index) in marketChips" :key="item.id || item.label || index">{{ item.label }}</span>
+          <div v-if="marketChips.length" class="cb-ps-intro__brand-marquee" aria-label="Tiendas compatibles">
+            <div class="cb-ps-intro__brand-track">
+              <span
+                v-for="(item, index) in marketMarqueeItems"
+                :key="`${item.id || item.label || index}-${index}`"
+                class="cb-ps-intro__brand"
+              >
+                <strong :class="brandLogoClass(item.label)">
+                  <img
+                    v-if="marketLogoUrl(item)"
+                    :src="marketLogoUrl(item)"
+                    :alt="`${item.label || 'Tienda'} logo`"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                  <span v-else v-html="brandLogoSvg(item.label)"></span>
+                </strong>
+              </span>
+            </div>
           </div>
         </div>
       </section>
@@ -153,15 +149,6 @@
               <h3 v-if="benefitsSettings.banner_title">{{ benefitsSettings.banner_title }}</h3>
               <p v-if="benefitsSettings.banner_text">{{ benefitsSettings.banner_text }}</p>
             </div>
-            <component
-              v-if="benefitsSettings.banner_button_label && benefitsSettings.banner_button_url"
-              :is="isInternalRoute(benefitsSettings.banner_button_url) ? 'nuxt-link' : 'a'"
-              class="cb-ps-btn cb-ps-btn--banner"
-              v-bind="linkAttrs(benefitsSettings.banner_button_url)"
-            >
-              {{ benefitsSettings.banner_button_label }}
-              <span aria-hidden="true">&rsaquo;</span>
-            </component>
           </div>
         </div>
       </section>
@@ -315,6 +302,9 @@ export default {
     marketChips() {
       return this.getSectionItems('postalshopper_intro')
     },
+    marketMarqueeItems() {
+      return [...this.marketChips, ...this.marketChips]
+    },
     stepItems() {
       return this.getSectionItems('postalshopper_steps')
     },
@@ -350,6 +340,50 @@ export default {
         return []
       }
       return section.items.map((item) => ({ ...(item.data || {}), id: item.id, type: item.type }))
+    },
+    marketLogoUrl(item) {
+      return String(item?.logo || item?.image || item?.logo_url || '').trim()
+    },
+    brandLogoSvg(label) {
+      const value = String(label || '').trim()
+      const lower = value.toLowerCase()
+
+      if (lower.includes('amazon')) {
+        return '<svg viewBox="0 0 118 36" aria-hidden="true"><text x="4" y="21" font-size="18" font-weight="800" font-family="Arial, sans-serif" fill="currentColor">amazon</text><path d="M28 28c18 7 42 5 61-5" fill="none" stroke="#ffb300" stroke-width="3" stroke-linecap="round"/><path d="M84 21l9 1-5 7" fill="none" stroke="#ffb300" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      }
+      if (lower.includes('ebay')) {
+        return '<svg viewBox="0 0 96 34" aria-hidden="true"><text x="3" y="24" font-size="22" font-weight="800" font-family="Arial, sans-serif" fill="#e53238">e</text><text x="23" y="24" font-size="22" font-weight="800" font-family="Arial, sans-serif" fill="#0064d2">b</text><text x="43" y="24" font-size="22" font-weight="800" font-family="Arial, sans-serif" fill="#f5af02">a</text><text x="63" y="24" font-size="22" font-weight="800" font-family="Arial, sans-serif" fill="#86b817">y</text></svg>'
+      }
+      if (lower.includes('walmart')) {
+        return '<svg viewBox="0 0 128 34" aria-hidden="true"><text x="3" y="23" font-size="20" font-weight="800" font-family="Arial, sans-serif" fill="#0071ce">Walmart</text><g fill="#ffc220" transform="translate(104 17)"><circle cx="0" cy="-11" r="2.4"/><circle cx="0" cy="11" r="2.4"/><circle cx="-10" cy="-5.5" r="2.4"/><circle cx="10" cy="-5.5" r="2.4"/><circle cx="-10" cy="5.5" r="2.4"/><circle cx="10" cy="5.5" r="2.4"/></g></svg>'
+      }
+      if (lower.includes('shein')) {
+        return '<svg viewBox="0 0 92 34" aria-hidden="true"><text x="4" y="24" font-size="22" font-weight="800" letter-spacing="3" font-family="Arial, sans-serif" fill="#111827">SHEIN</text></svg>'
+      }
+      if (lower.includes('nike')) {
+        return '<svg viewBox="0 0 96 34" aria-hidden="true"><path d="M8 22c16 6 37 1 80-14-33 18-58 25-73 24-7 0-11-3-7-10z" fill="#111827"/></svg>'
+      }
+      if (lower.includes('apple')) {
+        return '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#111827" d="M31.4 6.2c1.2-1.5 2-3.6 1.8-5.7-1.8.1-4 .1-5.4 1.8-1.2 1.4-2.2 3.5-1.9 5.5 2 .2 4.2-.5 5.5-1.6zM39 34.4c-.9 2-1.4 2.9-2.6 4.7-1.7 2.6-4.1 5.8-7.1 5.8-2.6 0-3.3-1.7-6.9-1.7s-4.4 1.7-6.9 1.7c-3 0-5.3-2.9-7-5.5-4.8-7.4-5.3-16.1-2.4-20.7 2.1-3.3 5.4-5.2 8.5-5.2 3.2 0 5.2 1.7 7.8 1.7 2.5 0 4.1-1.7 7.8-1.7 2.8 0 5.8 1.5 7.8 4.2-6.9 3.8-5.8 13.6 1 16.7z"/></svg>'
+      }
+      if (lower.includes('miles')) {
+        return '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="19" fill="#ffcc18"/><path d="M24 14v20M14 24h20" stroke="#0f4aad" stroke-width="4" stroke-linecap="round"/></svg>'
+      }
+
+      return '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="18" fill="#ffcc18"/><path d="M24 14v20M14 24h20" stroke="#0f4aad" stroke-width="4" stroke-linecap="round"/></svg>'
+    },
+    brandLogoClass(label) {
+      const value = String(label || '').trim().toLowerCase()
+
+      if (value.includes('amazon')) return 'cb-ps-intro__brand-logo cb-ps-intro__brand-logo--amazon'
+      if (value.includes('ebay')) return 'cb-ps-intro__brand-logo cb-ps-intro__brand-logo--ebay'
+      if (value.includes('walmart')) return 'cb-ps-intro__brand-logo cb-ps-intro__brand-logo--walmart'
+      if (value.includes('shein')) return 'cb-ps-intro__brand-logo cb-ps-intro__brand-logo--shein'
+      if (value.includes('nike')) return 'cb-ps-intro__brand-logo cb-ps-intro__brand-logo--nike'
+      if (value.includes('apple')) return 'cb-ps-intro__brand-logo cb-ps-intro__brand-logo--apple'
+      if (value.includes('miles')) return 'cb-ps-intro__brand-logo cb-ps-intro__brand-logo--more'
+
+      return 'cb-ps-intro__brand-logo'
     },
     resolveIcon(icon) {
       return this.icons[icon] || ''

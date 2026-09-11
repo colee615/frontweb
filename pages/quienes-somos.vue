@@ -145,27 +145,7 @@
               @click="heroIndex = index"
             />
           </div>
-        </div>
-      </section>
 
-      <section id="about-mission" class="cb-about-section cb-about-mission cb-about-reveal" data-reveal>
-        <div class="cb-shell cb-about-mission__grid">
-          <article class="cb-about-mission__card cb-about-reveal" data-reveal style="--cb-delay: 0ms;">
-            <div class="cb-about-mission__surface">
-              <h2>{{ missionVisionSettings.mission_title }}</h2>
-              <div class="cb-about-mission__body">
-                <p>{{ missionVisionSettings.mission_text }}</p>
-              </div>
-            </div>
-          </article>
-          <article class="cb-about-mission__card cb-about-reveal" data-reveal style="--cb-delay: 120ms;">
-            <div class="cb-about-mission__surface">
-              <h2>{{ missionVisionSettings.vision_title }}</h2>
-              <div class="cb-about-mission__body">
-                <p>{{ missionVisionSettings.vision_text }}</p>
-              </div>
-            </div>
-          </article>
         </div>
       </section>
 
@@ -231,6 +211,35 @@
               </div>
             </div>
           </article>
+        </div>
+      </section>
+
+      <section id="about-mission" class="cb-about-section cb-about-mission cb-about-reveal" data-reveal>
+        <div class="cb-shell">
+          <div class="cb-about-mission__intro cb-about-reveal" data-reveal>
+            <p class="cb-about-eyebrow">Nuestro compromiso</p>
+            <h2>Una institucion postal al servicio de Bolivia.</h2>
+          </div>
+          <div class="cb-about-mission__grid">
+            <article class="cb-about-mission__card cb-about-reveal" data-reveal style="--cb-delay: 0ms;">
+              <div class="cb-about-mission__surface">
+                <span class="cb-about-mission__icon" v-html="icons.mail"></span>
+                <h2>{{ missionVisionSettings.mission_title }}</h2>
+                <div class="cb-about-mission__body">
+                  <p>{{ missionVisionSettings.mission_text }}</p>
+                </div>
+              </div>
+            </article>
+            <article class="cb-about-mission__card cb-about-reveal" data-reveal style="--cb-delay: 120ms;">
+              <div class="cb-about-mission__surface">
+                <span class="cb-about-mission__icon" v-html="icons.globe"></span>
+                <h2>{{ missionVisionSettings.vision_title }}</h2>
+                <div class="cb-about-mission__body">
+                  <p>{{ missionVisionSettings.vision_text }}</p>
+                </div>
+              </div>
+            </article>
+          </div>
         </div>
       </section>
 
@@ -427,6 +436,15 @@ export default {
     },
     currentHeroSlide() {
       return this.heroSlides[this.heroIndex] || {}
+    },
+    aboutHeroEyebrow() {
+      return this.currentHeroSlide.eyebrow || 'Quienes somos'
+    },
+    aboutHeroTitle() {
+      return this.currentHeroSlide.title || this.historySettings.title || 'Conoce Correos de Bolivia'
+    },
+    aboutHeroText() {
+      return this.currentHeroSlide.text || this.historySettings.text || 'Trabajamos para conectar personas, instituciones y comunidades con un servicio postal cercano, confiable y en constante evolucion.'
     },
     currentHeroMediaType() {
       return normalizeHeroMediaType(this.currentHeroSlide)

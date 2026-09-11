@@ -10,6 +10,14 @@
 
     <main v-if="!isBootLoading" class="cb-page__content cb-encomienda">
       <section id="encomienda-hero" class="cb-encomienda-hero">
+        <div class="cb-encomienda-hero__stars" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
         <div class="cb-shell cb-encomienda-hero__inner">
           <div class="cb-encomienda-hero__badge cb-encomienda-reveal" data-reveal v-if="heroSettings.badge">
             <span class="cb-encomienda-hero__badge-dot"></span>
@@ -39,16 +47,6 @@
 
             <div class="cb-encomienda-hero__actions">
               <component
-                v-if="heroSettings.primary_button_label && heroSettings.primary_button_url"
-                :is="isInternalRoute(heroSettings.primary_button_url) ? 'nuxt-link' : 'a'"
-                class="cb-encomienda-btn cb-encomienda-btn--primary"
-                v-bind="linkAttrs(heroSettings.primary_button_url)"
-              >
-                {{ heroSettings.primary_button_label }}
-                <span aria-hidden="true">&rarr;</span>
-              </component>
-
-              <component
                 v-if="heroSettings.secondary_button_label && heroSettings.secondary_button_url"
                 :is="isInternalRoute(heroSettings.secondary_button_url) ? 'nuxt-link' : 'a'"
                 class="cb-encomienda-btn cb-encomienda-btn--ghost"
@@ -59,6 +57,10 @@
             </div>
           </article>
         </div>
+
+        <svg class="cb-encomienda-hero__wave" viewBox="0 0 1440 86" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 28C143 14 278 44 428 28C579 12 701 8 873 22C1045 36 1191 50 1440 18V86H0V28Z"></path>
+        </svg>
       </section>
 
       <section id="encomienda-intro" class="cb-encomienda-intro">
@@ -102,6 +104,13 @@
       </section>
 
       <section id="encomienda-features" class="cb-encomienda-features">
+        <div class="cb-encomienda-features__lights" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
         <div class="cb-shell">
           <div class="cb-encomienda-heading cb-encomienda-heading--light cb-encomienda-reveal" data-reveal>
             <h2 v-if="featuresSettings.title">{{ featuresSettings.title }}</h2>

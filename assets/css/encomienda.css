@@ -14,7 +14,7 @@
 
 .cb-encomienda-hero {
   min-height: 92vh;
-  padding: 88px 0 170px;
+  padding: 88px 0 188px;
   isolation: isolate;
   background:
     radial-gradient(circle at 4% 9%, rgba(255, 205, 28, 0.86) 0 1.1px, transparent 2.1px),
@@ -50,7 +50,7 @@
 .cb-encomienda-hero::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -3%;
   z-index: 0;
   pointer-events: none;
   opacity: 0.96;
@@ -87,21 +87,106 @@
     radial-gradient(circle at 62% 28%, rgba(255, 205, 28, 0.12) 0 24px, transparent 42px),
     radial-gradient(circle at 26% 74%, rgba(255, 255, 255, 0.06) 0 48px, transparent 78px),
     radial-gradient(circle at 72% 18%, rgba(255, 255, 255, 0.05) 0 42px, transparent 72px);
+  animation: cbEncomiendaHeroDrift 18s ease-in-out infinite alternate;
+  will-change: transform, opacity;
 }
 
 .cb-encomienda-hero::after {
-  content: "";
+  content: none;
+}
+
+.cb-encomienda-hero__wave {
   position: absolute;
-  inset: auto -1% -22px;
-  height: 54px;
-  background: #fff;
-  border-top-left-radius: 50% 18px;
-  border-top-right-radius: 50% 18px;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 86px;
+  color: #fff;
+  pointer-events: none;
+}
+
+.cb-encomienda-hero__wave path {
+  fill: currentColor;
+}
+
+.cb-encomienda-hero__stars {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cb-encomienda-hero__stars span {
+  position: absolute;
+  top: var(--cb-star-top);
+  left: -18vw;
+  width: var(--cb-star-width);
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.82), rgba(255, 204, 24, 0.92), transparent);
+  opacity: 0;
+  transform: rotate(-16deg);
+  filter: drop-shadow(0 0 8px rgba(255, 204, 24, 0.28));
+  animation: cbEncomiendaShootingStar var(--cb-star-duration) linear infinite;
+  animation-delay: var(--cb-star-delay);
+  will-change: transform, opacity;
+}
+
+.cb-encomienda-hero__stars span::after {
+  content: '';
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #ffcc18;
+  transform: translateY(-50%);
+  box-shadow: 0 0 14px rgba(255, 204, 24, 0.56);
+}
+
+.cb-encomienda-hero__stars span:nth-child(1) {
+  --cb-star-top: 12%;
+  --cb-star-width: 132px;
+  --cb-star-duration: 7.8s;
+  --cb-star-delay: -1.4s;
+}
+
+.cb-encomienda-hero__stars span:nth-child(2) {
+  --cb-star-top: 28%;
+  --cb-star-width: 96px;
+  --cb-star-duration: 9.4s;
+  --cb-star-delay: -4.2s;
+}
+
+.cb-encomienda-hero__stars span:nth-child(3) {
+  --cb-star-top: 47%;
+  --cb-star-width: 118px;
+  --cb-star-duration: 8.6s;
+  --cb-star-delay: -6.8s;
+}
+
+.cb-encomienda-hero__stars span:nth-child(4) {
+  --cb-star-top: 64%;
+  --cb-star-width: 82px;
+  --cb-star-duration: 10.2s;
+  --cb-star-delay: -2.7s;
+}
+
+.cb-encomienda-hero__stars span:nth-child(5) {
+  --cb-star-top: 82%;
+  --cb-star-width: 108px;
+  --cb-star-duration: 8.9s;
+  --cb-star-delay: -8.1s;
 }
 
 .cb-encomienda-hero__inner {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   justify-items: center;
   text-align: center;
@@ -129,6 +214,8 @@
   border-radius: 50%;
   background: #ffcc18;
   flex: 0 0 auto;
+  box-shadow: 0 0 0 0 rgba(255, 204, 24, 0.45);
+  animation: cbEncomiendaPulseDot 1.9s ease-in-out infinite;
 }
 
 .cb-encomienda-hero__icon-shell {
@@ -141,6 +228,8 @@
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
   display: grid;
   place-items: center;
+  animation: cbEncomiendaFloatIcon 5.6s ease-in-out infinite;
+  will-change: transform;
 }
 
 .cb-encomienda-hero__icon-mark,
@@ -198,6 +287,8 @@
   font-size: clamp(17px, 1.5vw, 22px);
   line-height: 1.48;
   font-weight: 700;
+  text-shadow: 0 8px 22px rgba(255, 204, 24, 0.08);
+  animation: cbEncomiendaSubtitleGlow 4.8s ease-in-out infinite;
 }
 
 .cb-encomienda-hero__actions,
@@ -211,6 +302,31 @@
 .cb-encomienda-hero__actions {
   margin-top: 34px;
   gap: 16px;
+  width: 100%;
+  justify-content: center;
+}
+
+.cb-encomienda-hero__actions .cb-encomienda-btn--ghost {
+  min-width: 184px;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  text-decoration: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 14px 28px rgba(6, 25, 78, 0.12);
+  animation: cbEncomiendaGhostBreath 4.2s ease-in-out infinite;
+}
+
+.cb-encomienda-hero__actions .cb-encomienda-btn--ghost:hover,
+.cb-encomienda-hero__actions .cb-encomienda-btn--ghost:focus-visible {
+  color: #0b43ab;
+  border-color: #ffcc18;
+  background: #ffcc18;
+  text-decoration: none;
+  box-shadow:
+    0 18px 34px rgba(255, 204, 24, 0.26),
+    0 8px 18px rgba(6, 25, 78, 0.12);
 }
 
 .cb-encomienda-btn {
@@ -266,6 +382,14 @@
 .cb-encomienda-cta {
   padding: 76px 0 110px;
   background: #fff;
+}
+
+.cb-encomienda-faq {
+  padding-bottom: 46px;
+}
+
+.cb-encomienda-cta {
+  padding-top: 34px;
 }
 
 .cb-encomienda-intro__grid {
@@ -412,23 +536,98 @@
 }
 
 .cb-encomienda-features {
-  padding: 96px 0 106px;
+  padding: 84px 0 94px;
+  overflow: hidden;
   background:
-    radial-gradient(circle at 20% 15%, rgba(255,198,26,0.18) 0 2px, transparent 2.5px) 0 0/170px 170px,
-    radial-gradient(circle at 88% 10%, rgba(255,198,26,0.18) 0 2px, transparent 2.5px) 0 0/220px 220px,
-    linear-gradient(180deg, var(--cb-blue) 0%, color-mix(in srgb, var(--cb-blue) 95%, #16356d 5%) 100%);
+    radial-gradient(circle at 8% 22%, rgba(255, 198, 26, 0.72) 0 1.6px, transparent 2.5px),
+    radial-gradient(circle at 23% 7%, rgba(255, 198, 26, 0.78) 0 1.5px, transparent 2.4px),
+    radial-gradient(circle at 46% 30%, rgba(255, 198, 26, 0.58) 0 1.3px, transparent 2.2px),
+    radial-gradient(circle at 76% 17%, rgba(255, 198, 26, 0.76) 0 1.7px, transparent 2.5px),
+    radial-gradient(circle at 92% 64%, rgba(255, 198, 26, 0.7) 0 1.4px, transparent 2.3px),
+    linear-gradient(180deg, #0644a9 0%, #0a49b1 48%, #0844a8 100%);
+}
+
+.cb-encomienda-features > .cb-shell {
+  position: relative;
+  z-index: 1;
 }
 
 .cb-encomienda-features::before {
-  content: "UPU";
+  content: "";
   position: absolute;
-  inset: auto 0 40px;
-  text-align: center;
-  color: rgba(255,255,255,0.03);
-  font-size: clamp(220px, 26vw, 520px);
-  font-weight: 900;
-  line-height: 0.8;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(112deg, transparent 0 7%, rgba(255, 198, 26, 0.16) 7.15% 7.28%, transparent 7.45% 100%),
+    linear-gradient(28deg, transparent 0 22%, rgba(255, 198, 26, 0.12) 22.1% 22.22%, transparent 22.38% 100%),
+    linear-gradient(154deg, transparent 0 64%, rgba(255, 198, 26, 0.13) 64.1% 64.22%, transparent 64.38% 100%);
+  opacity: 0.55;
   pointer-events: none;
+}
+
+.cb-encomienda-features__lights {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cb-encomienda-features__lights span {
+  position: absolute;
+  top: var(--cb-feature-light-top);
+  left: -16vw;
+  width: var(--cb-feature-light-width);
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.74), rgba(255, 204, 24, 0.86), transparent);
+  opacity: 0;
+  transform: rotate(-14deg);
+  filter: drop-shadow(0 0 8px rgba(255, 204, 24, 0.26));
+  animation: cbEncomiendaShootingStar var(--cb-feature-light-duration) linear infinite;
+  animation-delay: var(--cb-feature-light-delay);
+  will-change: transform, opacity;
+}
+
+.cb-encomienda-features__lights span::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: #ffcc18;
+  transform: translateY(-50%);
+  box-shadow: 0 0 12px rgba(255, 204, 24, 0.5);
+}
+
+.cb-encomienda-features__lights span:nth-child(1) {
+  --cb-feature-light-top: 10%;
+  --cb-feature-light-width: 128px;
+  --cb-feature-light-duration: 8.2s;
+  --cb-feature-light-delay: -1.6s;
+}
+
+.cb-encomienda-features__lights span:nth-child(2) {
+  --cb-feature-light-top: 32%;
+  --cb-feature-light-width: 92px;
+  --cb-feature-light-duration: 10.4s;
+  --cb-feature-light-delay: -5.1s;
+}
+
+.cb-encomienda-features__lights span:nth-child(3) {
+  --cb-feature-light-top: 58%;
+  --cb-feature-light-width: 116px;
+  --cb-feature-light-duration: 9.1s;
+  --cb-feature-light-delay: -7.4s;
+}
+
+.cb-encomienda-features__lights span:nth-child(4) {
+  --cb-feature-light-top: 78%;
+  --cb-feature-light-width: 84px;
+  --cb-feature-light-duration: 11.2s;
+  --cb-feature-light-delay: -3.2s;
 }
 
 .cb-encomienda-heading {
@@ -438,6 +637,21 @@
 .cb-encomienda-heading--light h2,
 .cb-encomienda-heading--light p {
   color: #fff;
+}
+
+.cb-encomienda-features .cb-encomienda-heading--light h2 {
+  max-width: 1040px;
+  color: var(--cb-yellow);
+  font-size: clamp(40px, 4.2vw, 56px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.cb-encomienda-features .cb-encomienda-heading--light p {
+  max-width: 680px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 18px;
+  line-height: 1.45;
 }
 
 .cb-encomienda-heading h2 {
@@ -464,17 +678,21 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
-  margin-top: 56px;
+  gap: 20px;
+  width: min(100%, 1120px);
+  margin: 58px auto 0;
 }
 
 .cb-encomienda-feature-card {
-  min-height: 360px;
-  padding: 28px 28px 30px;
-  border-radius: 28px;
-  border: 1px solid rgba(255,255,255,0.16);
-  background: linear-gradient(180deg, rgba(64, 109, 193, 0.96), rgba(48, 91, 173, 0.96));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  min-height: 312px;
+  padding: 28px 28px 28px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(55, 105, 197, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 44px rgba(4, 24, 82, 0.12);
+  backdrop-filter: blur(2px);
   transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
 }
 
@@ -485,9 +703,9 @@
 }
 
 .cb-encomienda-feature-card__icon {
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 15px;
   display: grid;
   place-items: center;
   background: var(--cb-yellow);
@@ -500,16 +718,18 @@
 }
 
 .cb-encomienda-feature-card h3 {
-  margin: 28px 0 16px;
+  margin: 24px 0 16px;
   color: #fff;
-  font-size: 25px;
+  font-size: 18px;
   font-weight: 900;
-  line-height: 1.18;
+  line-height: 1.32;
   text-transform: uppercase;
 }
 
 .cb-encomienda-feature-card p {
-  color: rgba(255,255,255,0.72);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 16px;
+  line-height: 1.62;
 }
 
 .cb-encomienda-faq__shell,
@@ -587,9 +807,9 @@
 
 .cb-encomienda-faq__tip {
   width: min(100%, 738px);
-  margin: 32px auto 0;
-  padding: 22px 24px;
-  border-radius: 24px;
+  margin: 28px auto 0;
+  padding: 18px 22px;
+  border-radius: 22px;
   border: 1px solid rgba(124, 154, 224, 0.28);
   background: #eef3ff;
   display: grid;
@@ -612,20 +832,31 @@
 .cb-encomienda-faq__tip p {
   margin: 0;
   color: #5a7fca;
-  font-size: 17px;
-  line-height: 1.7;
+  font-size: 16px;
+  line-height: 1.55;
 }
 
 .cb-encomienda-faq__tip strong {
   color: var(--cb-blue);
 }
 
-.cb-encomienda-cta {
-  padding-top: 88px;
-}
-
 .cb-encomienda-cta__inner {
   text-align: center;
+}
+
+.cb-encomienda-cta .cb-encomienda-heading {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.cb-encomienda-cta .cb-encomienda-heading__accent {
+  margin-bottom: 26px;
+}
+
+.cb-encomienda-cta .cb-encomienda-heading h2 {
+  max-width: 920px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .cb-encomienda-cta__actions {
@@ -680,10 +911,10 @@
 
 .cb-encomienda-cta__watermark {
   position: absolute;
-  inset: 54px 50% auto;
+  inset: 116px 50% auto;
   transform: translateX(-50%);
-  color: rgba(18, 71, 177, 0.035);
-  font-size: clamp(190px, 22vw, 420px);
+  color: rgba(18, 71, 177, 0.026);
+  font-size: clamp(160px, 18vw, 340px);
   font-weight: 900;
   letter-spacing: -0.06em;
   line-height: 0.85;
@@ -701,6 +932,108 @@
 .cb-encomienda-reveal.is-visible {
   opacity: 1;
   transform: none;
+}
+
+@keyframes cbEncomiendaHeroDrift {
+  0% {
+    transform: translate3d(-8px, -6px, 0) scale(1);
+    opacity: 0.84;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate3d(10px, 8px, 0) scale(1.015);
+    opacity: 0.9;
+  }
+}
+
+@keyframes cbEncomiendaShootingStar {
+  0% {
+    transform: translate3d(-18vw, -8px, 0) rotate(-16deg);
+    opacity: 0;
+  }
+
+  8%,
+  18% {
+    opacity: 0.82;
+  }
+
+  42% {
+    transform: translate3d(118vw, 62px, 0) rotate(-16deg);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate3d(118vw, 62px, 0) rotate(-16deg);
+    opacity: 0;
+  }
+}
+
+@keyframes cbEncomiendaPulseDot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 204, 24, 0.42);
+    transform: scale(0.92);
+  }
+
+  50% {
+    box-shadow: 0 0 0 7px rgba(255, 204, 24, 0);
+    transform: scale(1);
+  }
+}
+
+@keyframes cbEncomiendaFloatIcon {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-0.4deg);
+  }
+
+  50% {
+    transform: translateY(-8px) rotate(0.6deg);
+  }
+}
+
+@keyframes cbEncomiendaSubtitleGlow {
+  0%,
+  100% {
+    text-shadow: 0 8px 22px rgba(255, 204, 24, 0.08);
+  }
+
+  50% {
+    text-shadow: 0 10px 28px rgba(255, 204, 24, 0.22);
+  }
+}
+
+@keyframes cbEncomiendaGhostBreath {
+  0%,
+  100% {
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 14px 28px rgba(6, 25, 78, 0.12);
+  }
+
+  50% {
+    border-color: rgba(255, 204, 24, 0.42);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 16px 34px rgba(255, 204, 24, 0.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cb-encomienda-hero::before,
+  .cb-encomienda-hero__stars span,
+  .cb-encomienda-features__lights span,
+  .cb-encomienda-hero__badge-dot,
+  .cb-encomienda-hero__icon-shell,
+  .cb-encomienda-hero__subtitle,
+  .cb-encomienda-hero__actions .cb-encomienda-btn--ghost {
+    animation: none;
+  }
 }
 
 @media (max-width: 1240px) {
@@ -731,7 +1064,11 @@
 @media (max-width: 768px) {
   .cb-encomienda-hero {
     min-height: auto;
-    padding: 106px 0 138px;
+    padding: 106px 0 128px;
+  }
+
+  .cb-encomienda-hero__wave {
+    height: 58px;
   }
 
   .cb-encomienda-hero__copy h1 {
@@ -749,6 +1086,16 @@
 
   .cb-encomienda-features__grid {
     grid-template-columns: 1fr;
+    margin-top: 34px;
+  }
+
+  .cb-encomienda-features {
+    padding: 64px 0 76px;
+  }
+
+  .cb-encomienda-feature-card {
+    min-height: 0;
+    padding: 24px;
   }
 
   .cb-encomienda-heading h2,

@@ -151,7 +151,7 @@ export default {
 
       return {
         'is-right': left >= 58,
-        'is-bottom': top <= 28
+        'is-bottom': top <= 45
       }
     },
     usesCompactCard() {

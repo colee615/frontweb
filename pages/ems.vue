@@ -204,14 +204,6 @@
 
           <article class="cb-ems-global__cta cb-ems-reveal" data-reveal style="--cb-delay: 200ms;">
             <p>{{ internationalSettings.cta_text }}</p>
-            <component
-              v-if="internationalSettings.secondary_button_label && internationalSettings.secondary_button_url"
-              :is="isInternalRoute(internationalSettings.secondary_button_url) ? 'nuxt-link' : 'a'"
-              class="cb-ems-btn cb-ems-btn--secondary"
-              v-bind="linkAttrs(internationalSettings.secondary_button_url)"
-            >
-              {{ internationalSettings.secondary_button_label }}
-            </component>
           </article>
         </div>
       </section>

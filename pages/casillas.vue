@@ -56,27 +56,6 @@
 
             <p v-if="heroSettings.highlight_text" class="cb-casillas-hero__highlight">{{ heroSettings.highlight_text }}</p>
             <p v-if="heroSettings.subtitle" class="cb-casillas-hero__subtitle">{{ heroSettings.subtitle }}</p>
-
-            <div class="cb-casillas-hero__actions">
-              <component
-                v-if="heroSettings.primary_button_label && heroSettings.primary_button_url"
-                :is="isInternalRoute(heroSettings.primary_button_url) ? 'nuxt-link' : 'a'"
-                class="cb-casillas-btn cb-casillas-btn--primary"
-                v-bind="linkAttrs(heroSettings.primary_button_url)"
-              >
-                {{ heroSettings.primary_button_label }}
-                <span aria-hidden="true">&rsaquo;</span>
-              </component>
-
-              <component
-                v-if="heroSettings.secondary_button_label && heroSettings.secondary_button_url"
-                :is="isInternalRoute(heroSettings.secondary_button_url) ? 'nuxt-link' : 'a'"
-                class="cb-casillas-btn cb-casillas-btn--ghost"
-                v-bind="linkAttrs(heroSettings.secondary_button_url)"
-              >
-                {{ heroSettings.secondary_button_label }}
-              </component>
-            </div>
           </article>
         </div>
         <div class="cb-casillas-hero__wave" aria-hidden="true">
@@ -168,36 +147,30 @@
             <div class="cb-casillas-sizes__plans">
               <span v-if="sizesSettings.plan_label" class="cb-casillas-sizes__plans-label">{{ sizesSettings.plan_label }}</span>
 
-              <button
+              <span
                 v-if="sizesSettings.quarterly_label"
-                type="button"
                 class="cb-casillas-pill"
                 :class="{ 'is-active': selectedPlan === 'quarterly' }"
-                @click="selectPlan('quarterly')"
               >
                 {{ sizesSettings.quarterly_label }}
-              </button>
+              </span>
 
-              <button
+              <span
                 v-if="sizesSettings.semiannual_label"
-                type="button"
                 class="cb-casillas-pill"
                 :class="{ 'is-active': selectedPlan === 'semiannual' }"
-                @click="selectPlan('semiannual')"
               >
                 {{ sizesSettings.semiannual_label }}
-              </button>
+              </span>
 
-              <button
+              <span
                 v-if="sizesSettings.annual_label"
-                type="button"
                 class="cb-casillas-pill"
                 :class="{ 'is-active': selectedPlan === 'annual' }"
-                @click="selectPlan('annual')"
               >
                 <span v-if="sizesSettings.annual_badge" class="cb-casillas-pill__badge">{{ sizesSettings.annual_badge }}</span>
                 {{ sizesSettings.annual_label }}
-              </button>
+              </span>
             </div>
           </article>
 

@@ -6,13 +6,15 @@
 .cb-casillas-hero {
   position: relative;
   overflow: clip;
-  padding: 96px 0 176px;
+  min-height: 640px;
+  padding: 112px 0 190px;
   color: #fff;
   background:
-    linear-gradient(90deg, rgba(6, 38, 100, 0.95) 0%, rgba(9, 58, 144, 0.8) 42%, rgba(8, 34, 88, 0.62) 100%),
+    linear-gradient(90deg, rgba(6, 34, 91, 0.98) 0%, rgba(10, 58, 145, 0.93) 38%, rgba(10, 67, 169, 0.76) 62%, rgba(8, 34, 88, 0.38) 100%),
     var(--cb-hero-image, linear-gradient(180deg, #103f98 0%, #0b378a 100%));
-  background-size: cover, cover;
-  background-position: center, center right;
+  background-size: cover, auto 114%;
+  background-position: center, right 48% center;
+  background-repeat: no-repeat;
   border-top: 3px solid var(--cb-yellow);
 }
 
@@ -236,6 +238,10 @@
 .cb-casillas-sizes {
   padding: 92px 0;
   background: #fff;
+}
+
+.cb-casillas-intro {
+  padding-top: 142px;
 }
 
 .cb-casillas-intro__inner {
@@ -524,6 +530,9 @@
 
 .cb-casillas-pill {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 48px;
   padding: 0 20px;
   border: 2px solid rgba(186, 206, 241, 0.85);
@@ -532,7 +541,8 @@
   color: var(--cb-blue);
   font-size: 15px;
   font-weight: 800;
-  cursor: pointer;
+  cursor: default;
+  user-select: none;
 }
 
 .cb-casillas-pill.is-active {
@@ -886,7 +896,14 @@
 
 @media (max-width: 860px) {
   .cb-casillas-hero {
+    min-height: auto;
     padding: 88px 0 138px;
+    background-size: cover, auto 96%;
+    background-position: center, 68% center;
+  }
+
+  .cb-casillas-intro {
+    padding-top: 108px;
   }
 
   .cb-casillas-hero h1 {

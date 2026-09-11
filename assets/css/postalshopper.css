@@ -297,28 +297,106 @@
   color: var(--cb-blue);
 }
 
-.cb-ps-intro__chips {
+.cb-ps-intro__brand-marquee {
+  position: relative;
+  width: min(100%, 860px);
+  margin: 42px auto 0;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+}
+
+.cb-ps-intro__brand-track {
   display: flex;
-  flex-wrap: wrap;
+  width: max-content;
+  gap: 14px;
+  padding: 6px 0;
+  animation: cbPostalShopperBrands 22s linear infinite;
+  will-change: transform;
+}
+
+.cb-ps-intro__brand-marquee:hover .cb-ps-intro__brand-track {
+  animation-play-state: paused;
+}
+
+.cb-ps-intro__brand {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin-top: 36px;
-}
-
-.cb-ps-intro__chips span {
-  min-height: 34px;
-  padding: 7px 18px;
-  border: 1px solid rgba(195, 212, 242, 0.76);
+  min-height: 50px;
+  min-width: 126px;
+  padding: 0 22px;
+  border: 1px solid rgba(195, 212, 242, 0.78);
   border-radius: 999px;
-  background: #fff;
-  color: #7c99d2;
-  font-size: 14px;
-  font-weight: 700;
+  background: linear-gradient(180deg, #fff, #f8fbff);
+  color: var(--cb-blue);
+  box-shadow: 0 10px 22px rgba(20, 54, 112, 0.06);
+  white-space: nowrap;
 }
 
-.cb-ps-intro__chips span:last-child {
-  border-color: rgba(255, 204, 24, 0.86);
+.cb-ps-intro__brand strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
   color: var(--cb-blue);
+  line-height: 1;
+}
+
+.cb-ps-intro__brand strong span {
+  display: grid;
+  place-items: center;
+}
+
+.cb-ps-intro__brand strong img {
+  display: block;
+  width: auto;
+  max-width: 104px;
+  height: auto;
+  max-height: 30px;
+  object-fit: contain;
+}
+
+.cb-ps-intro__brand strong svg {
+  display: block;
+  width: 92px;
+  height: 30px;
+}
+
+.cb-ps-intro__brand-logo--apple svg,
+.cb-ps-intro__brand-logo--more svg {
+  width: 34px;
+  height: 34px;
+}
+
+.cb-ps-intro__brand-logo--nike svg {
+  width: 78px;
+  height: 30px;
+}
+
+.cb-ps-intro__brand-logo--walmart svg {
+  width: 104px;
+}
+
+.cb-ps-intro__brand:nth-child(7n) {
+  border-color: rgba(255, 204, 24, 0.88);
+  background: #fffdf2;
+}
+
+@keyframes cbPostalShopperBrands {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cb-ps-intro__brand-track {
+    animation: none;
+    transform: none;
+  }
 }
 
 .cb-ps-steps {
