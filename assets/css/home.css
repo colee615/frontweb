@@ -3253,34 +3253,65 @@ a {
 }
 
 .cb-socials {
-  display: flex;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 48px);
+  gap: 10px;
   margin-top: 18px;
-  flex-wrap: wrap;
+  align-items: center;
 }
 
 .cb-socials a {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: var(--cb-yellow);
-  color: var(--cb-blue);
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--cb-yellow);
   display: grid;
   place-items: center;
   font-weight: 800;
   overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.cb-socials a:hover,
+.cb-socials a:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(254, 204, 54, 0.5);
+  color: #fff;
+  transform: translateY(-2px);
 }
 
 .cb-socials a img {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   display: block;
   object-fit: contain;
+  transform: none;
+  transform-origin: center;
 }
 
 .cb-socials a span {
-  display: block;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0;
   line-height: 1;
+  text-transform: uppercase;
+}
+
+.cb-socials a[aria-label*="Instagram" i] img,
+.cb-socials a[aria-label*="Facebook" i] img {
+  transform: scale(1.16);
+}
+
+.cb-socials a[aria-label*="Twitter" i] img,
+.cb-socials a[aria-label="X" i] img {
+  transform: scale(1.04);
 }
 
 .cb-logo--footer img {
@@ -3879,14 +3910,18 @@ a {
   }
 
   .cb-footer-mobile__chevron {
+    width: 11px;
+    height: 11px;
+    flex: 0 0 11px;
+    border-right: 3px solid currentColor;
+    border-bottom: 3px solid currentColor;
     color: var(--cb-yellow);
-    font-size: 20px;
-    line-height: 1;
+    transform: rotate(45deg);
     transition: transform 0.2s ease;
   }
 
   .cb-footer-mobile__chevron.is-open {
-    transform: rotate(180deg);
+    transform: rotate(225deg);
   }
 
   .cb-footer-mobile__body {

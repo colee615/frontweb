@@ -3,17 +3,33 @@
     <HomeHeader :logo-url="logoUrl" :icons="icons" :content="headerSettings" :links="headerLinks" />
 
     <main class="cb-news-article">
-      <article class="cb-shell cb-news-article__layout">
+      <article v-if="isBootLoading" class="cb-shell cb-news-article__layout cb-news-article-skeleton" aria-hidden="true">
+        <div class="cb-news-article-skeleton__header">
+          <span class="cb-news-skeleton-line cb-news-skeleton-line--kicker cb-news-skeleton--wave"></span>
+          <span class="cb-news-skeleton-line cb-news-skeleton-line--title cb-news-skeleton--wave"></span>
+          <span class="cb-news-skeleton-line cb-news-skeleton-line--subtitle cb-news-skeleton--wave"></span>
+        </div>
+
+        <div class="cb-news-article-skeleton__media cb-news-skeleton--wave"></div>
+
+        <div class="cb-news-article-skeleton__body">
+          <span class="cb-news-skeleton-line cb-news-skeleton-line--lead cb-news-skeleton--wave"></span>
+          <span v-for="index in 7" :key="`article-skeleton-line-${index}`" class="cb-news-skeleton-line cb-news-skeleton--wave"></span>
+          <span class="cb-news-skeleton-line cb-news-skeleton-line--short cb-news-skeleton--wave"></span>
+        </div>
+      </article>
+
+      <article v-else class="cb-shell cb-news-article__layout">
         <header class="cb-news-article__header">
-          <div class="cb-news-article__kicker">
+          <div v-if="article.category" class="cb-news-article__kicker">
             <nuxt-link to="/noticias">Noticias</nuxt-link>
             <span>/</span>
-            <strong>{{ article.category || 'Institucional' }}</strong>
+            <strong>{{ article.category }}</strong>
           </div>
 
           <div class="cb-news-article__headline">
             <div>
-              <p class="cb-news-article__date">{{ article.date || 'Comunicado institucional' }}</p>
+              <p v-if="article.date" class="cb-news-article__date">{{ article.date }}</p>
               <h1>{{ article.title }}</h1>
             </div>
 
@@ -34,7 +50,7 @@
         </figure>
 
         <div class="cb-news-article__body">
-          <p class="cb-news-article__lead"><strong>{{ article.location || 'La Paz, Bolivia' }}, {{ article.date || 'fecha institucional' }}</strong></p>
+          <p v-if="articleLead" class="cb-news-article__lead"><strong>{{ articleLead }}</strong></p>
           <p v-for="(paragraph, index) in articleParagraphs" :key="`article-paragraph-${index}`">{{ paragraph }}</p>
         </div>
 
@@ -173,7 +189,8 @@ export default {
   },
   data() {
     return {
-      copied: false
+      copied: false,
+      isBootLoading: true
     }
   },
   computed: {
@@ -213,15 +230,21 @@ export default {
     articleParagraphs() {
       const body = String(this.article.body || '').trim()
       if (body) {
-        return body.split(/\r?\n\s*\r?\n|\r?\n/g).map((item) => item.trim()).filter(Boolean)
+        return body
+          .split(/\r?\n\s*\r?\n/g)
+          .map((item) => item.replace(/\s*\r?\n\s*/g, ' ').trim())
+          .filter(Boolean)
       }
 
-      return [
-        this.article.excerpt || 'Correos de Bolivia informa a la ciudadania sobre los avances, servicios y acciones institucionales desarrolladas para fortalecer la cobertura postal en el pais.',
-        'La entidad mantiene una agenda de mejora continua orientada a brindar mayor eficiencia, seguridad y cercania a las familias, emprendedores e instituciones que utilizan los servicios postales.',
-        'Estas acciones forman parte de una estrategia integral para modernizar procesos, ampliar puntos de atencion y consolidar canales digitales que permitan un seguimiento mas claro y oportuno.',
-        'Correos de Bolivia reafirma su compromiso con un servicio publico accesible, confiable y alineado a las necesidades actuales de comunicacion, logistica y distribucion.'
-      ]
+      return String(this.article.excerpt || '').trim()
+        ? [String(this.article.excerpt).trim()]
+        : []
+    },
+    articleLead() {
+      return [this.article.location, this.article.date]
+        .map((item) => String(item || '').trim())
+        .filter(Boolean)
+        .join(', ')
     },
     shareLinks() {
       const url = encodeURIComponent(this.currentUrl || '')
@@ -249,17 +272,27 @@ export default {
   },
   methods: {
     async refreshSharedContent() {
-      const [homePayload, newsPayload] = await Promise.all([
-        fetchHome(this.$api),
-        fetchNews(this.$api)
-      ])
+      const startedAt = Date.now()
 
-      if (homePayload) {
-        this.homeContent = normalizePage(homePayload, SHARED_LAYOUT_PAGE)
-      }
+      try {
+        const [homePayload, newsPayload] = await Promise.all([
+          fetchHome(this.$api),
+          fetchNews(this.$api)
+        ])
 
-      if (newsPayload) {
-        this.newsContent = normalizePage(newsPayload, NEWS_PAGE)
+        if (homePayload) {
+          this.homeContent = normalizePage(homePayload, SHARED_LAYOUT_PAGE)
+        }
+
+        if (newsPayload) {
+          this.newsContent = normalizePage(newsPayload, NEWS_PAGE)
+        }
+      } finally {
+        const elapsed = Date.now() - startedAt
+        const remaining = Math.max(0, 450 - elapsed)
+        window.setTimeout(() => {
+          this.isBootLoading = false
+        }, remaining)
       }
     },
     getSectionSettings(page, key) {

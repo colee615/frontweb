@@ -18,6 +18,12 @@
   border-top: 3px solid var(--cb-yellow);
 }
 
+.cb-casillas-hero--compact {
+  min-height: 150px;
+  padding: 34px 0 74px;
+  background-size: cover, auto 112%;
+}
+
 .cb-casillas-hero::before,
 .cb-casillas-requirements::before {
   content: "";
@@ -241,7 +247,7 @@
 }
 
 .cb-casillas-intro {
-  padding-top: 142px;
+  padding-top: 86px;
 }
 
 .cb-casillas-intro__inner {
@@ -269,18 +275,18 @@
 .cb-casillas-heading__eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 18px;
+  gap: 26px;
   margin-bottom: 26px;
   color: #9db8ef;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: 0.28em;
   text-transform: uppercase;
 }
 
 .cb-casillas-heading__eyebrow span {
-  width: 80px;
-  height: 1px;
+  width: 118px;
+  height: 2px;
   background: rgba(157, 184, 239, 0.5);
 }
 
@@ -902,8 +908,12 @@
     background-position: center, 68% center;
   }
 
+  .cb-casillas-hero--compact {
+    padding: 30px 0 62px;
+  }
+
   .cb-casillas-intro {
-    padding-top: 108px;
+    padding-top: 70px;
   }
 
   .cb-casillas-hero h1 {

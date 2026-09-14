@@ -101,7 +101,7 @@
                 @click="toggleMobileSection(section.key)"
               >
                 <span>{{ section.title }}</span>
-                <span class="cb-footer-mobile__chevron" :class="{ 'is-open': isMobileSectionOpen(section.key) }">âŒ„</span>
+                <span class="cb-footer-mobile__chevron" :class="{ 'is-open': isMobileSectionOpen(section.key) }" aria-hidden="true"></span>
               </button>
 
               <div v-show="isMobileSectionOpen(section.key)" class="cb-footer-mobile__body">

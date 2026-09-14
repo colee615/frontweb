@@ -35,7 +35,12 @@
     <HomeHeader v-if="!isBootLoading" :logo-url="logoUrl" :icons="icons" :content="headerSettings" :links="headerLinks" />
 
     <main v-if="!isBootLoading" class="cb-page__content cb-casillas">
-      <section id="casillas-hero" class="cb-casillas-hero" :style="heroStyles">
+      <section
+        id="casillas-hero"
+        class="cb-casillas-hero"
+        :class="{ 'cb-casillas-hero--compact': !hasHeroContent }"
+        :style="heroStyles"
+      >
         <div class="cb-shell cb-casillas-hero__inner">
           <article class="cb-casillas-hero__copy">
             <div v-if="heroSettings.badge" class="cb-casillas-hero__badge">
@@ -319,6 +324,16 @@ export default {
     },
     heroSettings() {
       return this.getSectionSettings('casillas_hero')
+    },
+    hasHeroContent() {
+      return Boolean(
+        this.heroSettings.badge ||
+        this.heroSettings.title_line_one_white ||
+        this.heroSettings.title_line_one_yellow ||
+        this.heroSettings.title_line_two_white ||
+        this.heroSettings.highlight_text ||
+        this.heroSettings.subtitle
+      )
     },
     heroTitleRows() {
       const firstLine = splitLastWord(this.heroSettings.title_line_one_white)
