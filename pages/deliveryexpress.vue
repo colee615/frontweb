@@ -277,6 +277,7 @@ export default {
     }
 
     this.isBootLoading = false
+    await this.$nextTick()
     this.setupRevealObserver()
   },
   beforeDestroy() {

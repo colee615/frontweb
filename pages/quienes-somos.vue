@@ -381,6 +381,7 @@ export default {
     }
 
     this.isBootLoading = false
+    await this.$nextTick()
     this.startHero()
     this.startHistory()
     this.setupRevealObserver()

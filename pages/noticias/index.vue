@@ -289,6 +289,7 @@ export default {
     }
 
     this.isBootLoading = false
+    await this.$nextTick()
     this.selectedCategory = this.defaultCategory
     this.syncSearchFromRoute()
     this.syncHashTarget()
