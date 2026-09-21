@@ -6,52 +6,47 @@
   >
     <div v-if="headlineItems.length" ref="newsbar" class="cb-news-ticker">
       <div :class="['cb-news-ticker__inner', { 'cb-news-ticker__inner--static': !isTickerAnimated }]">
-        <span v-if="tickerLabel" class="cb-news-ticker__badge">{{ tickerLabel }}</span>
-        <div :class="['cb-news-ticker__viewport', { 'cb-news-ticker__viewport--static': !isTickerAnimated }]" aria-live="polite">
-          <div class="cb-news-ticker__track">
-            <button
-              v-for="(item, index) in tickerItems"
-              :key="`headline-${index}`"
-              type="button"
-              class="cb-news-ticker__item"
-              @click="openHeadline(item)"
-            >
-              <span class="cb-news-ticker__item-text">{{ item.title }}</span>
-            </button>
+        <div class="cb-news-ticker__main">
+          <span v-if="tickerLabel" class="cb-news-ticker__badge">{{ tickerLabel }}</span>
+          <div :class="['cb-news-ticker__viewport', { 'cb-news-ticker__viewport--static': !isTickerAnimated }]" aria-live="polite">
+            <div class="cb-news-ticker__track" @animationiteration="rotateTicker">
+              <button
+                v-for="(item, index) in tickerItems"
+                :key="`headline-${index}`"
+                type="button"
+                :class="['cb-news-ticker__item', { 'cb-news-ticker__item--cycle-end': (index + 1) % orderedTickerItems.length === 0 }]"
+                @click="openHeadline(item)"
+              >
+                <span class="cb-news-ticker__item-text">{{ item.title }}</span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div ref="topbar" class="cb-topbar cb-shell">
-      <div class="cb-topbar-group cb-topbar-group--left">
-        <button type="button" class="cb-top-link">
-          <span class="cb-top-link__icon" v-html="icons.globe"></span>
-          <span class="cb-top-link__text">
-            <span class="cb-top-link__light-es">ES</span>
-            <strong>{{ content.language_primary || 'Español' }}</strong>
-            <span class="cb-top-link__sep">|</span>
-            <span class="cb-top-link__light-us">US</span>
-            <strong>{{ content.language_secondary || 'English' }}</strong>
-          </span>
-        </button>
-        <button type="button" class="cb-top-link cb-top-link--hidden">
-          <span class="cb-top-link__icon" v-html="icons.accessibility"></span>
-          <span class="cb-top-link__text">{{ content.accessibility_label || 'Accesibilidad' }}</span>
-        </button>
-      </div>
-
-      <div class="cb-topbar-group cb-topbar-group--right">
-        <button type="button" class="cb-top-link" @click="goToContact">
-          <span class="cb-top-link__icon" v-html="icons.help"></span>
-          <span class="cb-top-link__text">
-            <span>{{ content.help_label || 'Ayuda / Contacto' }}</span>
-          </span>
-        </button>
-        <button type="button" class="cb-top-link cb-top-link--hidden">
-          <span class="cb-top-link__icon" v-html="icons.login"></span>
-          <span class="cb-top-link__text"><span>{{ content.login_label || 'Iniciar sesion' }}</span></span>
-        </button>
+        <div class="cb-topbar-group cb-topbar-group--right">
+          <button
+            type="button"
+            class="cb-top-link cb-top-link--language"
+            aria-label="Traducir sitio al inglés"
+            title="Traducir al inglés"
+            @click="openEnglishTranslation"
+          >
+            <span class="cb-top-link__icon" v-html="icons.globe"></span>
+            <span class="cb-top-link__text">
+              <span class="cb-top-link__light-es">ES</span>
+              <strong class="cb-top-link__language-primary">{{ content.language_primary || 'Español' }}</strong>
+              <span class="cb-top-link__sep">|</span>
+              <span class="cb-top-link__light-us">US</span>
+              <strong>{{ content.language_secondary || 'English' }}</strong>
+            </span>
+          </button>
+          <button type="button" class="cb-top-link" @click="goToContact">
+            <span class="cb-top-link__icon" v-html="icons.help"></span>
+            <span class="cb-top-link__text">
+              <span>{{ content.help_label || 'Ayuda / Contacto' }}</span>
+            </span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -194,6 +189,7 @@ export default {
       isSearchReady: false,
       searchTimer: null,
       headlineItems: [],
+      tickerOffset: 0,
       isNavbarPinned: false,
       navbarHeight: 64
     }
@@ -205,10 +201,39 @@ export default {
     isTickerAnimated() {
       return this.headlineItems.length > 1
     },
+    orderedTickerItems() {
+      const sourceItems = Array.isArray(this.headlineItems) ? this.headlineItems : []
+      const findItem = (keywords, fallback) => sourceItems.find((item) => {
+        const label = this.normalizeLabel(item && item.title)
+        return keywords.some((keyword) => label.includes(keyword))
+      }) || fallback
+
+      return [
+        findItem(['siguenos', 'rrss', 'redes sociales'], {
+          id: 'fallback-social',
+          title: 'SÍGUENOS EN NUESTRAS RRSS',
+          url: '/noticias'
+        }),
+        findItem(['delivery express', 'delivery'], {
+          id: 'fallback-delivery',
+          title: 'DELIVERY EXPRESS',
+          url: '/deliveryexpress'
+        }),
+        findItem(['servicio al cliente', 'contacto', 'consulta'], {
+          id: 'fallback-customer-service',
+          title: 'SERVICIO AL CLIENTE',
+          url: '/contacto'
+        })
+      ]
+    },
     tickerItems() {
+      const items = this.orderedTickerItems
+      const offset = items.length ? this.tickerOffset % items.length : 0
+      const rotatedItems = [...items.slice(offset), ...items.slice(0, offset)]
+
       return this.isTickerAnimated
-        ? [...this.headlineItems, ...this.headlineItems]
-        : this.headlineItems
+        ? Array.from({ length: 4 }, () => rotatedItems).flat()
+        : rotatedItems
     },
     navLinks() {
       const sourceLinks = Array.isArray(this.links) ? this.links : []
@@ -339,10 +364,9 @@ export default {
       this.headlineItems = configuredItems.length
         ? configuredItems
         : [
-            { id: 'fallback-1', title: 'NOS EN NUESTRAS RRSS', url: '/noticias' },
+            { id: 'fallback-1', title: 'SÍGUENOS EN NUESTRAS RRSS', url: '/noticias' },
             { id: 'fallback-2', title: 'DELIVERY EXPRESS', url: '/deliveryexpress' },
-            { id: 'fallback-3', title: 'SIGUENOS EN NUESTRAS RRSS', url: '/noticias' },
-            { id: 'fallback-4', title: 'DELIVERY EXPRESS', url: '/deliveryexpress' }
+            { id: 'fallback-3', title: 'SERVICIO AL CLIENTE', url: '/contacto' }
           ]
 
       this.$nextTick(() => {
@@ -366,6 +390,11 @@ export default {
       }
 
       window.open(targetUrl, '_blank', 'noopener')
+    },
+    rotateTicker() {
+      if (this.orderedTickerItems.length > 1) {
+        this.tickerOffset = (this.tickerOffset + 1) % this.orderedTickerItems.length
+      }
     },
     resolveRoute(link) {
       const label = this.normalizeLabel(link.label)
@@ -612,6 +641,14 @@ export default {
       }
 
       this.$router.push('/contacto')
+    },
+    openEnglishTranslation() {
+      if (!process.client) {
+        return
+      }
+
+      const translationUrl = `https://translate.google.com/translate?sl=es&tl=en&u=${encodeURIComponent(window.location.href)}`
+      window.open(translationUrl, '_blank', 'noopener,noreferrer')
     }
   }
 }

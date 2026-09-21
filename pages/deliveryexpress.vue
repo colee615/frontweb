@@ -271,7 +271,12 @@ export default {
     }
   },
   async mounted() {
-    await this.refreshPageContent()
+    if (!this.logoUrl) {
+      await this.refreshPageContent()
+      return
+    }
+
+    this.isBootLoading = false
     this.setupRevealObserver()
   },
   beforeDestroy() {

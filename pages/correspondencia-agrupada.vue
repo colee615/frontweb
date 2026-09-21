@@ -236,7 +236,12 @@ export default {
     return { pageContent: normalizePage(payload || CORRESPONDENCIA_SOURCE_PAGE, CORRESPONDENCIA_SOURCE_PAGE) }
   },
   async mounted() {
-    await this.refreshPageContent()
+    if (!this.logoUrl) {
+      await this.refreshPageContent()
+      return
+    }
+
+    this.isBootLoading = false
     this.setupRevealObserver()
   },
   beforeDestroy() {

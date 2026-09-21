@@ -288,7 +288,12 @@ export default {
     return { pageContent: normalizePage(payload || ECA_SOURCE_PAGE, ECA_SOURCE_PAGE) }
   },
   async mounted() {
-    await this.refreshPageContent()
+    if (!this.logoUrl) {
+      await this.refreshPageContent()
+      return
+    }
+
+    this.isBootLoading = false
     this.setupRevealObserver()
   },
   beforeDestroy() {

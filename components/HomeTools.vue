@@ -127,6 +127,29 @@
             </div>
           </form>
         </div>
+
+        <div class="cb-calculator-benefits" aria-label="Beneficios del servicio">
+          <div>
+            <span v-html="icons.truck"></span>
+            <strong>Envíos seguros</strong>
+            <small>y confiables</small>
+          </div>
+          <div>
+            <span v-html="icons.clock"></span>
+            <strong>Cobertura</strong>
+            <small>nacional e internacional</small>
+          </div>
+          <div>
+            <span v-html="icons.box"></span>
+            <strong>Diversos servicios</strong>
+            <small>para tus necesidades</small>
+          </div>
+          <div>
+            <span v-html="icons.help"></span>
+            <strong>Tu envío</strong>
+            <small>en buenas manos</small>
+          </div>
+        </div>
       </article>
     </div>
 

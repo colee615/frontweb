@@ -19,6 +19,16 @@
           class="cb-product-card"
           :class="{ 'is-flipped': flippedCard === index }"
         >
+          <div class="cb-product-card__top">
+            <span class="cb-product-badge">
+              <span class="cb-product-badge__icon" v-html="icons.stamp"></span>
+              {{ product.collection || product.category || product.series || collectionLabels[index % collectionLabels.length] }}
+            </span>
+            <button type="button" class="cb-product-favorite" :aria-label="`Agregar ${product.title} a favoritos`">
+              <span aria-hidden="true">&#9825;</span>
+            </button>
+          </div>
+
           <div
             class="cb-product-visual"
             role="button"
@@ -35,18 +45,18 @@
                     <div class="cb-product-stamp__frame">
                       <img :src="product.image" :alt="product.title" class="cb-product-image">
                     </div>
-                    <div class="cb-product-stamp__caption">
-                      <span class="cb-product-stamp__series">{{ product.series }}</span>
-                      <span class="cb-product-stamp__year">{{ product.year }}</span>
-                    </div>
                   </div>
                 </div>
                 <div class="cb-product-flip__face cb-product-flip__face--back">
                   <div class="cb-product-back">
-                    <span class="cb-product-back__eyebrow">{{ product.year }}</span>
-                    <h5>{{ product.title }}</h5>
-                    <p>{{ product.description }}</p>
-                    <span class="cb-product-back__meta">{{ product.series }}</span>
+                    <span class="cb-product-back__icon" v-html="icons.stamp"></span>
+                    <span class="cb-product-back__eyebrow">Ficha de colección</span>
+                    <div class="cb-product-back__detail">
+                      <span>Distintivo postal</span>
+                      <strong>{{ product.year || product.series || 'Edición oficial' }}</strong>
+                    </div>
+                    <p class="cb-product-back__note">Una pieza postal para conservar y compartir la historia de Bolivia.</p>
+                    <span class="cb-product-back__meta">Toca para volver</span>
                   </div>
                 </div>
               </div>
@@ -54,12 +64,43 @@
           </div>
 
           <div class="cb-product-content">
-            <div class="cb-product-meta">
-              <span>{{ product.price }}</span>
-              <button type="button" class="cb-cart-btn" aria-label="Anadir al carrito" v-html="icons.cart"></button>
-            </div>
+            <h4>{{ product.title }}</h4>
+            <p>{{ product.description }}</p>
+          </div>
+
+          <div class="cb-product-meta">
+            <span>{{ product.price }}</span>
+            <button type="button" class="cb-cart-btn" aria-label="Anadir al carrito" v-html="icons.cart"></button>
           </div>
         </article>
+      </div>
+
+      <div class="cb-market-benefits" aria-label="Beneficios de Correos de Bolivia">
+        <div>
+          <span v-html="icons.truck"></span>
+          <strong>Envíos seguros</strong>
+          <small>a todo el país</small>
+        </div>
+        <div>
+          <span v-html="icons.shield"></span>
+          <strong>Productos originales</strong>
+          <small>de Correos de Bolivia</small>
+        </div>
+        <div>
+          <span v-html="icons.stamp"></span>
+          <strong>Collection</strong>
+          <small>nuestra historia</small>
+        </div>
+        <div>
+          <span v-html="icons.heart"></span>
+          <strong>Apoya la cultura</strong>
+          <small>y el patrimonio</small>
+        </div>
+        <div class="cb-market-benefits__motto" aria-hidden="true">
+          <b>Bolivia</b>
+          <small>siempre más lejos</small>
+          <i></i>
+        </div>
       </div>
 
       <a
@@ -78,7 +119,13 @@ export default {
   name: 'HomeMarket',
   data() {
     return {
-      flippedCard: null
+      flippedCard: null,
+      collectionLabels: [
+        'Colección oficial',
+        'Edición especial',
+        'Serie clásica',
+        'Edición institucional'
+      ]
     }
   },
   props: {

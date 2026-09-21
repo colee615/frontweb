@@ -405,13 +405,14 @@ export default {
   },
   mounted() {
     this.forceFooterChatbotMobile()
-    this.chatbotForceTimer = setInterval(() => {
+    this.chatbotForceTimer = setTimeout(() => {
       this.forceFooterChatbotMobile()
-    }, 1500)
+      this.chatbotForceTimer = null
+    }, 2000)
   },
   beforeDestroy() {
     if (this.chatbotForceTimer) {
-      clearInterval(this.chatbotForceTimer)
+      clearTimeout(this.chatbotForceTimer)
       this.chatbotForceTimer = null
     }
   }

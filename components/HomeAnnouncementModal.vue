@@ -7,7 +7,7 @@
       aria-modal="true"
       :aria-label="content.modal_title || 'Mensaje informativo'"
     >
-      <div class="cb-modal__backdrop" @click="handleClose"></div>
+      <div class="cb-modal__backdrop" @click="handleBackdropClick"></div>
 
       <div class="cb-modal__dialog">
         <div class="cb-modal__poster-shell" :class="{ 'has-multiple': hasMultipleSlides }">
@@ -21,25 +21,6 @@
             x
           </button>
 
-          <div v-if="hasMultipleSlides" class="cb-modal__stack">
-            <button
-              v-for="(slide, index) in stackSlides"
-              :key="`${slide.key}-stack-${index}`"
-              type="button"
-              class="cb-modal__stack-card"
-              :class="[`cb-modal__stack-card--level-${index + 1}`]"
-              :style="stackCardStyle(index)"
-              :aria-label="`Mostrar popup ${slide.position + 1}`"
-              @click="goTo(slide.position)"
-            >
-              <img
-                class="cb-modal__stack-poster"
-                :src="slide.poster_image"
-                :alt="slide.poster_alt || ''"
-              >
-            </button>
-          </div>
-
           <div class="cb-modal__poster-wrap">
             <transition :name="transitionName" mode="out-in">
               <div :key="activeSlideKey" class="cb-modal__poster-frame cb-modal__poster-frame--deck">
@@ -51,6 +32,13 @@
                 >
               </div>
             </transition>
+            <img
+              v-if="nextSlide.poster_image"
+              class="cb-modal__next-preload"
+              :src="nextSlide.poster_image"
+              alt=""
+              aria-hidden="true"
+            >
           </div>
 
           <div v-if="hasMultipleSlides" class="cb-modal__deck-nav">
@@ -94,6 +82,7 @@ export default {
   data() {
     return {
       isOpen: false,
+      posterReady: false,
       activeIndex: 0,
       transitionName: 'cb-modal-card-next',
       seenSlides: []
@@ -126,7 +115,7 @@ export default {
       return this.normalizedSlides.length > 1
     },
     canClose() {
-      return !this.hasMultipleSlides || this.hasSeenAllSlides
+      return this.hasSeenAllSlides
     },
     hasSeenAllSlides() {
       return this.normalizedSlides.length > 0 && this.seenSlides.length >= this.normalizedSlides.length
@@ -134,30 +123,15 @@ export default {
     activeSlide() {
       return this.normalizedSlides[this.activeIndex] || this.normalizedSlides[0] || {}
     },
-    stackSlides() {
-      if (!this.hasMultipleSlides) {
-        return []
-      }
-
-      const maxVisibleCards = Math.min(2, this.normalizedSlides.length - 1)
-
-      return Array.from({ length: maxVisibleCards }, (_, index) => index + 1)
-        .map((offset) => {
-          const position = (this.activeIndex + offset) % this.normalizedSlides.length
-          const slide = this.normalizedSlides[position]
-
-          return slide
-            ? {
-                ...slide,
-                position
-              }
-            : null
-        })
-        .filter((slide) => slide && slide.position !== this.activeIndex)
-        .filter((slide) => slide.poster_image)
-    },
     activeSlideKey() {
       return `${this.activeSlide.key}-${this.activeIndex}`
+    },
+    nextSlide() {
+      if (!this.hasMultipleSlides) {
+        return {}
+      }
+
+      return this.normalizedSlides[(this.activeIndex + 1) % this.normalizedSlides.length] || {}
     },
     storageKey() {
       const baseKey = this.content.storage_key || 'cb-home-announcement-modal'
@@ -202,14 +176,24 @@ export default {
         return
       }
 
-      this.isOpen = true
       this.markSlideAsSeen(this.activeIndex)
+      this.openWhenReady(this.activeIndex)
     },
     handleClose() {
+      if (!this.canClose) {
+        return
+      }
+
       this.isOpen = false
+      this.posterReady = false
 
       if (process.client && this.shouldShowOnce) {
         window.localStorage.setItem(this.storageKey, 'hidden')
+      }
+    },
+    handleBackdropClick() {
+      if (this.canClose) {
+        this.handleClose()
       }
     },
     goTo(index) {
@@ -227,14 +211,6 @@ export default {
     goPrev() {
       this.goTo((this.activeIndex - 1 + this.normalizedSlides.length) % this.normalizedSlides.length)
     },
-    stackCardStyle(index) {
-      const revealOffsets = [
-        { right: '-34px', bottom: '16px' },
-        { right: '-62px', bottom: '40px' }
-      ]
-
-      return revealOffsets[index] || revealOffsets[revealOffsets.length - 1]
-    },
     markSlideAsSeen(index) {
       if (!Number.isInteger(index) || index < 0 || index >= this.normalizedSlides.length) {
         return
@@ -243,6 +219,32 @@ export default {
       if (!this.seenSlides.includes(index)) {
         this.seenSlides = [...this.seenSlides, index]
       }
+    },
+    openWhenReady(index) {
+      const slide = this.normalizedSlides[index]
+
+      if (!slide || !slide.poster_image || !process.client) {
+        this.posterReady = true
+        this.isOpen = true
+        return
+      }
+
+      this.posterReady = false
+      const image = new Image()
+      let revealed = false
+      const reveal = () => {
+        if (revealed) {
+          return
+        }
+
+        revealed = true
+        this.posterReady = true
+        this.isOpen = true
+      }
+
+      image.onload = reveal
+      image.onerror = reveal
+      image.src = slide.poster_image
     },
     toBoolean(value, fallback) {
       if (typeof value === 'boolean') {

@@ -1,5 +1,5 @@
 <template>
-  <section class="cb-hero">
+  <section class="cb-hero" :class="{ 'is-loading': !heroReady }">
     <div class="cb-hero-media" v-if="normalizedSlides.length">
       <transition-group name="cb-hero-fade" tag="div">
         <div
@@ -18,6 +18,7 @@
             muted
             playsinline
             preload="metadata"
+            @canplay="handleMediaReady(index)"
           ></video>
           <div
             v-else
@@ -28,27 +29,78 @@
       </transition-group>
     </div>
 
+    <div v-if="!heroReady" class="cb-hero-loading" aria-live="polite">
+      <span class="cb-hero-loading__spinner" aria-hidden="true"></span>
+      <span>Cargando tu experiencia postal…</span>
+    </div>
+    <img
+      v-if="activeImageSlide"
+      class="cb-hero-preload"
+      :src="activeImageSlide.src"
+      alt=""
+      aria-hidden="true"
+      @load="handleMediaReady(activeSlide)"
+      @error="handleMediaReady(activeSlide)"
+    >
+
     <div class="cb-hero-overlay"></div>
     <div class="cb-shell cb-hero-content">
       <div class="cb-hero-copy">
+        <span class="cb-hero-copy__eyebrow">MÁS CERCA DE LO QUE TE IMPORTA</span>
         <h1 v-if="titleLines[0] || titleLines[1]">
-          <span v-if="titleLines[0]" class="cb-hero-copy__line">{{ titleLines[0] }}</span>
+          <span v-if="titleLines[0]" class="cb-hero-copy__line">
+            <span>{{ titlePrimaryText }}</span>
+            <em v-if="titlePrimaryAccent"> {{ titlePrimaryAccent }}</em>
+          </span>
           <span v-if="titleLines[1]" class="cb-hero-copy__line">{{ titleLines[1] }}</span>
         </h1>
-        <p v-if="content.subtitle">{{ content.subtitle }}</p>
+        <p>{{ content.subtitle || 'Llevamos tus cartas, paquetes y oportunidades a cada rincón del país y más allá de nuestras fronteras.' }}</p>
+        <div class="cb-hero-copy__actions">
+          <a href="/deliveryexpress" class="cb-hero-cta cb-hero-cta--primary">
+            <span class="cb-hero-cta__icon" v-html="icons.truck"></span>
+            <span>Descubre Delivery Express</span>
+            <span class="cb-hero-cta__arrow" v-html="icons.arrow"></span>
+          </a>
+          <a href="/quienes-somos" class="cb-hero-cta cb-hero-cta--secondary">
+            <span>Sobre Correos de Bolivia</span>
+            <span class="cb-hero-cta__arrow" v-html="icons.arrow"></span>
+          </a>
+        </div>
+        <div class="cb-hero-copy__signature" aria-hidden="true">
+          <span class="cb-hero-copy__signature-word">Bolivia</span>
+          <small>llega más lejos</small>
+          <span class="cb-hero-copy__signature-flag">
+            <i class="cb-hero-copy__signature-line cb-hero-copy__signature-line--red"></i>
+            <i class="cb-hero-copy__signature-line cb-hero-copy__signature-line--yellow"></i>
+            <i class="cb-hero-copy__signature-line cb-hero-copy__signature-line--green"></i>
+          </span>
+        </div>
       </div>
 
       <div class="cb-track-card">
-        <h2 v-if="content.tracking_title">{{ content.tracking_title }}</h2>
-        <p v-if="content.tracking_text">{{ content.tracking_text }}</p>
+        <div class="cb-track-card__heading">
+          <div class="cb-track-card__icon" v-html="icons.box"></div>
+          <div>
+            <h2 v-if="content.tracking_title">{{ content.tracking_title }}</h2>
+            <p v-if="content.tracking_text">{{ content.tracking_text }}</p>
+          </div>
+        </div>
         <label v-if="content.tracking_label" for="hero-track">{{ content.tracking_label }}</label>
-        <input
-          id="hero-track"
-          v-model.trim="trackingCode"
-          type="text"
-          :placeholder="content.tracking_placeholder || ''"
-          @keydown.enter.prevent="openTracking"
-        >
+        <div class="cb-track-input">
+          <span v-html="icons.search"></span>
+          <input
+            id="hero-track"
+            v-model.trim="trackingCode"
+            type="text"
+            :placeholder="content.tracking_placeholder || ''"
+            @input="trackingCode = trackingCode.toUpperCase()"
+            @keydown.enter.prevent="openTracking"
+          >
+        </div>
+        <button type="button" class="cb-track-submit" @click="openTracking">
+          <span>{{ content.tracking_button || 'Rastrear Envío' }}</span>
+          <span class="cb-hero-cta__arrow cb-track-submit__arrow" v-html="icons.arrow"></span>
+        </button>
         <div class="cb-captcha">
           <div class="cb-captcha__head">
             <span class="cb-captcha__label">Verificacion de seguridad</span>
@@ -64,7 +116,7 @@
             <span v-if="!captchaChars.length && captchaLoading" class="cb-captcha__char">...</span>
           </div>
           <p class="cb-captcha__hint">Escribe el codigo mostrado para continuar con la consulta.</p>
-          <div class="cb-captcha__input-row">
+          <div class="cb-captcha__input-row cb-captcha__input-row--single">
             <input
               id="hero-captcha"
               v-model.trim="captchaAnswer"
@@ -74,9 +126,6 @@
               placeholder="Escribe el captcha"
               @keydown.enter.prevent="openTracking"
             >
-            <button type="button" class="cb-captcha__submit" @click="openTracking">
-              {{ content.tracking_button || 'Buscar' }}
-            </button>
           </div>
           <p v-if="captchaError" class="cb-captcha__error">{{ captchaError }}</p>
         </div>
@@ -123,7 +172,8 @@ export default {
       captchaExpected: '',
       captchaChallenge: '',
       captchaError: '',
-      captchaLoading: false
+      captchaLoading: false,
+      heroReady: false
     }
   },
   computed: {
@@ -163,6 +213,14 @@ export default {
         words.slice(midpoint).join(' ') || ''
       ]
     },
+    titlePrimaryText() {
+      const firstLine = this.titleLines[0] || ''
+      return firstLine.replace(/\s*Bolivia\s*$/i, '').trim() || firstLine
+    },
+    titlePrimaryAccent() {
+      const firstLine = this.titleLines[0] || ''
+      return /Bolivia/i.test(firstLine) ? 'Bolivia' : ''
+    },
     normalizedSlides() {
       return this.slides
         .filter((slide) => slide && slide.src)
@@ -187,6 +245,10 @@ export default {
       return {
         '--cb-captcha-tilt': `${this.captchaExpected.length * 2}deg`
       }
+    },
+    activeImageSlide() {
+      const slide = this.normalizedSlides[this.activeSlide]
+      return slide && slide.media_type !== 'video' ? slide : null
     }
   },
   watch: {
@@ -194,6 +256,8 @@ export default {
       immediate: true,
       handler() {
         this.activeSlide = 0
+        this.heroReady = false
+        this.preloadActiveMedia()
         this.syncActiveVideo()
         this.setupRotation()
       }
@@ -228,6 +292,8 @@ export default {
     },
     goToNextSlide() {
       this.activeSlide = (this.activeSlide + 1) % this.normalizedSlides.length
+      this.heroReady = false
+      this.preloadActiveMedia()
       this.syncActiveVideo()
       this.setupRotation()
     },
@@ -267,6 +333,27 @@ export default {
           video.currentTime = 0
         })
       })
+    },
+    preloadActiveMedia() {
+      if (!process.client) {
+        return
+      }
+
+      const slide = this.normalizedSlides[this.activeSlide]
+
+      if (!slide || slide.media_type === 'video') {
+        return
+      }
+
+      const image = new Image()
+      image.onload = () => this.handleMediaReady(this.activeSlide)
+      image.onerror = () => this.handleMediaReady(this.activeSlide)
+      image.src = slide.src
+    },
+    handleMediaReady(index) {
+      if (index === this.activeSlide) {
+        this.heroReady = true
+      }
     },
     normalizeDuration(value) {
       const parsed = parseInt(value, 10)

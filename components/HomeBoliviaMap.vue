@@ -32,6 +32,14 @@
  
     </svg>
     <div
+      v-for="department in departmentLabels"
+      :key="`department-${department.id}`"
+      class="cb-department-label"
+      :style="{ left: department.left, top: department.top }"
+    >
+      {{ department.name }}
+    </div>
+    <div
       v-for="marker in markers"
       :key="marker.name"
       class="cb-map-marker"
@@ -97,6 +105,19 @@ export default {
     }
   },
   computed: {
+    departmentNames() {
+      return {
+        BON: 'Pando',
+        BOB: 'Beni',
+        BOL: 'La Paz',
+        BOO: 'Oruro',
+        BOC: 'Cochabamba',
+        BOS: 'Santa Cruz',
+        BOP: 'Potosí',
+        BOH: 'Chuquisaca',
+        BOT: 'Tarija'
+      }
+    },
     markers() {
       const source = Array.isArray(this.offices) ? this.offices : []
 
@@ -107,7 +128,7 @@ export default {
           return {
           key: office.key || String(office.name || office.title || `office-${index}`).toLowerCase().replace(/[^a-z0-9]+/g, ''),
           dept: String(office.dept || '').toUpperCase(),
-          name: office.name || office.title || `Oficina ${index + 1}`,
+          name: this.departmentNames[String(office.dept || '').toUpperCase()] || office.name || office.title || `Oficina ${index + 1}`,
           officeName: office.title || office.officeName || office.name || `Oficina ${index + 1}`,
           address: office.address || '',
           phone: office.phone || '',
@@ -121,6 +142,19 @@ export default {
           }
         })
         .filter((office) => office.dept && office.left && office.top)
+    },
+    departmentLabels() {
+      return [
+        { id: 'BON', name: 'Pando', left: '29%', top: '17%' },
+        { id: 'BOB', name: 'Beni', left: '53%', top: '24%' },
+        { id: 'BOL', name: 'La Paz', left: '25%', top: '39%' },
+        { id: 'BOO', name: 'Oruro', left: '28%', top: '55%' },
+        { id: 'BOC', name: 'Cochabamba', left: '42%', top: '51%' },
+        { id: 'BOS', name: 'Santa Cruz', left: '67%', top: '53%' },
+        { id: 'BOP', name: 'Potosí', left: '36%', top: '68%' },
+        { id: 'BOH', name: 'Chuquisaca', left: '49%', top: '68%' },
+        { id: 'BOT', name: 'Tarija', left: '48%', top: '83%' }
+      ]
     },
     activeOffice() {
       return this.markers.find((marker) => marker.dept === this.activeDepartment) || null
