@@ -209,6 +209,7 @@
 
 <script>
 import { sanitizeContentTree } from '~/utils/contentSecurity'
+import { fetchPageWithSharedLayout } from '~/utils/sharedLayout'
 
 const CORRESPONDENCIA_SOURCE_PAGE = {
   meta_title: '',
@@ -408,13 +409,7 @@ async function safeGet($api, endpoint) {
 
 async function fetchPage($api) {
   const endpoints = ['/frontapi/api/site/pages/correspondencia-agrupada', '/api/site/pages/correspondencia-agrupada']
-  for (const endpoint of endpoints) {
-    const payload = await safeGet($api, endpoint)
-    if (payload) {
-      return payload
-    }
-  }
-  return null
+  return fetchPageWithSharedLayout($api, endpoints)
 }
 
 function normalizePage(payload = {}, base = CORRESPONDENCIA_SOURCE_PAGE) {

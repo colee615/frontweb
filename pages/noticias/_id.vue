@@ -1,5 +1,5 @@
 <template>
-  <div class="cb-page cb-news-page cb-news-article-page" :style="themeStyles">
+  <div class="cb-page cb-news-page cb-news-article-page" :style="themeStyles" :class="{ 'cb-page--ready': !isBootLoading }">
     <HomeHeader :logo-url="logoUrl" :icons="icons" :content="headerSettings" :links="headerLinks" />
 
     <main class="cb-news-article">

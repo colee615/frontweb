@@ -261,6 +261,7 @@
 
 <script>
 import { sanitizeContentTree } from '~/utils/contentSecurity'
+import { fetchPageWithSharedLayout } from '~/utils/sharedLayout'
 
 const ECA_SOURCE_PAGE = {
   meta_title: '',
@@ -460,13 +461,7 @@ async function safeGet($api, endpoint) {
 
 async function fetchPage($api) {
   const endpoints = ['/frontapi/api/site/pages/eca', '/api/site/pages/eca']
-  for (const endpoint of endpoints) {
-    const payload = await safeGet($api, endpoint)
-    if (payload) {
-      return payload
-    }
-  }
-  return null
+  return fetchPageWithSharedLayout($api, endpoints)
 }
 
 function normalizePage(payload = {}, base = ECA_SOURCE_PAGE) {

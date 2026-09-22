@@ -256,6 +256,7 @@
 
 <script>
 import { sanitizeContentTree } from '~/utils/contentSecurity'
+import { fetchPageWithSharedLayout } from '~/utils/sharedLayout'
 
 const CASILLAS_SOURCE_PAGE = {
   meta_title: '',
@@ -475,13 +476,7 @@ async function safeGet($api, endpoint) {
 
 async function fetchPage($api) {
   const endpoints = ['/frontapi/api/site/pages/casillas', '/api/site/pages/casillas']
-  for (const endpoint of endpoints) {
-    const payload = await safeGet($api, endpoint)
-    if (payload) {
-      return payload
-    }
-  }
-  return null
+  return fetchPageWithSharedLayout($api, endpoints)
 }
 
 function normalizePage(payload = {}, base = CASILLAS_SOURCE_PAGE) {

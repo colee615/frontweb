@@ -104,6 +104,19 @@
     <div v-if="!isBootLoading" class="cb-page__content">
       <section id="home-hero">
         <HomeHero :icons="icons" :content="sectionSettings.hero" :slides="heroSlides" />
+        <nuxt-link
+          to="/misaplicaciones"
+          class="cb-home-apps-link"
+          aria-label="Ir a Mis Aplicaciones"
+        >
+          <img
+            src="/appmis.png"
+            alt="Mis Aplicaciones"
+            class="cb-home-apps-link__image"
+            width="2172"
+            height="724"
+          >
+        </nuxt-link>
       </section>
       <section id="home-services">
         <HomeServices :services="services" :icons="icons" :content="sectionSettings.services" />

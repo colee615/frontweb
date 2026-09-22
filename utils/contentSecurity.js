@@ -5,7 +5,8 @@ const ASSET_KEYS = new Set([
   'image',
   'src',
   'poster',
-  'poster_image'
+  'poster_image',
+  'seal_logo'
 ])
 
 const LINK_KEYS = new Set([
@@ -24,7 +25,9 @@ const COLOR_KEYS = new Set([
 ])
 
 export function sanitizeAssetUrl(value) {
-  return sanitizeUrl(value, { allowStorage: true, allowContact: false })
+  const sanitized = sanitizeUrl(value, { allowStorage: true, allowContact: false })
+
+  return normalizeStorageAssetUrl(sanitized)
 }
 
 export function sanitizeLinkUrl(value) {
@@ -114,4 +117,32 @@ function sanitizeUrl(value, { allowStorage, allowContact }) {
   }
 
   return null
+}
+
+function normalizeStorageAssetUrl(value) {
+  if (typeof value !== 'string' || !value) {
+    return value
+  }
+
+  const normalized = value.trim()
+
+  if (/^\/?storage\//i.test(normalized)) {
+    return `/frontstorage/${normalized.replace(/^\/+/, '')}`
+  }
+
+  if (!/^https?:\/\//i.test(normalized)) {
+    return normalized
+  }
+
+  try {
+    const parsed = new URL(normalized)
+
+    if (!/^\/storage\//i.test(parsed.pathname)) {
+      return normalized
+    }
+
+    return `/frontstorage${parsed.pathname}${parsed.search}${parsed.hash}`
+  } catch (error) {
+    return normalized
+  }
 }

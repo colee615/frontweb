@@ -63,15 +63,15 @@
             <div class="cb-footer-column">
               <h4>{{ content.contact_title || '' }}</h4>
               <div class="cb-contact-line">
-                <span class="cb-inline-icon" v-html="icons.pin"></span>
+                <span class="cb-inline-icon" v-html="footerIcons.pin"></span>
                 <span>{{ addressLines[0] }}<br>{{ addressLines[1] }}</span>
               </div>
               <div class="cb-contact-line">
-                <span class="cb-inline-icon" v-html="icons['phone-call']"></span>
+                <span class="cb-inline-icon" v-html="footerIcons['phone-call']"></span>
                 <span>{{ phoneLines[0] }}<br>{{ phoneLines[1] }}</span>
               </div>
               <div class="cb-contact-line">
-                <span class="cb-inline-icon" v-html="icons.mail"></span>
+                <span class="cb-inline-icon" v-html="footerIcons.mail"></span>
                 <span>{{ content.email || '' }}</span>
               </div>
             </div>
@@ -119,15 +119,15 @@
 
                 <template v-else-if="section.type === 'contact'">
                   <div class="cb-contact-line">
-                    <span class="cb-inline-icon" v-html="icons.pin"></span>
+                    <span class="cb-inline-icon" v-html="footerIcons.pin"></span>
                     <span>{{ addressLines[0] }}<br>{{ addressLines[1] }}</span>
                   </div>
                   <div class="cb-contact-line">
-                    <span class="cb-inline-icon" v-html="icons['phone-call']"></span>
+                    <span class="cb-inline-icon" v-html="footerIcons['phone-call']"></span>
                     <span>{{ phoneLines[0] }}<br>{{ phoneLines[1] }}</span>
                   </div>
                   <div class="cb-contact-line">
-                    <span class="cb-inline-icon" v-html="icons.mail"></span>
+                    <span class="cb-inline-icon" v-html="footerIcons.mail"></span>
                     <span>{{ content.email || '' }}</span>
                   </div>
 
@@ -188,6 +188,11 @@
 
 <script>
 const CONTACT_ROUTE = '/contacto'
+const FOOTER_ICONS = {
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
+  mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>',
+  'phone-call': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.34 1.79.64 2.64a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.44-1.3a2 2 0 0 1 2.11-.45c.85.3 1.74.52 2.64.64A2 2 0 0 1 22 16.92z"></path></svg>'
+}
 
 export default {
   name: 'HomeFooter',
@@ -216,6 +221,9 @@ export default {
     }
   },
   computed: {
+    footerIcons() {
+      return { ...FOOTER_ICONS, ...this.icons }
+    },
     helpLinks() {
       return this.links
         .filter((link) => link.group === 'help')

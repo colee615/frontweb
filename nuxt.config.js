@@ -7,13 +7,13 @@ const STORAGE_PROXY_BASE_URL = normalizeBaseUrl(process.env.STORAGE_PROXY_BASE_U
 const USER_API_BASE_URL = ((process.env.USER_API_BASE_URL || `${API_BASE_URL}/user`) || '/user').replace(/\/?$/, '/')
 const TRACKING_BASE_URL = (process.env.TRACKING_BASE_URL || 'https://trackingbo.correos.gob.bo:8100').replace(/\/+$/, '')
 const POSTAL_CALCULATOR_API_URL = (process.env.POSTAL_CALCULATOR_API_URL || 'https://postar.correos.gob.bo:8104/api/calcular').replace(/\/+$/, '')
-const CONNECT_SRC = ["'self'", 'https://www.google-analytics.com', 'https://analytics.google.com', 'https://www.googletagmanager.com']
+const CONNECT_SRC = ["'self'", 'https://www.google-analytics.com', 'https://analytics.google.com', 'https://www.googletagmanager.com', 'https://translate.google.com', 'https://translate.googleapis.com', 'https://translate-pa.googleapis.com']
 const IMG_SRC = ["'self'", 'data:', 'https:']
 const MEDIA_SRC = ["'self'", 'https:']
-const FRAME_SRC = ["'self'", 'https://chatbot.correos.gob.bo:5000']
+const FRAME_SRC = ["'self'", 'https://chatbot.correos.gob.bo:5000', 'https://translate.google.com']
 const SCRIPT_SRC = process.env.NODE_ENV === 'development'
-  ? ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo:5000']
-  : ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo:5000']
+  ? ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo:5000', 'https://translate.google.com', 'https://translate.googleapis.com']
+  : ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo:5000', 'https://translate.google.com', 'https://translate.googleapis.com']
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development'
 
 if (/^https?:\/\//i.test(API_BASE_URL)) {
@@ -76,6 +76,7 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    '~/assets/css/navigation.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins

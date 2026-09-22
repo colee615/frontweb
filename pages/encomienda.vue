@@ -218,6 +218,7 @@
 
 <script>
 import { sanitizeContentTree } from '~/utils/contentSecurity'
+import { fetchPageWithSharedLayout } from '~/utils/sharedLayout'
 
 const ENCOMIENDA_SOURCE_PAGE = {
   meta_title: '',
@@ -238,7 +239,7 @@ export default {
   name: 'EncomiendaPage',
   data() {
     return {
-      isBootLoading: false,
+      isBootLoading: true,
       revealObserver: null,
       activeFaqIndex: null
     }
@@ -249,7 +250,7 @@ export default {
   },
   async mounted() {
     this.setupRevealObserver()
-    await this.refreshPageContent({ blockUi: !this.hasMeaningfulCmsContent() })
+    await this.refreshPageContent({ blockUi: true })
   },
   beforeDestroy() {
     this.destroyRevealObserver()
@@ -427,13 +428,7 @@ async function safeGet($api, endpoint) {
 
 async function fetchPage($api) {
   const endpoints = ['/frontapi/api/site/pages/encomienda', '/api/site/pages/encomienda']
-  for (const endpoint of endpoints) {
-    const payload = await safeGet($api, endpoint)
-    if (payload) {
-      return payload
-    }
-  }
-  return null
+  return fetchPageWithSharedLayout($api, endpoints)
 }
 
 function normalizePage(payload = {}, base = ENCOMIENDA_SOURCE_PAGE) {

@@ -151,6 +151,8 @@
         </div>
       </transition>
     </div>
+
+    <div id="cb-google-translate" class="cb-google-translate" aria-hidden="true"></div>
   </header>
 </template>
 
@@ -191,7 +193,9 @@ export default {
       headlineItems: [],
       tickerOffset: 0,
       isNavbarPinned: false,
-      navbarHeight: 64
+      navbarHeight: 64,
+      googleTranslatePromise: null,
+      googleTranslateInitialized: false
     }
   },
   computed: {
@@ -274,6 +278,11 @@ export default {
           fallbackUrl: '/noticias'
         }),
         buildNavLink({
+          label: 'Contáctanos',
+          keywords: ['contacto', 'contactanos', 'consulta'],
+          fallbackUrl: CONTACT_ROUTE
+        }),
+        buildNavLink({
           label: 'Institucional',
           keywords: ['institucional'],
           fallbackUrl: '#',
@@ -283,11 +292,6 @@ export default {
           label: 'Delivery Express',
           keywords: ['delivery express', 'delivery'],
           fallbackUrl: '/deliveryexpress'
-        }),
-        buildNavLink({
-          label: 'Contáctanos',
-          keywords: ['contacto', 'contactanos', 'consulta'],
-          fallbackUrl: CONTACT_ROUTE
         })
       ]
     },
@@ -642,13 +646,89 @@ export default {
 
       this.$router.push('/contacto')
     },
-    openEnglishTranslation() {
+    async openEnglishTranslation() {
       if (!process.client) {
         return
       }
 
-      const translationUrl = `https://translate.google.com/translate?sl=es&tl=en&u=${encodeURIComponent(window.location.href)}`
-      window.open(translationUrl, '_blank', 'noopener,noreferrer')
+      try {
+        await this.ensureGoogleTranslate()
+        this.applyGoogleLanguage('en')
+      } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('No se pudo cargar Google Translate.', error)
+        }
+      }
+    },
+    ensureGoogleTranslate() {
+      if (this.googleTranslatePromise) {
+        return this.googleTranslatePromise
+      }
+
+      this.googleTranslatePromise = new Promise((resolve, reject) => {
+        const initialize = () => {
+          if (!window.google || !window.google.translate || !window.google.translate.TranslateElement) {
+            reject(new Error('Google Translate no está disponible.'))
+            return
+          }
+
+          const mount = document.getElementById('cb-google-translate')
+
+          if (!mount) {
+            reject(new Error('No se encontró el contenedor de Google Translate.'))
+            return
+          }
+
+          if (!this.googleTranslateInitialized) {
+            new window.google.translate.TranslateElement(
+              {
+                pageLanguage: 'es',
+                includedLanguages: 'es,en',
+                autoDisplay: false
+              },
+              'cb-google-translate'
+            )
+            this.googleTranslateInitialized = true
+          }
+
+          this.$nextTick(resolve)
+        }
+
+        if (window.google && window.google.translate && window.google.translate.TranslateElement) {
+          initialize()
+          return
+        }
+
+        window.cbGoogleTranslateInit = initialize
+
+        let script = document.getElementById('cb-google-translate-script')
+
+        if (!script) {
+          script = document.createElement('script')
+          script.id = 'cb-google-translate-script'
+          script.src = 'https://translate.google.com/translate_a/element.js?cb=cbGoogleTranslateInit'
+          script.async = true
+          script.onerror = () => reject(new Error('No se pudo cargar Google Translate.'))
+          document.head.appendChild(script)
+        } else {
+          script.addEventListener('load', initialize, { once: true })
+        }
+      })
+
+      return this.googleTranslatePromise
+    },
+    async applyGoogleLanguage(language) {
+      for (let attempt = 0; attempt < 20; attempt += 1) {
+        const select = document.querySelector('#cb-google-translate select.goog-te-combo') || document.querySelector('select.goog-te-combo')
+
+        if (select) {
+          select.value = language
+          select.dispatchEvent(new Event('change'))
+          return
+        }
+
+        await new Promise((resolve) => window.setTimeout(resolve, 50))
+      }
     }
   }
 }

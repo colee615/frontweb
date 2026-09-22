@@ -3497,7 +3497,7 @@ a {
   border: 1px solid rgba(254, 204, 54, 0.92);
   border-radius: 12px;
   background: var(--cb-yellow);
-  color: var(--cb-yellow);
+  color: var(--cb-blue);
   display: grid;
   place-items: center;
   font-weight: 800;
@@ -5830,6 +5830,35 @@ a {
   transform: rotate(-7deg);
 }
 
+.cb-google-translate {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+body > .skiptranslate {
+  display: none !important;
+}
+
+.goog-te-gadget,
+.goog-te-gadget-simple {
+  font-size: 0 !important;
+}
+
 @media (max-width: 1023px) {
   .cb-market-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5875,5 +5904,104 @@ a {
 
   .cb-market-benefits > div:last-child {
     border-bottom: 0;
+  }
+}
+
+/* Acceso a Mis Aplicaciones colgado del borde inferior del hero. */
+#home-hero {
+  position: relative;
+  z-index: 3;
+}
+
+#home-services {
+  position: relative;
+  z-index: 1;
+}
+
+.cb-home-apps-link {
+  position: absolute;
+  top: 100%;
+  left: max(7vw, calc((100vw - 1400px) / 2 + 80px));
+  z-index: 8;
+  display: block;
+  width: clamp(460px, 32vw, 620px);
+  aspect-ratio: 2172 / 724;
+  transform: translateY(-14%);
+  transform-origin: 36% 14%;
+  border-radius: 24px;
+  text-decoration: none;
+  filter: drop-shadow(0 15px 18px rgba(8, 43, 90, 0.2));
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), filter 260ms ease;
+  will-change: transform;
+}
+
+.cb-home-apps-link::after {
+  content: '';
+  position: absolute;
+  top: 14%;
+  left: 36%;
+  z-index: 0;
+  width: 9%;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(3, 24, 55, 0.34);
+  filter: blur(5px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cb-home-apps-link__image {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.cb-home-apps-link:hover {
+  transform: translateY(calc(-14% - 6px)) rotate(-0.35deg);
+  filter: drop-shadow(0 20px 22px rgba(8, 43, 90, 0.27));
+}
+
+.cb-home-apps-link:focus-visible {
+  outline: 4px solid var(--cb-yellow);
+  outline-offset: 5px;
+}
+
+#home-services .cb-services-section {
+  padding-top: clamp(168px, 11vw, 205px);
+}
+
+@media (max-width: 920px) {
+  .cb-home-apps-link {
+    left: 50%;
+    width: min(520px, calc(100vw - 32px));
+    transform: translate(-50%, -14%);
+  }
+
+  .cb-home-apps-link:hover {
+    transform: translate(-50%, calc(-14% - 4px));
+  }
+
+  #home-services .cb-services-section {
+    padding-top: 172px;
+  }
+}
+
+@media (max-width: 560px) {
+  .cb-home-apps-link {
+    width: calc(100vw - 24px);
+  }
+
+  #home-services .cb-services-section {
+    padding-top: 138px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cb-home-apps-link {
+    transition: none;
   }
 }
