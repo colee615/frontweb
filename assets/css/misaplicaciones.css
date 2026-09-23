@@ -355,14 +355,29 @@
 }
 
 .cb-app-card__type {
-  display: block;
-  margin-bottom: 2px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  margin-bottom: 4px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #edf4fc;
   color: #7890ac;
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.08em;
   line-height: 1.1;
   text-transform: uppercase;
+}
+
+.cb-app-card__type--app {
+  background: #fff5cc;
+  color: #8a6500;
+}
+
+.cb-app-card__type--web {
+  background: #eaf3ff;
+  color: #245c9f;
 }
 
 .cb-app-card h3 {

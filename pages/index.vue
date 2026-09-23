@@ -113,12 +113,12 @@
             src="/appmis.png"
             alt="Mis Aplicaciones"
             class="cb-home-apps-link__image"
-            width="2172"
-            height="724"
+            width="1122"
+            height="1402"
           >
         </nuxt-link>
         <nuxt-link
-          to="/misaplicaciones"
+          to="/informacion-postal"
           class="cb-home-apps-link cb-home-apps-link--info"
           aria-label="Ir a Información Postal"
         >
@@ -126,8 +126,8 @@
             src="/infopostal.png"
             alt="Información Postal"
             class="cb-home-apps-link__image"
-            width="1815"
-            height="866"
+            width="1122"
+            height="1402"
           >
         </nuxt-link>
       </section>
@@ -165,7 +165,7 @@ const EMPTY_PAGE = {
       key: 'announcement_modal',
       settings: {
         enabled: false,
-        show_once: false,
+        show_once: true,
         storage_key: 'cb-home-announcement',
         poster_image: '',
         poster_alt: '',

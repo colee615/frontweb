@@ -6,7 +6,8 @@ const ASSET_KEYS = new Set([
   'src',
   'poster',
   'poster_image',
-  'seal_logo'
+  'seal_logo',
+  'download_url'
 ])
 
 const LINK_KEYS = new Set([

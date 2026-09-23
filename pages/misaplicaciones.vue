@@ -134,7 +134,7 @@
                 <div class="cb-app-card__identity">
                   <span class="cb-app-card__icon" v-html="icons[application.icon]" aria-hidden="true"></span>
                   <div>
-                    <span class="cb-app-card__type">{{ application.type }}</span>
+                    <span :class="['cb-app-card__type', `cb-app-card__type--${application.resourceType}`]">{{ application.type }}</span>
                     <h3>{{ application.name }}</h3>
                   </div>
                 </div>
@@ -182,12 +182,18 @@
 
               <div class="cb-app-card__footer">
                 <span class="cb-app-card__category">{{ String(index + 1).padStart(2, '0') }}</span>
-                <template v-if="application.url">
-                  <nuxt-link v-if="isInternalRoute(application.url)" class="cb-app-card__action" :to="application.url" @click.native.prevent="navigateApplication($event, application)">
+                <template v-if="application.destinationUrl">
+                  <nuxt-link v-if="!application.shouldDownload && isInternalRoute(application.destinationUrl)" class="cb-app-card__action" :to="application.destinationUrl" @click.native.prevent="navigateApplication($event, application)">
                     {{ application.action }}
                     <span v-html="icons.arrow" aria-hidden="true"></span>
                   </nuxt-link>
-                  <a v-else class="cb-app-card__action" :href="application.url" @click.prevent="navigateApplication($event, application)">
+                  <a
+                    v-else
+                    class="cb-app-card__action"
+                    :href="application.destinationUrl"
+                    :download="application.shouldDownload ? (application.downloadName || 'aplicacion') : null"
+                    @click.prevent="navigateApplication($event, application)"
+                  >
                     {{ application.action }}
                     <span v-html="icons.arrow" aria-hidden="true"></span>
                   </a>
@@ -234,6 +240,7 @@
 
 <script>
 import { sanitizeContentTree } from '~/utils/contentSecurity'
+import { fetchPageWithSharedLayout } from '~/utils/sharedLayout'
 
 const SHARED_LAYOUT_PAGE = {
   theme: { logo_url: '', primary_color: '#20539a', secondary_color: '#2f3f5c', accent_color: '#fecc36' },
@@ -243,6 +250,15 @@ const SHARED_LAYOUT_PAGE = {
     { key: 'applications_highlights', settings: {}, items: [] },
     { key: 'footer', settings: { help_title: '', company_title: '', contact_title: '', social_title: '', social_text: '', address: '', phone: '', email: '', copyright: '', legal_text: '' }, items: [] }
   ]
+}
+
+function normalizeResourceType(value) {
+  return String(value || '').toLowerCase() === 'app' ? 'app' : 'web'
+}
+
+function normalizeDestinationUrl(value) {
+  const normalized = typeof value === 'string' ? value.trim() : ''
+  return normalized === '#' ? '' : normalized
 }
 
 export default {
@@ -343,19 +359,40 @@ export default {
     applicationItems() {
       const items = this.getSectionItems('applications')
 
-      return items.map((item) => ({
-        ...item,
-        name: item.name || item.title || '',
-        type: item.type || '',
-        category: item.category || '',
-        icon: item.icon || '',
-        preview: item.preview || '',
-        previewLabel: item.previewLabel || item.preview_label || item.name || '',
-        previewTitle: item.previewTitle || item.preview_title || item.name || '',
-        color: item.color || '',
-        action: item.action || '',
-        image: item.image || ''
-      }))
+      return items.map((item) => {
+        const resourceType = normalizeResourceType(item.resource_type)
+        const playStoreUrl = normalizeDestinationUrl(item.play_store_url)
+        const downloadUrl = normalizeDestinationUrl(item.download_url)
+        const websiteUrl = normalizeDestinationUrl(item.url)
+        const destinationUrl = resourceType === 'app'
+          ? (playStoreUrl || downloadUrl || websiteUrl)
+          : websiteUrl
+        const shouldDownload = resourceType === 'app' && !playStoreUrl && Boolean(downloadUrl)
+        const action = resourceType === 'app'
+          ? (playStoreUrl ? 'Ver en Play Store' : (downloadUrl ? 'Descargar aplicación' : (item.action || 'No disponible')))
+          : (item.action || 'Visitar sitio')
+
+        return {
+          ...item,
+          name: item.name || item.title || '',
+          type: resourceType === 'app' ? 'Aplicativo' : 'Sitio web',
+          resourceType,
+          category: item.category || '',
+          icon: item.icon || '',
+          preview: item.preview || '',
+          previewLabel: item.previewLabel || item.preview_label || item.name || '',
+          previewTitle: item.previewTitle || item.preview_title || item.name || '',
+          color: item.color || '',
+          action,
+          websiteUrl,
+          playStoreUrl,
+          downloadUrl,
+          downloadName: item.download_name || '',
+          destinationUrl,
+          shouldDownload,
+          image: item.image || ''
+        }
+      })
     },
     highlightItems() {
       return this.getSectionItems('applications_highlights')
@@ -456,7 +493,7 @@ export default {
       this.navigatingApplicationId = applicationId
     },
     handleApplicationCardClick(event, application) {
-      if (event.target.closest('a, button, input, select, textarea') || !application.url) {
+      if (event.target.closest('a, button, input, select, textarea') || !application.destinationUrl) {
         return
       }
 
@@ -468,6 +505,17 @@ export default {
       }
 
       if (this.isPageLeaving) {
+        return
+      }
+
+      if (application.shouldDownload) {
+        const downloadLink = document.createElement('a')
+        downloadLink.href = application.destinationUrl
+        downloadLink.download = application.downloadName || 'aplicacion'
+        downloadLink.hidden = true
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+        downloadLink.remove()
         return
       }
 
@@ -483,12 +531,12 @@ export default {
       }, 1100)
 
       window.setTimeout(() => {
-        if (this.isInternalRoute(application.url)) {
-          this.$router.push(application.url)
+        if (!application.shouldDownload && this.isInternalRoute(application.destinationUrl)) {
+          this.$router.push(application.destinationUrl)
           return
         }
 
-        window.location.assign(application.url)
+        window.location.assign(application.destinationUrl)
       }, 520)
     },
     async reloadCmsContent() {
@@ -524,26 +572,9 @@ export default {
   }
 }
 
-async function safeGet($api, endpoint) {
-  try {
-    return await $api.$get(endpoint)
-  } catch (error) {
-    return null
-  }
-}
-
 async function fetchPage($api) {
   const endpoints = ['/frontapi/api/site/pages/misaplicaciones', '/api/site/pages/misaplicaciones']
-
-  for (const endpoint of endpoints) {
-    const payload = await safeGet($api, endpoint)
-
-    if (payload) {
-      return payload
-    }
-  }
-
-  return null
+  return fetchPageWithSharedLayout($api, endpoints)
 }
 
 function normalizePage(payload = {}, base = SHARED_LAYOUT_PAGE) {

@@ -67,6 +67,10 @@ export function mergeSharedLayout(pagePayload, homePayload) {
 
   return {
     ...mergedPayload,
+    theme: {
+      ...((pagePayload && pagePayload.theme) || {}),
+      ...((homePayload && homePayload.theme) || {})
+    },
     section_map: sectionMap,
     sections: pageSections
   }

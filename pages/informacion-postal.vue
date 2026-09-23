@@ -4,20 +4,14 @@
 
 <script>
 import TramitesPage from './tramites.vue'
+import { fetchPageWithSharedLayout } from '~/utils/sharedLayout'
 
 export default {
   name: 'InformacionPostalPage',
   components: { TramitesPage },
   async asyncData({ $api }) {
-    let infoPage = null
-    for (const endpoint of ['/frontapi/api/site/pages/informacion-postal', '/api/site/pages/informacion-postal']) {
-      try {
-        infoPage = await $api.$get(endpoint)
-        if (infoPage) break
-      } catch (error) {
-        // Try the next API base when the first one is unavailable.
-      }
-    }
+    const endpoints = ['/frontapi/api/site/pages/informacion-postal', '/api/site/pages/informacion-postal']
+    const infoPage = await fetchPageWithSharedLayout($api, endpoints)
     return { infoPage }
   },
   head() {

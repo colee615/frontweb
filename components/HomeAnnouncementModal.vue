@@ -171,7 +171,7 @@ export default {
         return
       }
 
-      if (process.client && this.shouldShowOnce && window.localStorage.getItem(this.storageKey) === 'hidden') {
+      if (this.shouldShowOnce && this.wasSeenInCurrentSession()) {
         this.isOpen = false
         return
       }
@@ -187,8 +187,8 @@ export default {
       this.isOpen = false
       this.posterReady = false
 
-      if (process.client && this.shouldShowOnce) {
-        window.localStorage.setItem(this.storageKey, 'hidden')
+      if (this.shouldShowOnce) {
+        this.markAsSeenInCurrentSession()
       }
     },
     handleBackdropClick() {
@@ -245,6 +245,28 @@ export default {
       image.onload = reveal
       image.onerror = reveal
       image.src = slide.poster_image
+    },
+    wasSeenInCurrentSession() {
+      if (!process.client) {
+        return false
+      }
+
+      try {
+        return window.sessionStorage.getItem(this.storageKey) === 'hidden'
+      } catch (error) {
+        return false
+      }
+    },
+    markAsSeenInCurrentSession() {
+      if (!process.client) {
+        return
+      }
+
+      try {
+        window.sessionStorage.setItem(this.storageKey, 'hidden')
+      } catch (error) {
+        // Storage can be unavailable in strict privacy modes; closing must still work.
+      }
     },
     toBoolean(value, fallback) {
       if (typeof value === 'boolean') {

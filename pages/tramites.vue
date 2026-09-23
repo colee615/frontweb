@@ -83,6 +83,7 @@
 
 <script>
 import { sanitizeContentTree } from '~/utils/contentSecurity'
+import { fetchPageWithSharedLayout } from '~/utils/sharedLayout'
 
 const BASE_PAGE = {
   id: null,
@@ -166,10 +167,8 @@ export default {
 }
 
 async function fetchPage($api) {
-  for (const endpoint of ['/frontapi/api/site/pages/informacion-postal', '/api/site/pages/informacion-postal', '/frontapi/api/site/pages/tramites', '/api/site/pages/tramites']) {
-    try { const payload = await $api.$get(endpoint); if (payload) return payload } catch (error) { /* fallback endpoint */ }
-  }
-  return null
+  const endpoints = ['/frontapi/api/site/pages/informacion-postal', '/api/site/pages/informacion-postal', '/frontapi/api/site/pages/tramites', '/api/site/pages/tramites']
+  return fetchPageWithSharedLayout($api, endpoints)
 }
 
 function normalizePage(payload = {}) {
