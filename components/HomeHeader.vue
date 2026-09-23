@@ -31,7 +31,7 @@
             title="Traducir al inglés"
             @click="openEnglishTranslation"
           >
-            <span class="cb-top-link__icon" v-html="icons.globe"></span>
+            <span class="cb-top-link__icon" aria-hidden="true" v-html="icons.globe"></span>
             <span class="cb-top-link__text">
               <span class="cb-top-link__light-es">ES</span>
               <strong class="cb-top-link__language-primary">{{ content.language_primary || 'Español' }}</strong>
@@ -41,7 +41,7 @@
             </span>
           </button>
           <button type="button" class="cb-top-link" @click="goToContact">
-            <span class="cb-top-link__icon" v-html="icons.help"></span>
+            <span class="cb-top-link__icon cb-top-link__icon--help" aria-hidden="true" v-html="icons.help"></span>
             <span class="cb-top-link__text">
               <span>{{ content.help_label || 'Ayuda / Contacto' }}</span>
             </span>

@@ -106,7 +106,7 @@
         <HomeHero :icons="icons" :content="sectionSettings.hero" :slides="heroSlides" />
         <nuxt-link
           to="/misaplicaciones"
-          class="cb-home-apps-link"
+          class="cb-home-apps-link cb-home-apps-link--apps"
           aria-label="Ir a Mis Aplicaciones"
         >
           <img
@@ -115,6 +115,19 @@
             class="cb-home-apps-link__image"
             width="2172"
             height="724"
+          >
+        </nuxt-link>
+        <nuxt-link
+          to="/misaplicaciones"
+          class="cb-home-apps-link cb-home-apps-link--info"
+          aria-label="Ir a Información Postal"
+        >
+          <img
+            src="/infopostal.png"
+            alt="Información Postal"
+            class="cb-home-apps-link__image"
+            width="1815"
+            height="866"
           >
         </nuxt-link>
       </section>
