@@ -20,6 +20,11 @@ if (/^https?:\/\//i.test(API_BASE_URL)) {
   CONNECT_SRC.push(API_BASE_URL)
   IMG_SRC.push(API_BASE_URL)
   MEDIA_SRC.push(API_BASE_URL)
+  FRAME_SRC.push(getOrigin(API_BASE_URL))
+}
+
+if (/^https?:\/\//i.test(STORAGE_PROXY_BASE_URL)) {
+  FRAME_SRC.push(getOrigin(STORAGE_PROXY_BASE_URL))
 }
 
 if (/^https?:\/\//i.test(TRACKING_BASE_URL)) {

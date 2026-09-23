@@ -1,0 +1,24 @@
+.cb-status-page { display: flex; min-height: 100vh; flex-direction: column; background: #f4f7fb; }
+.cb-status { display: grid; flex: 1; place-items: center; padding: clamp(18px, 3vw, 32px) 20px; }
+.cb-status-content { display: flex; width: min(100%, 1440px); flex-direction: column; align-items: center; gap: 24px; }
+.cb-status-poster-frame { width: min(100%, 1120px); overflow: hidden; border: 1px solid rgba(32, 83, 154, .12); border-radius: 14px; background: #fff; box-shadow: 0 24px 58px rgba(21, 65, 125, .16), 0 5px 14px rgba(21, 65, 125, .08); }
+.cb-status-poster { display: block; width: 100%; height: auto; max-height: calc(100vh - 310px); object-fit: contain; object-position: center; }
+.cb-status-actions { display: flex; align-items: center; justify-content: center; }
+.cb-status-button { position: relative; display: inline-flex; min-width: 334px; min-height: 62px; align-items: center; justify-content: center; gap: 17px; padding: 0 34px; border: 2px solid rgba(255, 255, 255, .78); border-radius: 999px; background: linear-gradient(180deg, #ffe51a 0%, #ffd600 76%, #ffcf00 100%); box-shadow: 0 5px 0 #dcae00, 0 10px 20px rgba(155, 124, 0, .2), inset 0 2px 0 rgba(255, 255, 255, .55); color: #14509c; font-size: 19px; font-weight: 800; letter-spacing: -.02em; line-height: 1; text-decoration: none; transition: transform .18s ease, box-shadow .18s ease, filter .18s ease; }
+.cb-status-button:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #dcae00, 0 14px 24px rgba(155, 124, 0, .24), inset 0 2px 0 rgba(255, 255, 255, .62); color: #104783; filter: saturate(1.04); text-decoration: none; }
+.cb-status-button:active { transform: translateY(3px); box-shadow: 0 2px 0 #dcae00, 0 5px 11px rgba(155, 124, 0, .18), inset 0 2px 0 rgba(255, 255, 255, .5); }
+.cb-status-button:focus-visible { outline: 3px solid #20539a; outline-offset: 5px; }
+.cb-status-button__icon { width: 23px; height: 23px; flex: 0 0 auto; fill: currentColor; }
+.cb-status-visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (max-width: 700px) {
+  .cb-status { padding: 12px 12px 24px; }
+  .cb-status-content { gap: 20px; }
+  .cb-status-poster { max-height: none; }
+  .cb-status-button { min-width: min(100%, 334px); min-height: 58px; padding: 0 26px; font-size: 18px; }
+}
+@supports (height: 100svh) {
+  @media (min-width: 701px) {
+    .cb-status-poster { max-height: calc(100svh - 310px); }
+  }
+}
+@media (prefers-reduced-motion: reduce) { .cb-status-button { transition: none; } }

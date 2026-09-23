@@ -161,7 +161,7 @@
 
         <div class="cb-footer-bottom cb-footer-bottom--desktop">
           <nuxt-link class="cb-logo cb-logo--footer" to="/">
-            <img :src="logoUrl" alt="Correos de Bolivia">
+            <img v-if="logoUrl" :src="logoUrl" alt="Correos de Bolivia">
           </nuxt-link>
           <div class="cb-copyright">
             <p>{{ content.copyright || '' }}</p>

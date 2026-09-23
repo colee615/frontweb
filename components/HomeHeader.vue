@@ -53,7 +53,7 @@
     <div ref="navbar" :class="['cb-navbar', { 'cb-navbar--fixed': isNavbarPinned }]">
       <div class="cb-shell cb-navbar-inner">
         <nuxt-link class="cb-logo" to="/">
-          <img :src="logoUrl" alt="Correos de Bolivia">
+          <img v-if="logoUrl" :src="logoUrl" alt="Correos de Bolivia">
         </nuxt-link>
 
         <nav class="cb-nav-links">
