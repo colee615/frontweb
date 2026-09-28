@@ -309,7 +309,7 @@ export default {
       }
 
       const candidates = document.querySelectorAll(
-        'iframe[src*="chatbot.correos.gob.bo:5000"], [id*="chatbot"], [class*="chatbot"]'
+        'iframe[src*="chatbot.correos.gob.bo"], [id*="chatbot"], [class*="chatbot"]'
       )
 
       candidates.forEach((node) => {
