@@ -24,22 +24,11 @@
         </div>
 
         <div class="cb-topbar-group cb-topbar-group--right">
-          <button
-            type="button"
-            class="cb-top-link cb-top-link--language"
-            aria-label="Traducir sitio al inglés"
-            title="Traducir al inglés"
-            @click="openEnglishTranslation"
-          >
+          <span class="cb-top-link cb-language-indicator notranslate" translate="no" lang="es" aria-label="Idioma: Español">
             <span class="cb-top-link__icon" aria-hidden="true" v-html="icons.globe"></span>
-            <span class="cb-top-link__text">
-              <span class="cb-top-link__light-es">ES</span>
-              <strong class="cb-top-link__language-primary">{{ content.language_primary || 'Español' }}</strong>
-              <span class="cb-top-link__sep">|</span>
-              <span class="cb-top-link__light-us">US</span>
-              <strong>{{ content.language_secondary || 'English' }}</strong>
-            </span>
-          </button>
+            <span class="cb-top-link__light-es" aria-hidden="true">ES</span>
+            <strong>Español</strong>
+          </span>
           <button type="button" class="cb-top-link" @click="goToContact">
             <span class="cb-top-link__icon cb-top-link__icon--help" aria-hidden="true" v-html="icons.help"></span>
             <span class="cb-top-link__text">
@@ -152,7 +141,6 @@
       </transition>
     </div>
 
-    <div id="cb-google-translate" class="cb-google-translate" aria-hidden="true"></div>
   </header>
 </template>
 
@@ -193,9 +181,7 @@ export default {
       headlineItems: [],
       tickerOffset: 0,
       isNavbarPinned: false,
-      navbarHeight: 64,
-      googleTranslatePromise: null,
-      googleTranslateInitialized: false
+      navbarHeight: 64
     }
   },
   computed: {
@@ -645,90 +631,6 @@ export default {
       }
 
       this.$router.push('/contacto')
-    },
-    async openEnglishTranslation() {
-      if (!process.client) {
-        return
-      }
-
-      try {
-        await this.ensureGoogleTranslate()
-        this.applyGoogleLanguage('en')
-      } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('No se pudo cargar Google Translate.', error)
-        }
-      }
-    },
-    ensureGoogleTranslate() {
-      if (this.googleTranslatePromise) {
-        return this.googleTranslatePromise
-      }
-
-      this.googleTranslatePromise = new Promise((resolve, reject) => {
-        const initialize = () => {
-          if (!window.google || !window.google.translate || !window.google.translate.TranslateElement) {
-            reject(new Error('Google Translate no está disponible.'))
-            return
-          }
-
-          const mount = document.getElementById('cb-google-translate')
-
-          if (!mount) {
-            reject(new Error('No se encontró el contenedor de Google Translate.'))
-            return
-          }
-
-          if (!this.googleTranslateInitialized) {
-            new window.google.translate.TranslateElement(
-              {
-                pageLanguage: 'es',
-                includedLanguages: 'es,en',
-                autoDisplay: false
-              },
-              'cb-google-translate'
-            )
-            this.googleTranslateInitialized = true
-          }
-
-          this.$nextTick(resolve)
-        }
-
-        if (window.google && window.google.translate && window.google.translate.TranslateElement) {
-          initialize()
-          return
-        }
-
-        window.cbGoogleTranslateInit = initialize
-
-        let script = document.getElementById('cb-google-translate-script')
-
-        if (!script) {
-          script = document.createElement('script')
-          script.id = 'cb-google-translate-script'
-          script.src = 'https://translate.google.com/translate_a/element.js?cb=cbGoogleTranslateInit'
-          script.async = true
-          script.onerror = () => reject(new Error('No se pudo cargar Google Translate.'))
-          document.head.appendChild(script)
-        } else {
-          script.addEventListener('load', initialize, { once: true })
-        }
-      })
-
-      return this.googleTranslatePromise
-    },
-    async applyGoogleLanguage(language) {
-      for (let attempt = 0; attempt < 20; attempt += 1) {
-        const select = document.querySelector('#cb-google-translate select.goog-te-combo') || document.querySelector('select.goog-te-combo')
-
-        if (select) {
-          select.value = language
-          select.dispatchEvent(new Event('change'))
-          return
-        }
-
-        await new Promise((resolve) => window.setTimeout(resolve, 50))
-      }
     }
   }
 }

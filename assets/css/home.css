@@ -778,8 +778,28 @@ a {
   color: #fff;
 }
 
-.cb-news-ticker .cb-top-link__language-primary {
+.cb-language-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: default;
+}
+
+.cb-language-indicator:hover,
+.cb-language-indicator:focus {
+  opacity: 1;
+}
+
+.cb-news-ticker .cb-language-indicator strong {
   color: var(--cb-yellow);
+}
+
+@media (max-width: 420px) {
+  .cb-language-indicator .cb-top-link__light-es {
+    display: none;
+  }
 }
 
 .cb-news-ticker .cb-top-link__icon {
@@ -5555,6 +5575,43 @@ a {
   }
 }
 
+/* El menú compacto también se activa en tablet, donde los enlaces de escritorio se ocultan. */
+@media (min-width: 921px) and (max-width: 1180px) {
+  .cb-menu-btn {
+    display: grid;
+    flex: 0 0 40px;
+  }
+
+  .cb-mobile-nav {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    background: var(--cb-yellow);
+    border-top: 1px solid rgba(32, 83, 154, 0.14);
+    box-shadow: 0 12px 28px rgba(23, 63, 117, 0.1);
+  }
+
+  .cb-mobile-nav__inner {
+    display: grid;
+    gap: 10px;
+    padding: 12px 0 18px;
+  }
+
+  .cb-mobile-nav__link {
+    display: block;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.55);
+    color: var(--cb-blue);
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+}
+
 /* Home Market: catálogo limpio inspirado en la colección filatélica. */
 .cb-market {
   padding: 54px 0 0;
@@ -5834,35 +5891,6 @@ a {
   margin: 5px 0 0 18px;
   background: var(--cb-yellow);
   transform: rotate(-7deg);
-}
-
-.cb-google-translate {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.goog-te-banner-frame.skiptranslate {
-  display: none !important;
-}
-
-body {
-  top: 0 !important;
-}
-
-body > .skiptranslate {
-  display: none !important;
-}
-
-.goog-te-gadget,
-.goog-te-gadget-simple {
-  font-size: 0 !important;
 }
 
 @media (max-width: 1023px) {

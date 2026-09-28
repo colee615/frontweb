@@ -1,7 +1,8 @@
 <template>
   <div class="cb-app-layout">
     <transition name="cb-route-skeleton">
-      <div v-if="isRouteLoading" class="cb-route-skeleton" role="status" aria-live="polite" aria-busy="true">
+      <div v-if="isRouteLoading" class="cb-route-skeleton notranslate" translate="no" role="status" aria-live="polite" aria-busy="true">
+        <span class="sr-only">Cargando página en español…</span>
         <div class="cb-route-skeleton__topline"></div>
         <div class="cb-route-skeleton__shell">
           <div class="cb-route-skeleton__utility">
@@ -59,7 +60,9 @@
       </div>
     </transition>
 
-    <Nuxt />
+    <div ref="pageContent" class="cb-route-content" :inert="isRouteLoading ? '' : null" :aria-busy="isRouteLoading ? 'true' : 'false'">
+      <Nuxt />
+    </div>
   </div>
 </template>
 
@@ -181,12 +184,12 @@ export default {
         })
 
         if (elapsed >= 420 && pageReady && pendingImages.length === 0) {
-          this.isRouteLoading = false
+          this.finishPageLoad(token)
           return
         }
 
         if (elapsed >= 12000) {
-          this.isRouteLoading = false
+          this.finishPageLoad(token)
           return
         }
 
@@ -194,6 +197,9 @@ export default {
       }
 
       this.$nextTick(() => window.setTimeout(check, 0))
+    },
+    finishPageLoad(token) {
+      if (token === this.routeLoadToken) this.isRouteLoading = false
     },
     finishRouteLoading() {
       this.routeLoadToken += 1
