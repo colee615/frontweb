@@ -178,7 +178,7 @@
       </div>
     </div>
     <script
-      src="https://chatbot.correos.gob.bo:5000/widget-embed.js"
+      src="https://chatbot.correos.gob.bo/widget-embed.js"
       data-lang="es"
       data-position="right"
       defer>

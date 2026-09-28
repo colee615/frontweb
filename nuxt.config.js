@@ -10,10 +10,10 @@ const POSTAL_CALCULATOR_API_URL = (process.env.POSTAL_CALCULATOR_API_URL || 'htt
 const CONNECT_SRC = ["'self'", 'https://www.google-analytics.com', 'https://analytics.google.com', 'https://www.googletagmanager.com']
 const IMG_SRC = ["'self'", 'data:', 'https:']
 const MEDIA_SRC = ["'self'", 'https:']
-const FRAME_SRC = ["'self'", 'https://chatbot.correos.gob.bo:5000']
+const FRAME_SRC = ["'self'", 'https://chatbot.correos.gob.bo']
 const SCRIPT_SRC = process.env.NODE_ENV === 'development'
-  ? ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo:5000']
-  : ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo:5000']
+  ? ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo']
+  : ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo']
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development'
 
 if (/^https?:\/\//i.test(API_BASE_URL)) {
