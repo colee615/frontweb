@@ -61,11 +61,6 @@
 
         <div class="cb-route-skeleton__courier" aria-hidden="true">
           <div class="cb-route-skeleton__courier-stage">
-            <div class="cb-route-skeleton__courier-caption">
-              <span class="cb-route-skeleton__courier-status"></span>
-              <span>Preparando tu contenido</span>
-              <span class="cb-route-skeleton__courier-dots"><i></i><i></i><i></i></span>
-            </div>
             <div class="cb-route-skeleton__courier-road">
               <span class="cb-route-skeleton__courier-track"></span>
               <img
@@ -77,6 +72,11 @@
                 fetchpriority="high"
                 draggable="false"
               >
+            </div>
+            <div class="cb-route-skeleton__courier-caption">
+              <span class="cb-route-skeleton__courier-status"></span>
+              <span>Preparando tu contenido</span>
+              <span class="cb-route-skeleton__courier-dots"><i></i><i></i><i></i></span>
             </div>
           </div>
         </div>
