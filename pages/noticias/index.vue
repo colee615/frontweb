@@ -62,48 +62,56 @@
     </div>
 
     <main v-else class="cb-news">
-      <section id="news-featured" class="cb-news-landing cb-news-reveal is-visible" data-news-reveal>
-        <div class="cb-shell cb-news-landing__grid">
-          <article :id="`news-featured-item-${featuredItem.id || 0}`" class="cb-news-hero-card">
-            <template v-if="featuredMediaType === 'video' && featuredMediaUrl">
-              <video
+      <section v-if="featuredItems.length || importantNotices.length" id="news-featured" class="cb-news-landing cb-news-reveal is-visible" data-news-reveal>
+        <div class="cb-shell cb-news-landing__grid" :class="{ 'cb-news-landing__grid--no-featured': !featuredItems.length }">
+          <div v-if="featuredItems.length" class="cb-news-featured">
+            <div v-if="featuredItem.badge" class="cb-news-featured__label">
+              <span class="cb-news-featured__badge">{{ featuredItem.badge }}</span>
+            </div>
+            <article :id="`news-featured-item-${featuredItem.id || 0}`" class="cb-news-hero-card">
+              <template v-if="featuredMediaType === 'video' && featuredMediaUrl">
+                <video
+                  class="cb-news-hero-card__asset"
+                  :src="featuredMediaUrl"
+                  :poster="featuredPoster || null"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                ></video>
+              </template>
+              <img
+                v-else-if="featuredMediaUrl"
                 class="cb-news-hero-card__asset"
                 :src="featuredMediaUrl"
-                :poster="featuredPoster || null"
-                autoplay
-                muted
-                loop
-                playsinline
-                preload="metadata"
-              ></video>
-            </template>
-            <img
-              v-else-if="featuredMediaUrl"
-              class="cb-news-hero-card__asset"
-              :src="featuredMediaUrl"
-              alt=""
-            >
-            <div class="cb-news-hero-card__veil"></div>
-            <div class="cb-news-hero-card__content">
-              <span v-if="featuredItem.badge" class="cb-news-featured__badge">{{ featuredItem.badge }}</span>
-              <h1>{{ featuredItem.title }}</h1>
-              <p v-if="featuredExcerptParagraphs.length">{{ featuredExcerptParagraphs[0] }}</p>
-              <nuxt-link :to="articleLink(featuredItem)" class="cb-news-featured__button">
-                <span>{{ featuredButtonLabel }}</span>
-                <span class="cb-news-inline-icon" v-html="icons.chevronRight"></span>
-              </nuxt-link>
-            </div>
-            <div v-if="featuredItems.length > 1" class="cb-news-hero-card__dots" aria-label="Noticias destacadas">
-              <button
-                v-for="(item, index) in featuredItems"
-                :key="item.id || `${item.title}-${index}`"
-                type="button"
-                :class="['cb-news-hero-card__dot', { 'is-active': index === activeFeaturedIndex }]"
-                :aria-label="`Ver destacado ${index + 1}`"
-                @click="selectFeatured(index)"
-              ></button>
-            </div>
-          </article>
+                alt=""
+              >
+              <div class="cb-news-hero-card__veil"></div>
+              <div class="cb-news-hero-card__content">
+                <span v-if="featuredItem.date" class="cb-news-featured__date" aria-label="Fecha de publicación">
+                  <span class="cb-news-inline-icon" v-html="icons.calendar" aria-hidden="true"></span>
+                  {{ featuredItem.date }}
+                </span>
+                <h1>{{ featuredItem.title }}</h1>
+                <p v-if="featuredExcerptParagraphs.length">{{ featuredExcerptParagraphs[0] }}</p>
+                <nuxt-link :to="articleLink(featuredItem)" class="cb-news-featured__button">
+                  <span>{{ featuredButtonLabel }}</span>
+                  <span class="cb-news-inline-icon" v-html="icons.chevronRight"></span>
+                </nuxt-link>
+              </div>
+              <div v-if="featuredItems.length > 1" class="cb-news-hero-card__dots" aria-label="Noticias destacadas">
+                <button
+                  v-for="(item, index) in featuredItems"
+                  :key="item.id || `${item.title}-${index}`"
+                  type="button"
+                  :class="['cb-news-hero-card__dot', { 'is-active': index === activeFeaturedIndex }]"
+                  :aria-label="`Ver destacado ${index + 1}`"
+                  @click="selectFeatured(index)"
+                ></button>
+              </div>
+            </article>
+          </div>
 
           <aside v-if="importantNotices.length" class="cb-news-alerts" aria-label="Avisos importantes">
             <div class="cb-news-alerts__head">

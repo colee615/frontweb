@@ -57,6 +57,11 @@ export function sanitizeContentTree(input) {
   return Object.keys(input).reduce((accumulator, key) => {
     const value = input[key]
 
+    if (key === 'screenshots' && Array.isArray(value)) {
+      accumulator[key] = value.map(sanitizeAssetUrl).filter(Boolean)
+      return accumulator
+    }
+
     if (value && typeof value === 'object') {
       accumulator[key] = sanitizeContentTree(value)
       return accumulator

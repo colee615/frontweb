@@ -180,9 +180,44 @@
 
               <p class="cb-app-card__description">{{ application.description }}</p>
 
-              <div class="cb-app-card__footer">
-                <span class="cb-app-card__category">{{ String(index + 1).padStart(2, '0') }}</span>
-                <template v-if="application.destinationUrl">
+              <div :class="['cb-app-card__footer', { 'cb-app-card__footer--apk': application.isApk }]">
+                <span v-if="!application.isApk" class="cb-app-card__category">{{ String(index + 1).padStart(2, '0') }}</span>
+                <template v-if="application.isApk">
+                  <div class="cb-apk-actions">
+                    <div class="cb-apk-actions__top">
+                      <span class="cb-app-card__category">{{ String(index + 1).padStart(2, '0') }}</span>
+                      <div class="cb-apk-actions__tools">
+                        <a
+                          class="cb-apk-actions__download"
+                          :href="application.downloadUrl"
+                          :download="application.downloadName || null"
+                          :title="'Descargar ' + application.name + ' para Android'"
+                          :aria-label="'Descargar ' + application.name + ' para Android'"
+                          @click.stop
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M5 16.5v4h14v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                        </a>
+                        <button
+                          class="cb-apk-actions__share"
+                          :class="{ 'is-copied': sharedApplicationId === application.id }"
+                          type="button"
+                          :title="sharedApplicationId === application.id ? sharedApplicationMessage : 'Copiar enlace de descarga'"
+                          :aria-label="sharedApplicationId === application.id ? sharedApplicationMessage : 'Copiar enlace de descarga'"
+                          @click.stop="copyApkLink(application)"
+                        >
+                          <svg v-if="sharedApplicationId === application.id" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                          <svg v-else viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8.5" y="8.5" width="11" height="12" rx="2" stroke="currentColor" stroke-width="1.7" /><path d="M15.5 5.5v-.3A1.7 1.7 0 0 0 13.8 3.5H5.7A1.7 1.7 0 0 0 4 5.2v9.1A1.7 1.7 0 0 0 5.7 16h.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" /></svg>
+                        </button>
+                        <button type="button" class="cb-app-card__action cb-app-card__action--preview" @click="openApkPreview(application)">
+                          Previsualizar <span aria-hidden="true">↗</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+                <template v-else-if="application.destinationUrl">
                   <nuxt-link v-if="!application.shouldDownload && isInternalRoute(application.destinationUrl)" class="cb-app-card__action" :to="application.destinationUrl" @click.native.prevent="navigateApplication($event, application)">
                     {{ application.action }}
                     <span v-html="icons.arrow" aria-hidden="true"></span>
@@ -234,6 +269,26 @@
       <button type="button" @click="reloadCmsContent">Reintentar</button>
     </div>
 
+    <transition name="cb-apk-preview">
+      <div v-if="previewApplication" class="cb-apk-lightbox" role="presentation" @click.self="closeApkPreview">
+        <section class="cb-apk-lightbox__gallery" role="dialog" aria-modal="true" :aria-label="'Vista previa de ' + previewApplication.name">
+          <button class="cb-apk-lightbox__close" type="button" aria-label="Cerrar vista previa" @click="closeApkPreview">×</button>
+          <div class="cb-apk-lightbox__device" @touchstart.passive="startApkSwipe" @touchend.passive="endApkSwipe">
+            <button v-if="previewApplication.screenshots.length > 1" class="cb-apk-lightbox__arrow cb-apk-lightbox__arrow--left" type="button" aria-label="Captura anterior" @click="stepApkScreenshot(-1)">‹</button>
+            <div class="cb-apk-phone">
+              <div class="cb-apk-phone__screen">
+                <img v-if="previewApplication.screenshots.length" :src="previewApplication.screenshots[activeApkScreenshot]" :alt="'Pantalla ' + (activeApkScreenshot + 1) + ' de ' + previewApplication.name">
+                <div v-else class="cb-apk-phone__empty"><span>✦</span><strong>{{ previewApplication.name }}</strong></div>
+              </div>
+              <img class="cb-apk-phone__frame" src="/application-phone-frame.svg" alt="" aria-hidden="true">
+            </div>
+            <button v-if="previewApplication.screenshots.length > 1" class="cb-apk-lightbox__arrow cb-apk-lightbox__arrow--right" type="button" aria-label="Captura siguiente" @click="stepApkScreenshot(1)">›</button>
+          </div>
+          <nav v-if="previewApplication.screenshots.length > 1" class="cb-apk-lightbox__dots" aria-label="Capturas de la aplicación"><button v-for="(screenshot, index) in previewApplication.screenshots" :key="screenshot + index" type="button" :class="{ 'is-active': activeApkScreenshot === index }" :aria-label="'Mostrar captura ' + (index + 1)" :aria-current="activeApkScreenshot === index ? 'true' : null" @click="activeApkScreenshot = index"></button></nav>
+        </section>
+      </div>
+    </transition>
+
     <HomeFooter v-if="!isBootLoading && hasCmsContent" :logo-url="logoUrl" :icons="icons" :content="footerSettings" :links="footerLinks" />
   </div>
 </template>
@@ -277,6 +332,12 @@ export default {
       failedApplicationImages: {},
       loadedApplicationImages: {},
       navigatingApplicationId: null,
+      previewApplication: null,
+      activeApkScreenshot: 0,
+      apkTouchStartX: null,
+      sharedApplicationId: null,
+      sharedApplicationMessage: '',
+      shareResetTimer: null,
       isPageLeaving: false,
       transitionOrigin: '50% 50%',
       pageTransitionTimer: null
@@ -320,6 +381,9 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('pageshow', this.resetPageTransition)
+    window.removeEventListener('keydown', this.handleApkPreviewKeydown)
+    document.body.style.overflow = ''
+    if (this.shareResetTimer) window.clearTimeout(this.shareResetTimer)
     this.resetPageTransition()
   },
   watch: {
@@ -364,6 +428,8 @@ export default {
         const playStoreUrl = normalizeDestinationUrl(item.play_store_url)
         const downloadUrl = normalizeDestinationUrl(item.download_url)
         const websiteUrl = normalizeDestinationUrl(item.url)
+        const downloadName = item.download_name || ''
+        const isApk = resourceType === 'app' && Boolean(downloadUrl) && (/\.apk$/i.test(downloadName) || /\.apk(?:[?#].*)?$/i.test(downloadUrl))
         const destinationUrl = resourceType === 'app'
           ? (playStoreUrl || downloadUrl || websiteUrl)
           : websiteUrl
@@ -387,10 +453,16 @@ export default {
           websiteUrl,
           playStoreUrl,
           downloadUrl,
-          downloadName: item.download_name || '',
+          downloadName,
           destinationUrl,
           shouldDownload,
-          image: item.image || ''
+          image: item.image || '',
+          isApk,
+          version: item.app_version || '',
+          androidRequirement: item.android_requirement || '',
+          screenshots: Array.isArray(item.screenshots) && item.screenshots.length
+            ? item.screenshots.filter(Boolean)
+            : (item.image ? [item.image] : [])
         }
       })
     },
@@ -457,6 +529,72 @@ export default {
     clearFilters() {
       this.searchTerm = ''
       this.activeCategory = 'Todos'
+    },
+    openApkPreview(application) {
+      this.previewApplication = application
+      this.activeApkScreenshot = 0
+      document.body.style.overflow = 'hidden'
+      window.addEventListener('keydown', this.handleApkPreviewKeydown)
+    },
+    closeApkPreview() {
+      this.previewApplication = null
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', this.handleApkPreviewKeydown)
+    },
+    handleApkPreviewKeydown(event) {
+      if (event.key === 'Escape') this.closeApkPreview()
+      if (event.key === 'ArrowRight') this.stepApkScreenshot(1)
+      if (event.key === 'ArrowLeft') this.stepApkScreenshot(-1)
+    },
+    stepApkScreenshot(direction) {
+      const screenshots = this.previewApplication && this.previewApplication.screenshots
+      if (!screenshots || screenshots.length < 2) return
+      this.activeApkScreenshot = (this.activeApkScreenshot + direction + screenshots.length) % screenshots.length
+    },
+    startApkSwipe(event) {
+      this.apkTouchStartX = event.changedTouches && event.changedTouches.length
+        ? event.changedTouches[0].clientX
+        : null
+    },
+    endApkSwipe(event) {
+      if (this.apkTouchStartX === null || !event.changedTouches || !event.changedTouches.length) return
+      const distance = event.changedTouches[0].clientX - this.apkTouchStartX
+      this.apkTouchStartX = null
+      if (Math.abs(distance) < 45) return
+      this.stepApkScreenshot(distance < 0 ? 1 : -1)
+    },
+    async copyApkLink(application) {
+      const url = new URL(application.downloadUrl, window.location.origin).href
+      let copied = false
+
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(url)
+          copied = true
+        } catch (error) {}
+      }
+
+      if (!copied) {
+        const field = document.createElement('textarea')
+        field.value = url
+        field.setAttribute('readonly', '')
+        field.style.position = 'fixed'
+        field.style.opacity = '0'
+        document.body.appendChild(field)
+        field.select()
+        try {
+          copied = document.execCommand('copy')
+        } finally {
+          field.remove()
+        }
+      }
+
+      if (!copied) return
+
+      this.sharedApplicationId = application.id
+      this.sharedApplicationMessage = 'Enlace copiado'
+      if (this.shareResetTimer) window.clearTimeout(this.shareResetTimer)
+      this.shareResetTimer = window.setTimeout(() => { this.sharedApplicationId = null }, 2500)
     },
     handleApplicationImageError(applicationId) {
       this.$set(this.failedApplicationImages, applicationId, true)
