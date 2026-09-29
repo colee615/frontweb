@@ -210,7 +210,7 @@
                           <svg v-if="sharedApplicationId === application.id" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
                           <svg v-else viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8.5" y="8.5" width="11" height="12" rx="2" stroke="currentColor" stroke-width="1.7" /><path d="M15.5 5.5v-.3A1.7 1.7 0 0 0 13.8 3.5H5.7A1.7 1.7 0 0 0 4 5.2v9.1A1.7 1.7 0 0 0 5.7 16h.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" /></svg>
                         </button>
-                        <button type="button" class="cb-app-card__action cb-app-card__action--preview" @click="openApkPreview(application)">
+                        <button v-if="application.screenshots.length" type="button" class="cb-app-card__action cb-app-card__action--preview" @click="openApkPreview(application)">
                           Previsualizar <span aria-hidden="true">↗</span>
                         </button>
                       </div>
@@ -274,17 +274,26 @@
         <section class="cb-apk-lightbox__gallery" role="dialog" aria-modal="true" :aria-label="'Vista previa de ' + previewApplication.name">
           <button class="cb-apk-lightbox__close" type="button" aria-label="Cerrar vista previa" @click="closeApkPreview">×</button>
           <div class="cb-apk-lightbox__device" @touchstart.passive="startApkSwipe" @touchend.passive="endApkSwipe">
-            <button v-if="previewApplication.screenshots.length > 1" class="cb-apk-lightbox__arrow cb-apk-lightbox__arrow--left" type="button" aria-label="Captura anterior" @click="stepApkScreenshot(-1)">‹</button>
+            <button v-if="previewApplication.screenshots.length > 1" class="cb-apk-lightbox__arrow cb-apk-lightbox__arrow--left" type="button" aria-label="Captura anterior" @click="stepApkScreenshot(-1)">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 6.5 9 12l5.5 5.5" /></svg>
+            </button>
             <div class="cb-apk-phone">
               <div class="cb-apk-phone__screen">
-                <img v-if="previewApplication.screenshots.length" :src="previewApplication.screenshots[activeApkScreenshot]" :alt="'Pantalla ' + (activeApkScreenshot + 1) + ' de ' + previewApplication.name">
+                <transition v-if="previewApplication.screenshots.length" name="cb-apk-screenshot" mode="out-in">
+                  <img :key="previewApplication.screenshots[activeApkScreenshot]" :src="previewApplication.screenshots[activeApkScreenshot]" :alt="'Pantalla ' + (activeApkScreenshot + 1) + ' de ' + previewApplication.name">
+                </transition>
                 <div v-else class="cb-apk-phone__empty"><span>✦</span><strong>{{ previewApplication.name }}</strong></div>
               </div>
-              <img class="cb-apk-phone__frame" src="/application-phone-frame.svg" alt="" aria-hidden="true">
+              <img class="cb-apk-phone__frame" src="/application-phone-frame.svg?v=2" alt="" aria-hidden="true">
             </div>
-            <button v-if="previewApplication.screenshots.length > 1" class="cb-apk-lightbox__arrow cb-apk-lightbox__arrow--right" type="button" aria-label="Captura siguiente" @click="stepApkScreenshot(1)">›</button>
+            <button v-if="previewApplication.screenshots.length > 1" class="cb-apk-lightbox__arrow cb-apk-lightbox__arrow--right" type="button" aria-label="Captura siguiente" @click="stepApkScreenshot(1)">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9.5 6.5 5.5 5.5-5.5 5.5" /></svg>
+            </button>
           </div>
-          <nav v-if="previewApplication.screenshots.length > 1" class="cb-apk-lightbox__dots" aria-label="Capturas de la aplicación"><button v-for="(screenshot, index) in previewApplication.screenshots" :key="screenshot + index" type="button" :class="{ 'is-active': activeApkScreenshot === index }" :aria-label="'Mostrar captura ' + (index + 1)" :aria-current="activeApkScreenshot === index ? 'true' : null" @click="activeApkScreenshot = index"></button></nav>
+          <nav v-if="previewApplication.screenshots.length > 1" class="cb-apk-lightbox__dots" aria-label="Capturas de la aplicación">
+            <span class="cb-apk-lightbox__count" aria-live="polite">{{ String(activeApkScreenshot + 1).padStart(2, '0') }} / {{ String(previewApplication.screenshots.length).padStart(2, '0') }}</span>
+            <button v-for="(screenshot, index) in previewApplication.screenshots" :key="screenshot + index" type="button" :class="{ 'is-active': activeApkScreenshot === index }" :aria-label="'Mostrar captura ' + (index + 1)" :aria-current="activeApkScreenshot === index ? 'true' : null" @click="activeApkScreenshot = index"></button>
+          </nav>
         </section>
       </div>
     </transition>
@@ -460,9 +469,9 @@ export default {
           isApk,
           version: item.app_version || '',
           androidRequirement: item.android_requirement || '',
-          screenshots: Array.isArray(item.screenshots) && item.screenshots.length
-            ? item.screenshots.filter(Boolean)
-            : (item.image ? [item.image] : [])
+          screenshots: Array.isArray(item.screenshots)
+            ? item.screenshots.filter(Boolean).filter(screenshot => screenshot !== item.image)
+            : []
         }
       })
     },
@@ -531,6 +540,7 @@ export default {
       this.activeCategory = 'Todos'
     },
     openApkPreview(application) {
+      if (!application || !application.screenshots || !application.screenshots.length) return
       this.previewApplication = application
       this.activeApkScreenshot = 0
       document.body.style.overflow = 'hidden'
