@@ -4,6 +4,7 @@
       <div v-if="isRouteLoading" class="cb-route-skeleton notranslate" translate="no" role="status" aria-live="polite" aria-busy="true">
         <span class="sr-only">Cargando página en español…</span>
         <div class="cb-route-skeleton__topline"></div>
+
         <div class="cb-route-skeleton__shell">
           <div class="cb-route-skeleton__utility">
             <span class="cb-route-skeleton__block cb-route-skeleton__block--utility"></span>
@@ -56,6 +57,28 @@
               </article>
             </div>
           </section>
+        </div>
+
+        <div class="cb-route-skeleton__courier" aria-hidden="true">
+          <div class="cb-route-skeleton__courier-stage">
+            <div class="cb-route-skeleton__courier-caption">
+              <span class="cb-route-skeleton__courier-status"></span>
+              <span>Preparando tu contenido</span>
+              <span class="cb-route-skeleton__courier-dots"><i></i><i></i><i></i></span>
+            </div>
+            <div class="cb-route-skeleton__courier-road">
+              <span class="cb-route-skeleton__courier-track"></span>
+              <img
+                class="cb-route-skeleton__courier-image"
+                src="/moto.png"
+                alt=""
+                width="168"
+                height="126"
+                fetchpriority="high"
+                draggable="false"
+              >
+            </div>
+          </div>
         </div>
       </div>
     </transition>
@@ -156,6 +179,41 @@ export default {
     waitForPageAssets() {
       const token = ++this.routeLoadToken
       const startedAt = Date.now()
+      const cssBackgroundAssets = new Map()
+      let lastBackgroundScan = 0
+
+      const trackCssBackgroundImages = () => {
+        const now = Date.now()
+        if (now - lastBackgroundScan < 250) return
+        lastBackgroundScan = now
+
+        const pageContent = this.$refs.pageContent
+        if (!pageContent) return
+
+        const elements = [pageContent, ...Array.from(pageContent.querySelectorAll('*'))]
+        const urlPattern = /url\(\s*(?:"([^"]+)"|'([^']+)'|([^)]*))\s*\)/g
+
+        elements.forEach((element) => {
+          const backgroundImage = window.getComputedStyle(element).backgroundImage
+          let match
+
+          while ((match = urlPattern.exec(backgroundImage))) {
+            const source = (match[1] || match[2] || match[3] || '').trim()
+            if (!source || source.charAt(0) === '#' || cssBackgroundAssets.has(source)) continue
+
+            const image = new window.Image()
+            const asset = { image, loaded: false }
+            const markLoaded = () => { asset.loaded = true }
+
+            image.onload = markLoaded
+            image.onerror = markLoaded
+            cssBackgroundAssets.set(source, asset)
+            image.src = source
+
+            if (image.complete) markLoaded()
+          }
+        })
+      }
 
       const check = () => {
         if (token !== this.routeLoadToken) {
@@ -167,33 +225,24 @@ export default {
         const pageReady = pageRoot
           ? pageRoot.classList.contains('cb-page--ready') || elapsed > 8000
           : elapsed >= 800
-        const pendingImages = Array.from(document.images).filter((image) => {
-          if (image.closest('.cb-route-skeleton') || image.complete) {
-            return false
-          }
+        const pageImages = Array.from(document.images).filter((image) => !image.closest('.cb-route-skeleton'))
 
-          // Do not keep the whole route covered by a skeleton for images that
-          // are intentionally lazy and still far below the viewport.
-          if (image.getAttribute('loading') === 'lazy') {
-            const bounds = image.getBoundingClientRect()
-            const viewportMargin = window.innerHeight * 1.5
-            return bounds.top < window.innerHeight + viewportMargin && bounds.bottom > -viewportMargin
-          }
-
-          return true
+        // Load lazy images too; the route loader should wait for the complete page on mobile.
+        pageImages.forEach((image) => {
+          if (image.loading === 'lazy') image.loading = 'eager'
         })
 
-        if (elapsed >= 420 && pageReady && pendingImages.length === 0) {
+        trackCssBackgroundImages()
+
+        const pendingImages = pageImages.filter((image) => !image.complete)
+        const pendingBackgroundImages = Array.from(cssBackgroundAssets.values()).some((asset) => !asset.loaded)
+
+        if (elapsed >= 420 && pageReady && pendingImages.length === 0 && !pendingBackgroundImages) {
           this.finishPageLoad(token)
           return
         }
 
-        if (elapsed >= 12000) {
-          this.finishPageLoad(token)
-          return
-        }
-
-        window.setTimeout(check, pendingImages.length ? 80 : 50)
+        window.setTimeout(check, pendingImages.length || pendingBackgroundImages ? 80 : 50)
       }
 
       this.$nextTick(() => window.setTimeout(check, 0))
