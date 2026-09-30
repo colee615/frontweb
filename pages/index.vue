@@ -143,6 +143,11 @@
       <section id="home-market">
         <HomeMarket :products="products" :icons="icons" :content="sectionSettings.market" />
       </section>
+      <HomeNews
+        :articles="recentNews.items"
+        :settings="recentNews.settings"
+        :eyebrow="sectionSettings.header.news_ticker_label"
+      />
       <HomeFooter :logo-url="logoUrl" :icons="icons" :content="sectionSettings.footer" :links="footerLinks" />
     </div>
   </div>
@@ -188,20 +193,19 @@ export default {
   name: 'IndexPage',
   data() {
     return {
-      isBootLoading: true
+      isBootLoading: true,
+      recentNews: normalizeRecentNews()
     }
   },
   async asyncData({ $api }) {
-    try {
-      const payload = await $api.$get('/frontapi/api/site/pages/home')
+    const [payload, newsPayload] = await Promise.all([
+      $api.$get('/frontapi/api/site/pages/home').catch(() => null),
+      fetchNewsPage($api)
+    ])
 
-      return {
-        pageContent: normalizePageContent(payload)
-      }
-    } catch (error) {
-      return {
-        pageContent: normalizePageContent()
-      }
+    return {
+      pageContent: normalizePageContent(payload || {}),
+      recentNews: normalizeRecentNews(newsPayload)
     }
   },
   async mounted() {
@@ -389,6 +393,52 @@ function normalizePageContent(payload = {}) {
     sections: normalizedSections.map((section) => sanitizeContentTree(section))
   }
 }
+
+async function fetchNewsPage($api) {
+  const endpoints = [
+    '/api/site/pages/noticias',
+    '/frontapi/api/site/pages/noticias',
+    '/api/site/pages/news',
+    '/frontapi/api/site/pages/news'
+  ]
+
+  for (const endpoint of endpoints) {
+    try {
+      const payload = await $api.$get(endpoint)
+      if (payload) {
+        return payload
+      }
+    } catch (error) {
+      // Continue through the supported routes; news are optional on the homepage.
+    }
+  }
+
+  return null
+}
+
+function normalizeRecentNews(payload = {}) {
+  const section = (payload.section_map && payload.section_map.news_grid) ||
+    (Array.isArray(payload.sections) && payload.sections.find((item) => item.key === 'news_grid')) ||
+    {}
+  const settings = {
+    eyebrow: 'NOVEDADES',
+    view_all_label: 'Ver todas las noticias',
+    view_all_url: '/noticias',
+    ...sanitizeContentTree(section.settings || {})
+  }
+  const items = Array.isArray(section.items)
+    ? section.items.map((item) => ({
+        ...(item.data || {}),
+        id: item.id,
+        type: item.type,
+        itemName: item.name
+      })).filter((item) => item.title)
+    : []
+
+  return { settings, items }
+}
+
 </script>
 
 <style src="~/assets/css/home.css"></style>
+<style src="~/assets/css/home-news.css"></style>

@@ -165,8 +165,20 @@
 
       <section id="news-grid" class="cb-news-grid-section cb-news-reveal" data-news-reveal>
         <div class="cb-shell">
-          <div v-if="gridSettings.title" class="cb-news-grid-section__heading cb-news-reveal" data-news-reveal>
-            <h2 v-if="gridSettings.title">{{ gridSettings.title }}</h2>
+          <div v-if="gridSettings.title || gridEyebrow || gridViewAllLabel" class="cb-news-grid-section__heading cb-news-reveal" data-news-reveal>
+            <div class="cb-news-grid-section__intro">
+              <div v-if="gridEyebrow" class="cb-news-grid-section__eyebrow">
+                <span></span>
+                <span>{{ gridEyebrow }}</span>
+              </div>
+              <h2 v-if="gridSettings.title">{{ gridSettings.title }}</h2>
+            </div>
+            <button v-if="gridViewAllLabel" type="button" class="cb-news-grid-section__all" @click="showAllNews">
+              <span>{{ gridViewAllLabel }}</span>
+              <span class="cb-news-grid-section__all-icon" aria-hidden="true">
+                <span class="cb-news-inline-icon" v-html="icons.chevronRight"></span>
+              </span>
+            </button>
           </div>
 
           <transition name="cb-news-page-switch" mode="out-in">
@@ -259,7 +271,7 @@ const NEWS_PAGE = {
     { key: 'featured_story', settings: { button_label: 'Leer noticia completa' }, items: [] },
     { key: 'important_notices', settings: { title: 'Avisos importantes', view_all_label: 'Ver todos', view_all_url: '/noticias' }, items: [] },
     { key: 'category_filters', settings: { search_placeholder: 'Buscar noticias...' }, items: [] },
-    { key: 'news_grid', settings: { title: '', subtitle: '', cta_label: 'Leer mas' }, items: [] },
+    { key: 'news_grid', settings: { title: '', subtitle: '', cta_label: 'Leer mas', eyebrow: 'NOVEDADES', view_all_label: 'Ver todas las noticias' }, items: [] },
     { key: 'newsletter', settings: { badge: '', title: '', text: '', placeholder: '', button_label: '', legal_text: '' }, items: [] },
     { key: 'pagination', settings: { load_more_label: 'Cargar mas noticias' }, items: [] }
   ]
@@ -336,6 +348,12 @@ export default {
     },
     gridSettings() {
       return this.getSectionSettings(this.newsContent, 'news_grid')
+    },
+    gridEyebrow() {
+      return this.gridSettings.eyebrow || ''
+    },
+    gridViewAllLabel() {
+      return this.gridSettings.view_all_label || ''
     },
     newsletterSettings() {
       return this.getSectionSettings(this.newsContent, 'newsletter')
@@ -585,6 +603,28 @@ export default {
       if (this.currentPage < this.totalPages) {
         this.currentPage += 1
       }
+    },
+    showAllNews() {
+      this.selectedCategory = 'Todas'
+      this.searchTerm = ''
+      this.currentPage = 1
+
+      if (Object.keys(this.$route.query || {}).length) {
+        this.$router.replace({ path: this.$route.path }).catch(() => {})
+      }
+
+      this.$nextTick(() => {
+        const target = document.querySelector('#news-grid .cb-news-grid')
+        const header = document.querySelector('.cb-navbar')
+
+        if (!target) {
+          return
+        }
+
+        const offset = (header ? header.offsetHeight : 64) + 18
+        const top = target.getBoundingClientRect().top + window.pageYOffset - offset
+        window.scrollTo({ top, behavior: 'smooth' })
+      })
     },
     goToPage(page) {
       if (page.is_ellipsis) {
