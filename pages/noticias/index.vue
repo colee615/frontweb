@@ -311,14 +311,13 @@ export default {
       revealObserver: null
     }
   },
-  async asyncData({ $api, req, $config }) {
+  async asyncData({ $api }) {
     const [homePayload, newsPayload] = await Promise.all([
       fetchHome($api),
       fetchNews($api)
     ])
 
     return {
-      siteOrigin: getSiteOrigin(req, $config && $config.siteUrl),
       homeContent: normalizePage(homePayload || SHARED_LAYOUT_PAGE, SHARED_LAYOUT_PAGE),
       newsContent: normalizePage(newsPayload || NEWS_PAGE, NEWS_PAGE)
     }
@@ -389,20 +388,6 @@ export default {
     },
     featuredItems() {
       return this.getSectionItems(this.newsContent, 'featured_story').filter((item) => item.title)
-    },
-    socialPreviewItem() {
-      const candidates = [
-        ...this.featuredItems,
-        ...this.getSectionItems(this.newsContent, 'news_grid').filter((item) => item.title)
-      ]
-
-      return candidates.find((item) => resolveSocialImage(item)) || candidates[0] || {}
-    },
-    socialImageUrl() {
-      return toAbsoluteUrl(resolveSocialImage(this.socialPreviewItem), this.siteOrigin)
-    },
-    socialPageUrl() {
-      return toAbsoluteUrl(this.$route.path, this.siteOrigin)
     },
     featuredButtonLabel() {
       return this.featuredSettings.button_label || 'Leer noticia completa'
@@ -819,24 +804,10 @@ export default {
     }
   },
   head() {
-    const title = this.newsContent.meta_title || 'Noticias | Correos de Bolivia'
-    const description = this.newsContent.meta_description || 'Noticias, comunicados y novedades institucionales de Correos de Bolivia.'
-
     return {
-      title,
+      title: this.newsContent.meta_title || 'Noticias',
       meta: [
-        { hid: 'description', name: 'description', content: description },
-        { hid: 'og:type', property: 'og:type', content: 'website' },
-        { hid: 'og:site_name', property: 'og:site_name', content: 'Correos de Bolivia' },
-        { hid: 'og:title', property: 'og:title', content: title },
-        { hid: 'og:description', property: 'og:description', content: description },
-        { hid: 'og:image', property: 'og:image', content: this.socialImageUrl },
-        { hid: 'og:image:alt', property: 'og:image:alt', content: this.socialPreviewItem.title || 'Noticias de Correos de Bolivia' },
-        { hid: 'og:url', property: 'og:url', content: this.socialPageUrl },
-        { hid: 'twitter:card', name: 'twitter:card', content: 'summary_large_image' },
-        { hid: 'twitter:title', name: 'twitter:title', content: title },
-        { hid: 'twitter:description', name: 'twitter:description', content: description },
-        { hid: 'twitter:image', name: 'twitter:image', content: this.socialImageUrl }
+        { hid: 'description', name: 'description', content: this.newsContent.meta_description || '' }
       ],
       htmlAttrs: { lang: 'es' }
     }
@@ -880,54 +851,6 @@ async function safeGet($api, endpoint) {
   } catch (error) {
     return null
   }
-}
-
-function getSiteOrigin(req, configuredSiteUrl) {
-  const headers = req && req.headers ? req.headers : {}
-  const forwardedHost = String(headers['x-forwarded-host'] || '').split(',')[0].trim()
-  const requestHost = String(forwardedHost || headers.host || '').split(',')[0].trim()
-  const configuredOrigin = toAbsoluteUrl(configuredSiteUrl, '')
-
-  if (configuredOrigin) {
-    return new URL(configuredOrigin).origin
-  }
-
-  if (!requestHost || !/^[a-z0-9.-]+(?::\d{1,5})?$/i.test(requestHost)) {
-    return ''
-  }
-
-  const forwardedProtocol = String(headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase()
-  const requestProtocol = forwardedProtocol === 'https' || forwardedProtocol === 'http'
-    ? forwardedProtocol
-    : (req && req.connection && req.connection.encrypted ? 'https' : 'http')
-
-  return `${requestProtocol}://${requestHost}`
-}
-
-function toAbsoluteUrl(value, origin) {
-  const normalizedValue = String(value || '').trim()
-  if (!normalizedValue) {
-    return ''
-  }
-
-  try {
-    const absoluteUrl = origin
-      ? new URL(normalizedValue, `${origin.replace(/\/+$/, '')}/`)
-      : new URL(normalizedValue)
-
-    return ['http:', 'https:'].includes(absoluteUrl.protocol) ? absoluteUrl.href : ''
-  } catch (error) {
-    return ''
-  }
-}
-
-function resolveSocialImage(item = {}) {
-  const mediaType = String(item.media_type || '').toLowerCase()
-  if (mediaType === 'video') {
-    return item.poster_image || item.image || ''
-  }
-
-  return item.poster_image || item.media_url || item.image || ''
 }
 
 function normalizePage(payload = {}, base = NEWS_PAGE) {

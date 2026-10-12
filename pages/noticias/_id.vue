@@ -255,7 +255,8 @@ export default {
       return toAbsoluteUrl(routePath, this.siteOrigin) || this.currentUrl
     },
     shareLinks() {
-      const url = encodeURIComponent(this.currentUrl || '')
+      const pageUrl = this.socialPageUrl || this.currentUrl
+      const url = encodeURIComponent(pageUrl || '')
       const title = encodeURIComponent(this.article.title || 'Noticia de Correos de Bolivia')
       return {
         facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
@@ -321,13 +322,21 @@ export default {
       }))
     },
     resolveMediaUrl(item) {
-      return item.media_url || item.image || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1400&q=80'
+      const mediaType = String(item.media_type || '').toLowerCase()
+      const mediaUrl = String(item.media_url || '')
+      const isVideo = mediaType === 'video' || /\.(mp4|webm)(\?.*)?$/i.test(mediaUrl)
+      const imageUrl = isVideo
+        ? item.poster_image || item.poster || item.thumbnail_url || item.image
+        : item.media_url || item.image || item.image_url || item.thumbnail_url || item.thumbnail || item.poster_image
+
+      return imageUrl || '/servicios_fondo.png'
     },
     async copyCurrentUrl() {
-      if (!navigator.clipboard || !this.currentUrl) {
+      const pageUrl = this.socialPageUrl || this.currentUrl
+      if (!navigator.clipboard || !pageUrl) {
         return
       }
-      await navigator.clipboard.writeText(this.currentUrl)
+      await navigator.clipboard.writeText(pageUrl)
       this.copied = true
       window.setTimeout(() => {
         this.copied = false
@@ -347,6 +356,7 @@ export default {
         { hid: 'og:title', property: 'og:title', content: title },
         { hid: 'og:description', property: 'og:description', content: description },
         { hid: 'og:image', property: 'og:image', content: this.socialImageUrl },
+        { hid: 'og:image:secure_url', property: 'og:image:secure_url', content: this.socialImageUrl },
         { hid: 'og:image:alt', property: 'og:image:alt', content: this.article.title || 'Noticia de Correos de Bolivia' },
         { hid: 'og:url', property: 'og:url', content: this.socialPageUrl },
         { hid: 'twitter:card', name: 'twitter:card', content: 'summary_large_image' },

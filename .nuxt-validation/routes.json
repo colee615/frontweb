@@ -1,0 +1,128 @@
+[
+  {
+    "name": "404",
+    "path": "/404",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\404.vue",
+    "chunkName": "pages/404"
+  },
+  {
+    "name": "casillas",
+    "path": "/casillas",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\casillas.vue",
+    "chunkName": "pages/casillas"
+  },
+  {
+    "name": "contacto",
+    "path": "/contacto",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\contacto.vue",
+    "chunkName": "pages/contacto"
+  },
+  {
+    "name": "correspondencia-agrupada",
+    "path": "/correspondencia-agrupada",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\correspondencia-agrupada.vue",
+    "chunkName": "pages/correspondencia-agrupada"
+  },
+  {
+    "name": "deliveryexpress",
+    "path": "/deliveryexpress",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\deliveryexpress.vue",
+    "chunkName": "pages/deliveryexpress"
+  },
+  {
+    "name": "eca",
+    "path": "/eca",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\eca.vue",
+    "chunkName": "pages/eca"
+  },
+  {
+    "name": "ems",
+    "path": "/ems",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\ems.vue",
+    "chunkName": "pages/ems"
+  },
+  {
+    "name": "encomienda",
+    "path": "/encomienda",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\encomienda.vue",
+    "chunkName": "pages/encomienda"
+  },
+  {
+    "name": "informacion-postal",
+    "path": "/informacion-postal",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\informacion-postal.vue",
+    "chunkName": "pages/informacion-postal"
+  },
+  {
+    "name": "misaplicaciones",
+    "path": "/misaplicaciones",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\misaplicaciones.vue",
+    "chunkName": "pages/misaplicaciones"
+  },
+  {
+    "name": "misaplicaicones",
+    "path": "/misaplicaicones",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\misaplicaicones.vue",
+    "chunkName": "pages/misaplicaicones"
+  },
+  {
+    "name": "noticias",
+    "path": "/noticias",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\noticias\\\\index.vue",
+    "chunkName": "pages/noticias/index"
+  },
+  {
+    "name": "politica-de-privacidad",
+    "path": "/politica-de-privacidad",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\politica-de-privacidad.vue",
+    "chunkName": "pages/politica-de-privacidad"
+  },
+  {
+    "name": "politica-privacidad-trackingbo-app",
+    "path": "/politica-privacidad-trackingbo-app",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\politica-privacidad-trackingbo-app.vue",
+    "chunkName": "pages/politica-privacidad-trackingbo-app"
+  },
+  {
+    "name": "postalshopper",
+    "path": "/postalshopper",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\postalshopper.vue",
+    "chunkName": "pages/postalshopper"
+  },
+  {
+    "name": "quienes-somos",
+    "path": "/quienes-somos",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\quienes-somos.vue",
+    "chunkName": "pages/quienes-somos"
+  },
+  {
+    "name": "trabajando",
+    "path": "/trabajando",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\trabajando.vue",
+    "chunkName": "pages/trabajando"
+  },
+  {
+    "name": "tramites",
+    "path": "/tramites",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\tramites.vue",
+    "chunkName": "pages/tramites"
+  },
+  {
+    "name": "index",
+    "path": "/",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\index.vue",
+    "chunkName": "pages/index"
+  },
+  {
+    "name": "noticias-id",
+    "path": "/noticias/:id",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\noticias\\\\_id.vue",
+    "chunkName": "pages/noticias/_id"
+  },
+  {
+    "name": "all",
+    "path": "/*",
+    "component": "C:\\\\xampp\\\\htdocs\\\\Git proyectos\\\\frontweb\\\\pages\\\\_.vue",
+    "chunkName": "pages/_"
+  }
+]

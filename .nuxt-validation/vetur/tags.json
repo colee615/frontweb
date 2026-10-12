@@ -1,0 +1,35 @@
+{
+  "HomeAnnouncementModal": {
+    "description": "Auto imported from components/HomeAnnouncementModal.vue"
+  },
+  "HomeAppBanner": {
+    "description": "Auto imported from components/HomeAppBanner.vue"
+  },
+  "HomeBoliviaMap": {
+    "description": "Auto imported from components/HomeBoliviaMap.vue"
+  },
+  "HomeFooter": {
+    "description": "Auto imported from components/HomeFooter.vue"
+  },
+  "HomeHeader": {
+    "description": "Auto imported from components/HomeHeader.vue"
+  },
+  "HomeHero": {
+    "description": "Auto imported from components/HomeHero.vue"
+  },
+  "HomeMarket": {
+    "description": "Auto imported from components/HomeMarket.vue"
+  },
+  "HomeServices": {
+    "description": "Auto imported from components/HomeServices.vue"
+  },
+  "HomeStatus": {
+    "description": "Auto imported from components/HomeStatus.vue"
+  },
+  "HomeTools": {
+    "description": "Auto imported from components/HomeTools.vue"
+  },
+  "StatusPage": {
+    "description": "Auto imported from components/StatusPage.vue"
+  }
+}
