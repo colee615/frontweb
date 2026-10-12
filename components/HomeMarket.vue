@@ -61,13 +61,18 @@
               :class="{ 'cb-market-grid--duplicate': copyIndex !== centerCopy }"
               :aria-hidden="copyIndex !== centerCopy ? 'true' : null"
             >
-              <article
+              <component
+                :is="isProductPurchasable(product) ? 'a' : 'article'"
                 v-for="(product, index) in products"
                 :key="`${copyIndex}-${product.id || product.catalogCode || product.title}`"
                 :id="copyIndex === centerCopy ? `home-market-item-${product.id || index}` : null"
+                :href="isProductPurchasable(product) ? product.addToCartUrl : undefined"
+                :target="isProductPurchasable(product) ? '_blank' : undefined"
+                :rel="isProductPurchasable(product) ? 'noopener noreferrer' : undefined"
+                :tabindex="copyIndex === centerCopy ? null : -1"
                 class="cb-product-card cb-product-card--carousel"
-                :class="{ 'is-carousel-active': isProductActive(index), 'is-flipped': isCardFlipped(copyIndex, product) }"
-                role="group"
+                :class="{ 'is-carousel-active': isProductActive(index), 'is-purchasable': isProductPurchasable(product) }"
+                :role="isProductPurchasable(product) ? null : 'group'"
                 aria-roledescription="producto"
                 :aria-label="`${product.title}, ${index + 1} de ${products.length}`"
               >
@@ -76,18 +81,11 @@
                   <span class="cb-product-badge__icon" v-html="icons.stamp"></span>
                   {{ product.collection || product.series || 'Colección postal' }}
                 </span>
-                <button type="button" class="cb-product-favorite" :tabindex="copyIndex === centerCopy ? 0 : -1" :aria-label="`Agregar ${product.title} a favoritos`">
-                  <span aria-hidden="true">&#9825;</span>
-                </button>
               </div>
 
-              <button
-                type="button"
+              <div
                 class="cb-product-visual"
-                :tabindex="copyIndex === centerCopy ? 0 : -1"
-                :aria-label="isCardFlipped(copyIndex, product) ? `Volver a ver ${product.title}` : `Girar ${product.title}`"
-                :aria-pressed="isCardFlipped(copyIndex, product) ? 'true' : 'false'"
-                @click="toggleFlip(copyIndex, product)"
+                aria-hidden="true"
               >
                 <span class="cb-product-flip">
                   <span class="cb-product-flip__inner">
@@ -115,7 +113,7 @@
                     </span>
                   </span>
                 </span>
-              </button>
+              </div>
 
               <div class="cb-product-content">
                 <h4>{{ product.title }}</h4>
@@ -127,27 +125,9 @@
                   <span>{{ product.price }}</span>
                   <small v-if="product.year">Emisión {{ product.year }}</small>
                 </div>
-                <a
-                  v-if="product.addToCartUrl && product.inStock"
-                  :href="product.addToCartUrl"
-                  class="cb-cart-btn"
-                  :aria-label="`Comprar ${product.title}`"
-                  :tabindex="copyIndex === centerCopy ? 0 : -1"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  v-html="icons.cart"
-                ></a>
-                <button
-                  v-else
-                  type="button"
-                  class="cb-cart-btn"
-                  :aria-label="product.inStock ? 'Enlace de compra no disponible' : `${product.title} agotado`"
-                  :tabindex="copyIndex === centerCopy ? 0 : -1"
-                  :disabled="!product.inStock || !product.addToCartUrl"
-                  v-html="icons.cart"
-                ></button>
+                <span class="cb-cart-btn" aria-hidden="true" v-html="icons.cart"></span>
               </div>
-              </article>
+              </component>
             </div>
           </div>
         </div>
@@ -232,7 +212,6 @@ export default {
   },
   data() {
     return {
-      flippedCardKey: null,
       carouselFrame: null,
       previousAnimationTime: null,
       touchResumeTimer: null,
@@ -269,7 +248,6 @@ export default {
     products() {
       this.stopAutoplay()
       this.currentSlide = 0
-      this.flippedCardKey = null
       this.cardWidth = 0
       this.$nextTick(() => {
         this.refreshCarouselLayout(0)
@@ -288,16 +266,8 @@ export default {
     this.stopAutoplay()
   },
   methods: {
-    cardKey(copyIndex, product) {
-      return `${copyIndex}-${product.id || product.catalogCode || product.title}`
-    },
-    isCardFlipped(copyIndex, product) {
-      return this.flippedCardKey === this.cardKey(copyIndex, product)
-    },
-    toggleFlip(copyIndex, product) {
-      const nextKey = this.cardKey(copyIndex, product)
-      this.flippedCardKey = this.flippedCardKey === nextKey ? null : nextKey
-      this.syncAutoplay()
+    isProductPurchasable(product) {
+      return Boolean(product && product.addToCartUrl && product.inStock)
     },
     setAutoplayHold(reason, isHeld) {
       if (reason === 'pointer' && window.matchMedia && window.matchMedia('(hover: none)').matches) {
@@ -338,7 +308,6 @@ export default {
         this.pointerOverCarousel ||
         this.focusWithinCarousel ||
         this.touchingCarousel ||
-        this.flippedCardKey !== null ||
         document.hidden ||
         prefersReducedMotion
 
@@ -368,7 +337,7 @@ export default {
         return
       }
 
-      const shouldPause = this.pointerOverCarousel || this.focusWithinCarousel || this.touchingCarousel || this.flippedCardKey !== null || document.hidden
+      const shouldPause = this.pointerOverCarousel || this.focusWithinCarousel || this.touchingCarousel || document.hidden
       if (shouldPause) {
         this.stopAutoplay()
         return
