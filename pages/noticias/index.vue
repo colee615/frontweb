@@ -63,54 +63,71 @@
 
     <main v-else class="cb-news">
       <section v-if="featuredItems.length || importantNotices.length" id="news-featured" class="cb-news-landing cb-news-reveal is-visible" data-news-reveal>
-        <div class="cb-shell cb-news-landing__grid" :class="{ 'cb-news-landing__grid--no-featured': !featuredItems.length }">
+        <div
+          class="cb-shell cb-news-landing__grid"
+          :class="{
+            'cb-news-landing__grid--no-featured': !featuredItems.length,
+            'cb-news-landing__grid--no-alerts': !importantNotices.length
+          }"
+        >
           <div v-if="featuredItems.length" class="cb-news-featured">
-            <div v-if="featuredItem.badge" class="cb-news-featured__label">
-              <span class="cb-news-featured__badge">{{ featuredItem.badge }}</span>
-            </div>
-            <article :id="`news-featured-item-${featuredItem.id || 0}`" class="cb-news-hero-card">
-              <template v-if="featuredMediaType === 'video' && featuredMediaUrl">
-                <video
-                  class="cb-news-hero-card__asset"
-                  :src="featuredMediaUrl"
-                  :poster="featuredPoster || null"
-                  autoplay
-                  muted
-                  loop
-                  playsinline
-                  preload="metadata"
-                ></video>
-              </template>
-              <img
-                v-else-if="featuredMediaUrl"
-                class="cb-news-hero-card__asset"
-                :src="featuredMediaUrl"
-                alt=""
-              >
-              <div class="cb-news-hero-card__veil"></div>
-              <div class="cb-news-hero-card__content">
-                <span v-if="featuredItem.date" class="cb-news-featured__date" aria-label="Fecha de publicación">
-                  <span class="cb-news-inline-icon" v-html="icons.calendar" aria-hidden="true"></span>
-                  {{ featuredItem.date }}
-                </span>
-                <h1>{{ featuredItem.title }}</h1>
-                <p v-if="featuredExcerptParagraphs.length">{{ featuredExcerptParagraphs[0] }}</p>
-                <nuxt-link :to="articleLink(featuredItem)" class="cb-news-featured__button">
-                  <span>{{ featuredButtonLabel }}</span>
-                  <span class="cb-news-inline-icon" v-html="icons.chevronRight"></span>
-                </nuxt-link>
+            <transition name="cb-news-featured-fade" mode="out-in">
+              <div :key="featuredItem.id || featuredItem.title" class="cb-news-featured__slide">
+                <div v-if="featuredItem.badge" class="cb-news-featured__label">
+                  <span class="cb-news-featured__badge">{{ featuredItem.badge }}</span>
+                </div>
+                <article
+                  :id="`news-featured-item-${featuredItem.id || 0}`"
+                  class="cb-news-hero-card"
+                  @mouseenter="pauseFeaturedAutoplay"
+                  @mouseleave="resumeFeaturedAutoplay"
+                  @focusin="pauseFeaturedAutoplay"
+                  @focusout="resumeFeaturedAutoplay"
+                >
+                  <template v-if="featuredMediaType === 'video' && featuredMediaUrl">
+                    <video
+                      class="cb-news-hero-card__asset"
+                      :src="featuredMediaUrl"
+                      :poster="featuredPoster || null"
+                      autoplay
+                      muted
+                      loop
+                      playsinline
+                      preload="metadata"
+                    ></video>
+                  </template>
+                  <img
+                    v-else-if="featuredMediaUrl"
+                    class="cb-news-hero-card__asset"
+                    :src="featuredMediaUrl"
+                    alt=""
+                  >
+                  <div class="cb-news-hero-card__veil"></div>
+                  <div class="cb-news-hero-card__content">
+                    <span v-if="featuredItem.date" class="cb-news-featured__date" aria-label="Fecha de publicación">
+                      <span class="cb-news-inline-icon" v-html="icons.calendar" aria-hidden="true"></span>
+                      {{ featuredItem.date }}
+                    </span>
+                    <h1>{{ featuredItem.title }}</h1>
+                    <p v-if="featuredExcerptParagraphs.length">{{ featuredExcerptParagraphs[0] }}</p>
+                    <nuxt-link :to="articleLink(featuredItem)" class="cb-news-featured__button">
+                      <span>{{ featuredButtonLabel }}</span>
+                      <span class="cb-news-inline-icon" v-html="icons.chevronRight"></span>
+                    </nuxt-link>
+                  </div>
+                  <div v-if="featuredItems.length > 1" class="cb-news-hero-card__dots" aria-label="Noticias destacadas">
+                    <button
+                      v-for="(item, index) in featuredItems"
+                      :key="item.id || `${item.title}-${index}`"
+                      type="button"
+                      :class="['cb-news-hero-card__dot', { 'is-active': index === activeFeaturedIndex }]"
+                      :aria-label="`Ver destacado ${index + 1}`"
+                      @click="selectFeatured(index)"
+                    ></button>
+                  </div>
+                </article>
               </div>
-              <div v-if="featuredItems.length > 1" class="cb-news-hero-card__dots" aria-label="Noticias destacadas">
-                <button
-                  v-for="(item, index) in featuredItems"
-                  :key="item.id || `${item.title}-${index}`"
-                  type="button"
-                  :class="['cb-news-hero-card__dot', { 'is-active': index === activeFeaturedIndex }]"
-                  :aria-label="`Ver destacado ${index + 1}`"
-                  @click="selectFeatured(index)"
-                ></button>
-              </div>
-            </article>
+            </transition>
           </div>
 
           <aside v-if="importantNotices.length" class="cb-news-alerts" aria-label="Avisos importantes">
@@ -287,6 +304,9 @@ export default {
       currentPage: 1,
       pageSize: 3,
       activeFeaturedIndex: 0,
+      featuredTimer: null,
+      featuredHovering: false,
+      featuredHasFocus: false,
       isFeaturedExpanded: false,
       revealObserver: null
     }
@@ -309,6 +329,7 @@ export default {
     }
 
     this.isBootLoading = false
+    this.startFeaturedAutoplay()
     await this.$nextTick()
     this.selectedCategory = this.defaultCategory
     this.syncSearchFromRoute()
@@ -316,6 +337,7 @@ export default {
     this.setupRevealObserver()
   },
   beforeDestroy() {
+    this.stopFeaturedAutoplay()
     this.destroyRevealObserver()
   },
   computed: {
@@ -522,6 +544,7 @@ export default {
 
         window.setTimeout(() => {
           this.isBootLoading = false
+          this.startFeaturedAutoplay()
           this.$nextTick(() => {
             this.syncHashTarget()
             this.setupRevealObserver()
@@ -555,6 +578,49 @@ export default {
     selectFeatured(index) {
       this.activeFeaturedIndex = index
       this.isFeaturedExpanded = false
+      this.startFeaturedAutoplay()
+    },
+    startFeaturedAutoplay() {
+      this.stopFeaturedAutoplay()
+
+      if (!process.client || this.featuredItems.length <= 2 || this.featuredHovering || this.featuredHasFocus) {
+        return
+      }
+
+      this.featuredTimer = window.setInterval(() => {
+        this.activeFeaturedIndex = (this.activeFeaturedIndex + 1) % this.featuredItems.length
+        this.isFeaturedExpanded = false
+      }, 6000)
+    },
+    stopFeaturedAutoplay() {
+      if (this.featuredTimer) {
+        window.clearInterval(this.featuredTimer)
+        this.featuredTimer = null
+      }
+    },
+    pauseFeaturedAutoplay(event) {
+      if (event.type === 'mouseenter') {
+        this.featuredHovering = true
+      } else {
+        this.featuredHasFocus = true
+      }
+
+      this.stopFeaturedAutoplay()
+    },
+    resumeFeaturedAutoplay(event) {
+      if (event.type === 'mouseleave') {
+        this.featuredHovering = false
+      } else {
+        if (event.currentTarget.contains(event.relatedTarget)) {
+          return
+        }
+
+        this.featuredHasFocus = false
+      }
+
+      if (!this.featuredHovering && !this.featuredHasFocus) {
+        this.startFeaturedAutoplay()
+      }
     },
     toggleFeaturedExpanded() {
       this.isFeaturedExpanded = !this.isFeaturedExpanded

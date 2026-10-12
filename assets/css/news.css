@@ -73,8 +73,23 @@
   grid-template-columns: minmax(300px, 520px);
 }
 
+.cb-news-landing__grid--no-alerts {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .cb-news-featured {
   min-width: 0;
+}
+
+.cb-news-featured-fade-enter-active,
+.cb-news-featured-fade-leave-active {
+  transition: opacity 0.32s ease, transform 0.32s ease;
+}
+
+.cb-news-featured-fade-enter,
+.cb-news-featured-fade-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
 }
 
 .cb-news-featured__label {
@@ -84,7 +99,7 @@
 
 .cb-news-hero-card {
   position: relative;
-  min-height: 360px;
+  min-height: 460px;
   overflow: hidden;
   border-radius: 12px;
   background: #132a4a;
@@ -205,13 +220,13 @@
 .cb-news-hero-card__content {
   position: relative;
   z-index: 2;
-  width: min(560px, 68%);
-  min-height: 360px;
+  width: min(900px, 85%);
+  min-height: 460px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 14px;
-  padding: 34px 36px;
+  padding: 42px 48px;
 }
 
 .cb-news-hero-card__dots {
@@ -968,9 +983,9 @@
 
 .cb-news-article__headline {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 190px;
-  gap: 28px;
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
 }
 
 .cb-news-article__date {
@@ -985,17 +1000,18 @@
 .cb-news-article__headline h1 {
   margin: 0;
   color: #102542;
-  font-size: clamp(2.3rem, 4.2vw, 4rem);
-  line-height: 1.07;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  line-height: 1.12;
   letter-spacing: 0;
   text-wrap: balance;
 }
 
 .cb-news-article__share {
-  display: grid;
-  gap: 10px;
-  justify-items: start;
-  padding-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  padding-bottom: 0;
 }
 
 .cb-news-article__share strong {
@@ -1320,11 +1336,11 @@
   }
 
   .cb-news-article__share {
-    justify-items: start;
+    justify-content: flex-start;
   }
 
   .cb-news-article__headline h1 {
-    font-size: clamp(2rem, 10vw, 2.8rem);
+    font-size: clamp(1.9rem, 8vw, 2.35rem);
   }
 
   .cb-news-article__figure {

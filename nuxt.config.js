@@ -97,6 +97,7 @@ export default {
   ],
 
   publicRuntimeConfig: {
+    siteUrl: process.env.SITE_URL || '',
     apiBaseUrl: API_BASE_URL,
     internalApiBaseUrl: INTERNAL_API_BASE_URL,
     storageBaseUrl: '/frontstorage',
