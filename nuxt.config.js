@@ -97,7 +97,7 @@ export default {
   ],
 
   publicRuntimeConfig: {
-    siteUrl: process.env.SITE_URL || 'https://correos.gob.bo',
+    siteUrl: process.env.SITE_URL || 'https://www.correos.gob.bo',
     apiBaseUrl: API_BASE_URL,
     internalApiBaseUrl: INTERNAL_API_BASE_URL,
     storageBaseUrl: '/frontstorage',

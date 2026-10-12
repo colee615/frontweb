@@ -349,6 +349,9 @@ export default {
 
     return {
       title,
+      link: [
+        { hid: 'canonical', rel: 'canonical', href: this.socialPageUrl }
+      ],
       meta: [
         { hid: 'description', name: 'description', content: description },
         { hid: 'og:type', property: 'og:type', content: 'article' },
@@ -388,7 +391,7 @@ function getSiteOrigin(req, configuredSiteUrl) {
     ? forwardedProtocol
     : (req && req.connection && req.connection.encrypted ? 'https' : 'http')
 
-  return `${requestProtocol}://${requestHost}`
+  return toAbsoluteUrl(`${requestProtocol}://${requestHost}`, '')
 }
 
 function toAbsoluteUrl(value, origin) {
@@ -401,6 +404,10 @@ function toAbsoluteUrl(value, origin) {
     const absoluteUrl = origin
       ? new URL(normalizedValue, `${origin.replace(/\/+$/, '')}/`)
       : new URL(normalizedValue)
+
+    if (absoluteUrl.hostname.toLowerCase() === 'correos.gob.bo') {
+      absoluteUrl.hostname = 'www.correos.gob.bo'
+    }
 
     return ['http:', 'https:'].includes(absoluteUrl.protocol) ? absoluteUrl.href : ''
   } catch (error) {
