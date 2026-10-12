@@ -7,6 +7,7 @@ const STORAGE_PROXY_BASE_URL = normalizeBaseUrl(process.env.STORAGE_PROXY_BASE_U
 const USER_API_BASE_URL = ((process.env.USER_API_BASE_URL || `${API_BASE_URL}/user`) || '/user').replace(/\/?$/, '/')
 const TRACKING_BASE_URL = (process.env.TRACKING_BASE_URL || 'https://trackingbo.correos.gob.bo:8100').replace(/\/+$/, '')
 const POSTAL_CALCULATOR_API_URL = (process.env.POSTAL_CALCULATOR_API_URL || 'https://postar.correos.gob.bo:8104/api/calcular').replace(/\/+$/, '')
+const FILATELIA_API_URL = (process.env.FILATELIA_API_URL || 'https://filatelia.correos.gob.bo/api/external/showcase').replace(/\/+$/, '')
 const CONNECT_SRC = ["'self'", 'https://www.google-analytics.com', 'https://analytics.google.com', 'https://www.googletagmanager.com']
 const IMG_SRC = ["'self'", 'data:', 'https:']
 const MEDIA_SRC = ["'self'", 'https:']
@@ -33,6 +34,10 @@ if (/^https?:\/\//i.test(TRACKING_BASE_URL)) {
 
 if (/^https?:\/\//i.test(POSTAL_CALCULATOR_API_URL)) {
   CONNECT_SRC.push(getOrigin(POSTAL_CALCULATOR_API_URL))
+}
+
+if (/^https?:\/\//i.test(FILATELIA_API_URL)) {
+  CONNECT_SRC.push(getOrigin(FILATELIA_API_URL))
 }
 
 if (process.env.NODE_ENV === 'development') {
@@ -104,6 +109,7 @@ export default {
     userApiBaseUrl: USER_API_BASE_URL,
     trackingBaseUrl: TRACKING_BASE_URL,
     postalCalculatorApiUrl: POSTAL_CALCULATOR_API_URL,
+    filateliaApiUrl: FILATELIA_API_URL,
     axios: {
       browserBaseURL: API_BASE_URL || '/',
       baseURL: INTERNAL_API_BASE_URL || API_BASE_URL || '/'

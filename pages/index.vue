@@ -141,7 +141,7 @@
         <HomeAppBanner :content="sectionSettings.app_banner" :slides="appBannerSlides" />
       </section>
       <section id="home-market">
-        <HomeMarket :products="products" :icons="icons" :content="sectionSettings.market" />
+        <HomeMarket :products="products" :icons="icons" :content="sectionSettings.market" :error="filateliaError" />
       </section>
       <HomeFooter :logo-url="logoUrl" :icons="icons" :content="sectionSettings.footer" :links="footerLinks" />
     </div>
@@ -179,7 +179,7 @@ const EMPTY_PAGE = {
     { key: 'services', settings: { title: '', subtitle: '', kicker: '' }, items: [] },
     { key: 'tools', settings: { map_title: '', map_text: '', map_button_label: '', calculator_title: '', calculator_text: '', origin_label: '', origin_placeholder: '', destination_label: '', destination_placeholder: '', weight_label: '', weight_placeholder: '', calculate_button_label: '' }, items: [] },
     { key: 'app_banner', settings: { title: '', text: '', app_store_label: '', play_store_label: '', app_store_url: '', play_store_url: '', background_image: '' }, items: [] },
-    { key: 'market', settings: { title: '', subtitle: '', view_all_label: '', view_all_url: '' }, items: [] },
+    { key: 'market', settings: { title: 'Correos Market / Filatelia', subtitle: 'Descubre nuestra colección exclusiva de sellos y souvenirs', view_all_label: '', view_all_url: '' }, items: [] },
     { key: 'footer', settings: { help_title: '', company_title: '', contact_title: '', social_title: '', social_text: '', address: '', phone: '', email: '', copyright: '', legal_text: '' }, items: [] }
   ]
 }
@@ -188,14 +188,22 @@ export default {
   name: 'IndexPage',
   data() {
     return {
-      isBootLoading: true
+      isBootLoading: true,
+      filateliaProducts: [],
+      filateliaError: false
     }
   },
-  async asyncData({ $api }) {
-    const payload = await $api.$get('/frontapi/api/site/pages/home').catch(() => null)
+  async asyncData({ $api, $axios, $config }) {
+    const filateliaApiUrl = ($config && $config.filateliaApiUrl) || ''
+    const [payload, showcasePayload] = await Promise.all([
+      $api.$get('/frontapi/api/site/pages/home').catch(() => null),
+      filateliaApiUrl ? $axios.$get(filateliaApiUrl, { timeout: 10000 }).catch(() => null) : Promise.resolve(null)
+    ])
 
     return {
-      pageContent: normalizePageContent(payload || {})
+      pageContent: normalizePageContent(payload || {}),
+      filateliaProducts: normalizeFilateliaProducts(showcasePayload),
+      filateliaError: !showcasePayload || showcasePayload.success !== true
     }
   },
   async mounted() {
@@ -217,7 +225,7 @@ export default {
       return this.getSectionItems('hero')
     },
     products() {
-      return this.getSectionItems('market')
+      return this.filateliaProducts
     },
     toolOffices() {
       return this.getSectionItems('tools')
@@ -236,7 +244,7 @@ export default {
         services: this.getSectionSettings('services'),
         tools: this.getSectionSettings('tools'),
         app_banner: this.getSectionSettings('app_banner'),
-        market: this.getSectionSettings('market'),
+        market: EMPTY_PAGE.sections.find((section) => section.key === 'market').settings,
         footer: this.getSectionSettings('footer')
       }
     },
@@ -367,9 +375,11 @@ function normalizePageContent(payload = {}) {
       sort_order: typeof payloadSection.sort_order === 'number' ? payloadSection.sort_order : index,
       settings: {
         ...(fallbackSection.settings || {}),
-        ...(payloadSection.settings || {})
+        ...(key === 'market' ? {} : (payloadSection.settings || {}))
       },
-      items: Array.isArray(payloadSection.items) ? payloadSection.items : fallbackSection.items
+      items: key === 'market'
+        ? []
+        : (Array.isArray(payloadSection.items) ? payloadSection.items : fallbackSection.items)
     }
   })
 
@@ -382,6 +392,44 @@ function normalizePageContent(payload = {}) {
     },
     sections: normalizedSections.map((section) => sanitizeContentTree(section))
   }
+}
+
+function normalizeFilateliaProducts(payload) {
+  if (!payload || payload.success !== true || !Array.isArray(payload.data)) {
+    return []
+  }
+
+  return payload.data
+    .filter((product) => product && product.name && product.is_in_showcase !== false)
+    .slice()
+    .sort((first, second) => Number(first.showcase_order || 0) - Number(second.showcase_order || 0))
+    .map((product) => ({
+      id: product.id,
+      title: product.name,
+      description: product.short_description || product.description || '',
+      image: product.front_image_url || product.image_url || product.back_image_url || '/servicios_fondo.png',
+      collection: product.badge || (product.category && product.category.name) || 'Colección postal',
+      series: (product.category && product.category.name) || (product.emission && product.emission.name) || '',
+      year: product.year || (product.emission && product.emission.year) || '',
+      catalogCode: product.catalog_code || '',
+      condition: product.condition || '',
+      dimensions: product.dimensions || '',
+      rarity: product.rarity || '',
+      stock: Number(product.stock || 0),
+      inStock: product.is_in_stock !== false,
+      price: product.price_formatted || formatFilateliaPrice(product),
+      storeUrl: product.store_url || '',
+      addToCartUrl: product.add_to_cart_url || product.store_url || ''
+    }))
+}
+
+function formatFilateliaPrice(product) {
+  const price = Number(product && product.price)
+  if (!Number.isFinite(price)) {
+    return 'Consultar precio'
+  }
+
+  return `${(product && product.currency_symbol) || 'Bs.'} ${price.toFixed(2)}`
 }
 
 </script>

@@ -6158,3 +6158,403 @@ a {
     transition: none;
   }
 }
+
+/* Carrusel de la vitrina filatélica. */
+.cb-market-head {
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.cb-market-carousel-controls {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 0 0 auto;
+}
+
+.cb-market-carousel-count {
+  margin-right: 5px;
+  color: #6e7e98;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cb-market-carousel-arrow {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid rgba(32, 83, 154, 0.15);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--cb-blue);
+  box-shadow: 0 7px 18px rgba(22, 49, 95, 0.08);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cb-market-carousel-arrow svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cb-market-carousel-arrow:hover:not(:disabled),
+.cb-market-carousel-arrow:focus-visible {
+  transform: translateY(-2px);
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(22, 49, 95, 0.14);
+}
+
+.cb-market-carousel-arrow:disabled {
+  opacity: 0.42;
+  cursor: default;
+  box-shadow: none;
+}
+
+.cb-market-carousel__viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 3px 3px 16px;
+  margin: -3px -3px -16px;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.cb-market-carousel__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.cb-market-grid {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  width: 100%;
+  grid-template-columns: none;
+}
+
+.cb-product-card.cb-product-card--carousel {
+  display: flex;
+  flex: 0 0 calc((100% - 42px) / 4);
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  scroll-snap-align: start;
+}
+
+.cb-product-card--carousel .cb-product-content {
+  flex: 1 0 auto;
+}
+
+.cb-product-card--carousel .cb-product-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cb-product-meta__price {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cb-product-meta__price small {
+  color: #7d8aa0;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.cb-product-back__detail--catalog strong {
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+
+.cb-product-card--carousel .cb-cart-btn {
+  display: grid;
+  flex: 0 0 42px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  text-decoration: none;
+}
+
+.cb-product-card--carousel .cb-cart-btn:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+
+.cb-market-carousel-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  min-height: 24px;
+  margin-top: 12px;
+}
+
+.cb-market-carousel-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(32, 83, 154, 0.24);
+  cursor: pointer;
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.cb-market-carousel-dot.is-active {
+  width: 23px;
+  background: var(--cb-blue);
+}
+
+.cb-market-empty {
+  margin: 0;
+  padding: 30px 20px;
+  border: 1px solid rgba(32, 83, 154, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #687895;
+  text-align: center;
+}
+
+@media (max-width: 1023px) {
+  .cb-product-card.cb-product-card--carousel {
+    flex-basis: calc((100% - 14px) / 2);
+  }
+}
+
+@media (max-width: 560px) {
+  .cb-market-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cb-market-head .cb-panel-title {
+    align-items: center;
+  }
+
+  .cb-market-carousel-controls {
+    justify-content: flex-end;
+  }
+
+  .cb-product-card.cb-product-card--carousel {
+    flex-basis: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cb-market-carousel__viewport,
+  .cb-market-carousel-arrow,
+  .cb-market-carousel-dot {
+    scroll-behavior: auto;
+    transition: none;
+  }
+}
+
+/* Mantiene completa la ficha trasera del sello dentro del espacio de giro. */
+.cb-product-card--carousel .cb-product-visual {
+  height: 208px;
+}
+
+.cb-product-card--carousel .cb-product-back {
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 12px 14px;
+}
+
+.cb-product-card--carousel .cb-product-back__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cb-product-card--carousel .cb-product-back__icon {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+}
+
+.cb-product-card--carousel .cb-product-back__icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.cb-product-card--carousel .cb-product-back__eyebrow {
+  min-width: 0;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.cb-product-card--carousel .cb-product-back__detail {
+  padding: 6px 0;
+}
+
+.cb-product-card--carousel .cb-product-back__detail > span {
+  margin-bottom: 2px;
+  font-size: 8px;
+  line-height: 1.2;
+}
+
+.cb-product-card--carousel .cb-product-back__detail--catalog strong {
+  font-size: 13px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.cb-product-card--carousel .cb-product-back__detail > strong {
+  font-size: 11px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.cb-product-card--carousel .cb-product-back__note {
+  display: block;
+  max-width: none;
+  margin: 0;
+  overflow: visible;
+  color: #607391;
+  font-size: 10px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  -webkit-line-clamp: unset;
+}
+
+.cb-product-card--carousel .cb-product-back__meta {
+  max-width: 100%;
+  margin-top: 0;
+  padding: 3px 7px;
+  font-size: 8px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 560px) {
+  .cb-product-card--carousel .cb-product-visual {
+    height: 210px;
+  }
+}
+
+/* Entrada y salida de los sellos al recorrer la vitrina. */
+.cb-product-card--carousel {
+  opacity: 0.42;
+  filter: blur(1.5px);
+  transform: translate3d(0, 10px, 0) scale(0.975);
+  transition:
+    opacity 0.42s ease,
+    filter 0.42s ease,
+    transform 0.58s cubic-bezier(0.2, 0.75, 0.25, 1),
+    box-shadow 0.25s ease;
+}
+
+.cb-product-card--carousel.is-carousel-active {
+  opacity: 1;
+  filter: blur(0);
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.cb-product-card--carousel.is-carousel-active:hover {
+  transform: translate3d(0, -4px, 0) scale(1.008);
+}
+
+.cb-product-card--carousel .cb-product-visual {
+  display: block;
+  position: relative;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.cb-product-card--carousel .cb-product-flip,
+.cb-product-card--carousel .cb-product-flip__inner,
+.cb-product-card--carousel .cb-product-stamp,
+.cb-product-card--carousel .cb-product-stamp__frame {
+  display: block;
+}
+
+.cb-product-card--carousel .cb-product-visual:focus-visible {
+  outline: 3px solid rgba(32, 83, 154, 0.45);
+  outline-offset: 3px;
+}
+
+/* Continuous, seamless loop for the Filatelia showcase. */
+.cb-market-carousel {
+  position: relative;
+}
+
+.cb-market-carousel__viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 3px 12px 16px;
+  margin: -3px -12px -16px;
+  scroll-behavior: auto;
+  scroll-snap-type: none;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22px, #000 calc(100% - 22px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 22px, #000 calc(100% - 22px), transparent 100%);
+}
+
+.cb-market-carousel__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.cb-market-loop-track {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  width: max-content;
+}
+
+.cb-market-grid {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: stretch;
+  gap: 14px;
+  width: max-content;
+  grid-template-columns: none;
+}
+
+.cb-product-card.cb-product-card--carousel {
+  flex: 0 0 var(--cb-market-card-width, 280px);
+  scroll-snap-align: none;
+}
+
+.cb-product-card--carousel {
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cb-product-card--carousel,
+  .cb-product-card--carousel .cb-product-flip__inner,
+  .cb-market-carousel-arrow,
+  .cb-market-carousel-dot {
+    transition-duration: 0.01ms !important;
+  }
+
+  .cb-market-carousel__viewport {
+    scroll-behavior: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
