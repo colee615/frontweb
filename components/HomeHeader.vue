@@ -227,58 +227,44 @@ export default {
     },
     navLinks() {
       const sourceLinks = Array.isArray(this.links) ? this.links : []
-      const findLink = (keywords) => sourceLinks.find((link) => {
-        const normalizedLabel = this.normalizeLabel(link.label)
-        return keywords.some((keyword) => normalizedLabel.includes(keyword))
-      })
-      const buildNavLink = ({ label, keywords, fallbackUrl, preferOriginalUrl = false }) => {
-        const sourceLink = findLink(keywords)
-        const originalUrl = sourceLink && typeof sourceLink.url === 'string'
-          ? sourceLink.url.trim()
-          : ''
+      const standardLabels = [
+        { keywords: ['quienes somos'], label: '¿Quiénes somos?' },
+        { keywords: ['noticias'], label: 'Noticias' },
+        { keywords: ['contacto', 'contactanos', 'consulta'], label: 'Contáctanos' },
+        { keywords: ['institucional'], label: 'Institucional' },
+        { keywords: ['delivery express', 'delivery'], label: 'Delivery Express' }
+      ]
+      const configuredLinks = sourceLinks
+        .map((link) => {
+          const label = typeof link.label === 'string' ? link.label.trim() : ''
 
-        let resolvedUrl = fallbackUrl
+          if (!label) {
+            return null
+          }
 
-        if (sourceLink) {
-          resolvedUrl = preferOriginalUrl && originalUrl && originalUrl !== '#'
-            ? originalUrl
-            : this.resolveRoute(sourceLink)
-        }
+          const normalizedLabel = this.normalizeLabel(label)
+          const standardLabel = standardLabels.find(({ keywords }) =>
+            keywords.some((keyword) => normalizedLabel.includes(keyword))
+          )
 
-        return {
-          ...(sourceLink || {}),
-          label,
-          url: resolvedUrl || fallbackUrl || '#'
-        }
+          return {
+            ...link,
+            label: standardLabel ? standardLabel.label : label,
+            url: this.resolveRoute({ ...link, label })
+          }
+        })
+        .filter(Boolean)
+
+      if (configuredLinks.length) {
+        return configuredLinks
       }
 
       return [
-        buildNavLink({
-          label: '¿Quiénes somos?',
-          keywords: ['quienes somos'],
-          fallbackUrl: '/quienes-somos'
-        }),
-        buildNavLink({
-          label: 'Noticias',
-          keywords: ['noticias'],
-          fallbackUrl: '/noticias'
-        }),
-        buildNavLink({
-          label: 'Contáctanos',
-          keywords: ['contacto', 'contactanos', 'consulta'],
-          fallbackUrl: CONTACT_ROUTE
-        }),
-        buildNavLink({
-          label: 'Institucional',
-          keywords: ['institucional'],
-          fallbackUrl: '#',
-          preferOriginalUrl: true
-        }),
-        buildNavLink({
-          label: 'Delivery Express',
-          keywords: ['delivery express', 'delivery'],
-          fallbackUrl: '/deliveryexpress'
-        })
+        { label: '¿Quiénes somos?', url: '/quienes-somos' },
+        { label: 'Noticias', url: '/noticias' },
+        { label: 'Contáctanos', url: CONTACT_ROUTE },
+        { label: 'Institucional', url: '#' },
+        { label: 'Delivery Express', url: '/deliveryexpress' }
       ]
     },
     searchResults() {
