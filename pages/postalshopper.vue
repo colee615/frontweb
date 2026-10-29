@@ -70,7 +70,61 @@
         </div>
       </section>
 
-      <section id="postalshopper-intro" class="cb-ps-intro">
+      <section v-if="availableDestinationItems.length || hasUpcomingDestinations" class="cb-ps-destinations" aria-label="Destinos Postal Shopper">
+        <div class="cb-ps-destinations__grid">
+          <component
+            v-for="(item, index) in availableDestinationItems"
+            :key="item.id || item.label || index"
+            :is="destinationCardComponent(item)"
+            v-bind="destinationCardAttributes(item)"
+            class="cb-ps-destination-card"
+            :class="{
+              'cb-ps-destination-card--linked': item.url,
+              'cb-ps-destination-card--available': isDestinationAvailable(item.status)
+            }"
+            :aria-label="destinationCardAriaLabel(item)"
+            :aria-disabled="!item.url || null"
+          >
+            <span
+              class="cb-ps-destination-card__flag"
+              :class="{ 'cb-ps-destination-card__flag--us': destinationFlagImage(item.flag) === '/flags/us.svg' }"
+              aria-hidden="true"
+            >
+              <img v-if="destinationFlagImage(item.flag)" :src="destinationFlagImage(item.flag)" alt="" loading="lazy" decoding="async">
+              <span v-else-if="item.flag && item.flag !== '🌐'">{{ item.flag }}</span>
+              <span v-else class="cb-ps-destination-card__globe" v-html="icons.globe"></span>
+            </span>
+            <span class="cb-ps-destination-card__copy">
+              <strong>{{ item.label }}</strong>
+              <small :class="destinationStatusClass(item.status)">
+                <span aria-hidden="true"></span>
+                {{ item.status || 'Próximamente' }}
+              </small>
+            </span>
+            <span v-if="item.url" class="cb-ps-destination-card__arrow" aria-hidden="true">↗</span>
+          </component>
+
+          <article
+            v-if="hasUpcomingDestinations"
+            class="cb-ps-destination-card cb-ps-destination-card--upcoming"
+            :aria-label="`${destinationSettings.upcoming_label || 'Nuevos destinos'}: ${destinationSettings.upcoming_status || 'Muy pronto'}`"
+          >
+            <span class="cb-ps-destination-card__flag cb-ps-destination-card__flag--upcoming" aria-hidden="true">
+              <img src="/flags/globe.svg" alt="" loading="lazy" decoding="async">
+              <span class="cb-ps-upcoming-flag__mark">?</span>
+            </span>
+            <span class="cb-ps-destination-card__copy">
+              <strong>{{ destinationSettings.upcoming_label || 'Nuevos destinos' }}</strong>
+              <small class="cb-ps-destination-card__status">
+                <span aria-hidden="true"></span>
+                {{ destinationSettings.upcoming_status || 'Muy pronto' }}
+              </small>
+            </span>
+          </article>
+        </div>
+      </section>
+
+      <section id="postalshopper-intro" class="cb-ps-intro" :class="{ 'cb-ps-intro--with-destinations': destinationItems.length }">
         <div class="cb-shell cb-ps-intro__inner">
           <div class="cb-ps-heading cb-ps-heading--center">
             <div v-if="introSettings.eyebrow" class="cb-ps-heading__eyebrow">
@@ -192,6 +246,11 @@ const POSTALSHOPPER_SOURCE_PAGE = {
       },
       items: []
     },
+    {
+      key: 'postalshopper_destinations',
+      settings: { upcoming_label: 'Nuevos destinos', upcoming_status: 'Muy pronto' },
+      items: []
+    },
     { key: 'postalshopper_intro', settings: { eyebrow: '', title: '', paragraph_one: '', paragraph_two: '' }, items: [] },
     { key: 'postalshopper_steps', settings: { title: '', subtitle: '' }, items: [] },
     {
@@ -308,6 +367,21 @@ export default {
     marketChips() {
       return this.getSectionItems('postalshopper_intro')
     },
+    destinationItems() {
+      return this.getSectionItems('postalshopper_destinations')
+    },
+    destinationSettings() {
+      return this.getSectionSettings('postalshopper_destinations')
+    },
+    availableDestinationItems() {
+      return this.destinationItems.filter((item) => {
+        return this.isDestinationAvailable(item.status)
+          && String(item.label || '').trim().toLowerCase() !== 'nuevos destinos'
+      })
+    },
+    hasUpcomingDestinations() {
+      return this.destinationItems.length > 0
+    },
     marketMarqueeItems() {
       return [...this.marketChips, ...this.marketChips]
     },
@@ -402,6 +476,41 @@ export default {
         return { to: url }
       }
       return { href: url || '#' }
+    },
+    destinationCardComponent(item) {
+      if (!item.url) return 'article'
+      return this.isInternalRoute(item.url) ? 'nuxt-link' : 'a'
+    },
+    destinationCardAttributes(item) {
+      if (!item.url) return {}
+      if (this.isInternalRoute(item.url)) return { to: item.url }
+      return { href: item.url, target: '_blank', rel: 'noopener noreferrer' }
+    },
+    destinationFlagImage(flag) {
+      const value = String(flag || '').trim()
+      if (/^https:\/\//i.test(value) || (value.startsWith('/') && !value.startsWith('//'))) return value
+
+      const countryCode = Array.from(value).map((character) => {
+        const point = character.codePointAt(0)
+        return point >= 0x1f1e6 && point <= 0x1f1ff ? String.fromCharCode(point - 0x1f1e6 + 65) : ''
+      }).join('')
+      const localFlags = ['US', 'CN', 'ES', 'BR', 'CL', 'AR', 'MX']
+
+      return countryCode.length === 2 && localFlags.includes(countryCode)
+        ? `/flags/${countryCode.toLowerCase()}.svg`
+        : ''
+    },
+    destinationCardAriaLabel(item) {
+      const status = item.status || 'Próximamente'
+      return `${item.label}: ${status}`
+    },
+    destinationStatusClass(status) {
+      return this.isDestinationAvailable(status)
+        ? 'cb-ps-destination-card__status cb-ps-destination-card__status--available'
+        : 'cb-ps-destination-card__status'
+    },
+    isDestinationAvailable(status) {
+      return String(status || '').toLowerCase().includes('disponible')
     }
   },
   head() {

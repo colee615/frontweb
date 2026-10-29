@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="ocean" x1="20" y1="10" x2="174" y2="190" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67cdf2"/>
+      <stop offset=".52" stop-color="#2495dc"/>
+      <stop offset="1" stop-color="#1768bd"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#25579a" flood-opacity=".2"/>
+    </filter>
+    <clipPath id="sphere"><circle cx="100" cy="98" r="88"/></clipPath>
+  </defs>
+  <g filter="url(#shadow)">
+    <circle cx="100" cy="98" r="92" fill="#fff"/>
+    <circle cx="100" cy="98" r="88" fill="url(#ocean)"/>
+    <g clip-path="url(#sphere)" fill="#75d55b">
+      <path d="m21 49 13-18 19-8 15 5 5 10 15 3 9 12-7 10-13 2-3 13-14 3-6 14-12 3-7-13-13-5-8-15 4-12-9-4z"/>
+      <path d="m76 96 13 3 9 13-4 15-8 12-1 18-10 20-8-4-5-19-7-12 4-19-7-12 5-12 8-4z"/>
+      <path d="m114 48 11-8 15 3 7 8 18 1 12 12-5 10-14 2-8 11-13-3-7 11-11-3-5-11-13-4 3-12-8-7 8-8-2-8z"/>
+      <path d="m119 92 12-5 13 7 5 15-5 18-11 17-12 18-10-10 3-16-7-12 6-14-5-10z"/>
+      <path d="m158 126 18-7 12 8-5 13-18 5-10-7z"/>
+      <path d="m37 134 10-2 6 8-6 8-11-4z"/>
+    </g>
+    <g clip-path="url(#sphere)" fill="none" stroke="#d7f5ff" stroke-opacity=".38" stroke-width="2">
+      <ellipse cx="100" cy="98" rx="43" ry="88"/>
+      <ellipse cx="100" cy="98" rx="75" ry="88"/>
+      <path d="M13 98h174M23 62h154M23 134h154"/>
+    </g>
+    <path d="M48 42c18-20 40-29 65-29" fill="none" stroke="#fff" stroke-linecap="round" stroke-opacity=".42" stroke-width="7"/>
+  </g>
+</svg>
