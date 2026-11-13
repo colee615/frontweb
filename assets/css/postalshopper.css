@@ -1127,7 +1127,7 @@
 
 .cb-ps-calculator__preset > strong {
   color: #173f7a;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -1409,7 +1409,7 @@
   }
 
   .cb-ps-calculator__preset > strong {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .cb-ps-calculator__quote {
