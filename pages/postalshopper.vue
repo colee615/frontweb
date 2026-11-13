@@ -124,6 +124,87 @@
         </div>
       </section>
 
+      <section id="postalshopper-calculadora" class="cb-ps-calculator" aria-labelledby="postalshopper-calculator-title">
+        <div class="cb-shell">
+          <header class="cb-ps-calculator__heading">
+            <h2 id="postalshopper-calculator-title">Cotiza tu paquete <em>en segundos.</em></h2>
+          </header>
+
+          <div class="cb-ps-calculator__grid">
+            <figure class="cb-ps-calculator__visual">
+              <span class="cb-ps-calculator__visual-orbit" aria-hidden="true"></span>
+              <span class="cb-ps-calculator__visual-spark cb-ps-calculator__visual-spark--one" aria-hidden="true"></span>
+              <span class="cb-ps-calculator__visual-spark cb-ps-calculator__visual-spark--two" aria-hidden="true"></span>
+              <img src="/postalshopper-calculator-mascot.png" alt="Cartero con un paquete y una calculadora de envíos" loading="lazy" decoding="async">
+              <figcaption class="cb-ps-calculator__visual-caption">
+                <span class="cb-ps-calculator__caption-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="m4 8 8-4 8 4v8l-8 4-8-4V8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                    <path d="m4.5 8.3 7.5 4 7.5-4M12 12.5V20M8 6l8 4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                  </svg>
+                </span>
+                <span class="cb-ps-calculator__caption-copy">
+                  <small>POSTAL SHOPPER</small>
+                  <strong>Tus compras, de Miami a Bolivia</strong>
+                </span>
+              </figcaption>
+            </figure>
+
+            <article class="cb-ps-calculator__card" aria-label="Calculadora de tarifa Postal Shopper">
+              <div class="cb-ps-calculator__selection">
+                <span class="cb-ps-calculator__selection-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 4h10l4 5v11H3V9l4-5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                    <path d="M7 4 5 9h14l-2-5M12 12l2.2 2.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="11" cy="13" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                  </svg>
+                </span>
+                <strong>Elige el peso del paquete</strong>
+              </div>
+              <div class="cb-ps-calculator__presets" role="group" aria-label="Tarifas por peso">
+                <div class="cb-ps-calculator__presets-grid">
+                  <button
+                    v-for="rate in parcelRates"
+                    :key="rate.weight"
+                    type="button"
+                    class="cb-ps-calculator__preset"
+                    :class="{ 'cb-ps-calculator__preset--selected': parcelWeight === rate.weight }"
+                    :aria-pressed="parcelWeight === rate.weight"
+                    :aria-label="'Elegir ' + rate.weight + (rate.weight === 1 ? ' libra' : ' libras') + ', precio $us ' + rate.price"
+                    @click="parcelWeight = rate.weight"
+                  >
+                    <span
+                      class="cb-ps-calculator__preset-icon"
+                      :class="{ 'cb-ps-calculator__preset-icon--heavy': rate.weight >= 4 }"
+                      :style="{ width: (26 + rate.weight * 4) + 'px', height: (26 + rate.weight * 4) + 'px' }"
+                      aria-hidden="true"
+                    >
+                      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4.5 10.5 16 4l11.5 6.5v13L16 30 4.5 23.5v-13Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                        <path d="m5 10.7 11 6.1 11-6.1M16 17v12.5M11 7l11 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </span>
+                    <span class="cb-ps-calculator__preset-weight">{{ rate.weight }} {{ rate.weight === 1 ? 'libra' : 'libras' }}</span>
+                    <strong>$us {{ rate.price }}</strong>
+                  </button>
+                </div>
+              </div>
+
+              <div class="cb-ps-calculator__quote" aria-live="polite" aria-atomic="true">
+                <span class="cb-ps-calculator__quote-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 3.75h12a2 2 0 0 1 2 2v14.5l-4-2.5-4 2.5-4-2.5-4 2.5V5.75a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                    <path d="M8 8h8M8 11.5h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                  </svg>
+                </span>
+                <span class="cb-ps-calculator__quote-label">Tarifa estimada</span>
+                <strong class="cb-ps-calculator__quote-total"><span>$us</span> {{ selectedParcelRate.price }}</strong>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="postalshopper-intro" class="cb-ps-intro" :class="{ 'cb-ps-intro--with-destinations': destinationItems.length }">
         <div class="cb-shell cb-ps-intro__inner">
           <div class="cb-ps-heading cb-ps-heading--center">
@@ -262,6 +343,14 @@ const POSTALSHOPPER_SOURCE_PAGE = {
   ]
 }
 
+const POSTALSHOPPER_PARCEL_RATES = [
+  { weight: 1, price: '10,59' },
+  { weight: 2, price: '13,86' },
+  { weight: 3, price: '17,14' },
+  { weight: 4, price: '20,41' },
+  { weight: 5, price: '23,70' }
+]
+
 export default {
   name: 'PostalShopperPage',
   async asyncData({ $api }) {
@@ -270,7 +359,8 @@ export default {
   },
   data() {
     return {
-      isBootLoading: true
+      isBootLoading: true,
+      parcelWeight: 1
     }
   },
   async mounted() {
@@ -302,6 +392,12 @@ export default {
     heroStyles() {
       const image = this.heroSettings.background_image || '/personajechica.png'
       return { '--cb-ps-hero-image': `url(${image})` }
+    },
+    parcelRates() {
+      return POSTALSHOPPER_PARCEL_RATES
+    },
+    selectedParcelRate() {
+      return POSTALSHOPPER_PARCEL_RATES.find((rate) => rate.weight === this.parcelWeight) || POSTALSHOPPER_PARCEL_RATES[0]
     },
     headerSettings() {
       return this.getSectionSettings('header')
