@@ -35,7 +35,7 @@
     <HomeHeader v-if="!isBootLoading" :logo-url="logoUrl" :icons="icons" :content="headerSettings" :links="headerLinks" />
 
     <main v-if="!isBootLoading" class="cb-page__content cb-postalshopper">
-      <section id="postalshopper-hero" class="cb-ps-hero" :style="heroStyles">
+      <section v-if="sectionEnabled('postalshopper_hero')" id="postalshopper-hero" class="cb-ps-hero" :style="heroStyles">
         <div class="cb-shell cb-ps-hero__grid">
           <article class="cb-ps-hero__copy">
             <div v-if="heroSettings.badge" class="cb-ps-hero__badge">
@@ -52,6 +52,30 @@
 
             <p v-if="heroSettings.lead_text" class="cb-ps-hero__lead">{{ heroSettings.lead_text }}</p>
             <p v-if="heroSettings.subtitle" class="cb-ps-hero__subtitle">{{ heroSettings.subtitle }}</p>
+
+            <div v-if="heroSettings.primary_button_label || heroSettings.primary_button_url || heroSettings.secondary_button_label || heroSettings.secondary_button_url" class="cb-ps-hero__actions">
+              <a
+                v-if="heroSettings.primary_button_label || heroSettings.primary_button_url"
+                class="cb-ps-btn cb-ps-btn--primary"
+                :href="tutorialLink || '#postalshopper-tutorial'"
+                :target="linkTarget(tutorialLink)"
+                :rel="linkRel(tutorialLink)"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M8 5.7c0-.8.9-1.3 1.6-.9l10 6.3a1 1 0 0 1 0 1.7l-10 6.3c-.7.4-1.6-.1-1.6-.9V5.7Z" />
+                </svg>
+                <span>{{ primaryButtonLabel }}</span>
+              </a>
+              <a
+                v-if="heroSettings.secondary_button_label || secondaryButtonUrl"
+                class="cb-ps-btn cb-ps-btn--secondary"
+                :href="secondaryButtonUrl || '#postalshopper-steps'"
+                :target="linkTarget(secondaryButtonUrl)"
+                :rel="linkRel(secondaryButtonUrl)"
+              >
+                <span>{{ heroSettings.secondary_button_label || 'Más información' }}</span>
+              </a>
+            </div>
 
             <div v-if="heroFeatureItems.length" class="cb-ps-hero__stats">
               <article v-for="(item, index) in heroFeatureItems" :key="item.id || item.value || index" class="cb-ps-hero__stat">
@@ -70,7 +94,11 @@
         </div>
       </section>
 
-      <section v-if="availableDestinationItems.length || hasUpcomingDestinations" class="cb-ps-destinations" aria-label="Destinos Postal Shopper">
+      <section
+        v-if="sectionEnabled('postalshopper_destinations') && (availableDestinationItems.length || hasUpcomingDestinations)"
+        class="cb-ps-destinations cb-ps-destinations--service-links"
+        aria-label="Disponibilidad de envíos Postal Shopper"
+      >
         <div class="cb-ps-destinations__grid">
           <component
             v-for="(item, index) in availableDestinationItems"
@@ -107,14 +135,14 @@
           <article
             v-if="hasUpcomingDestinations"
             class="cb-ps-destination-card cb-ps-destination-card--upcoming"
-            :aria-label="`${destinationSettings.upcoming_label || 'Nuevos destinos'}: ${destinationSettings.upcoming_status || 'Muy pronto'}`"
+            :aria-label="`${destinationSettings.upcoming_label || 'Nuevos envíos'}: ${destinationSettings.upcoming_status || 'Muy pronto'}`"
           >
             <span class="cb-ps-destination-card__flag cb-ps-destination-card__flag--upcoming" aria-hidden="true">
               <img src="/flags/globe.svg" alt="" loading="lazy" decoding="async">
               <span class="cb-ps-upcoming-flag__mark">?</span>
             </span>
             <span class="cb-ps-destination-card__copy">
-              <strong>{{ destinationSettings.upcoming_label || 'Nuevos destinos' }}</strong>
+              <strong>{{ destinationSettings.upcoming_label || 'Nuevos envíos' }}</strong>
               <small class="cb-ps-destination-card__status">
                 <span aria-hidden="true"></span>
                 {{ destinationSettings.upcoming_status || 'Muy pronto' }}
@@ -124,18 +152,58 @@
         </div>
       </section>
 
-      <section id="postalshopper-calculadora" class="cb-ps-calculator" aria-labelledby="postalshopper-calculator-title">
+      <section v-if="sectionEnabled('postalshopper_steps')" id="postalshopper-steps" class="cb-ps-steps">
         <div class="cb-shell">
-          <header class="cb-ps-calculator__heading">
-            <h2 id="postalshopper-calculator-title">Cotiza tu paquete <em>en segundos.</em></h2>
-          </header>
+          <div class="cb-ps-heading cb-ps-heading--center">
+            <div class="cb-ps-heading__accent"></div>
+            <h2>{{ stepsSettings.title || '¿Cómo funciona Postal Shopper?' }}</h2>
+            <p v-if="stepsSettings.subtitle">{{ stepsSettings.subtitle }}</p>
+          </div>
 
+          <div class="cb-ps-steps__grid">
+            <div class="cb-ps-steps__cards">
+              <article v-for="(item, index) in stepItems" :key="item.id || item.title || index" class="cb-ps-step-card">
+                <span class="cb-ps-step-card__icon" aria-hidden="true" v-html="resolveIcon(item.icon || 'package')"></span>
+                <span class="cb-ps-step-card__copy">
+                  <h3><span>{{ item.step || index + 1 }}.</span> {{ item.title }}</h3>
+                  <p v-if="item.text">{{ item.text }}</p>
+                </span>
+              </article>
+            </div>
+
+            <component
+              :is="tutorialLink ? 'a' : 'article'"
+              v-if="stepsSettings.tutorial_label || stepsSettings.tutorial_image || tutorialLink"
+              id="postalshopper-tutorial"
+              class="cb-ps-tutorial-card"
+              :href="tutorialLink || null"
+              :target="linkTarget(tutorialLink)"
+              :rel="linkRel(tutorialLink)"
+              :aria-label="`${stepsSettings.tutorial_label || 'Ver tutorial completo de Postal Shopper'}${stepsSettings.tutorial_duration ? ', duración ' + stepsSettings.tutorial_duration : ''}`"
+            >
+              <span class="cb-ps-tutorial-card__city" aria-hidden="true">
+                <svg viewBox="0 0 480 180" preserveAspectRatio="none">
+                  <path d="M0 180V112h35V90h18v22h24V61h35v51h18V77h34v35h19V43h43v69h22V84h34v28h17V60h41v52h21V94h28v18h27V72h34v40h30v68H0Z" fill="currentColor" />
+                </svg>
+              </span>
+              <img :src="stepsSettings.tutorial_image || '/postalshopper-calculator-mascot.png'" alt="" loading="lazy" decoding="async">
+              <span class="cb-ps-tutorial-card__play" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5.7c0-.8.9-1.3 1.6-.9l10 6.3a1 1 0 0 1 0 1.7l-10 6.3c-.7.4-1.6-.1-1.6-.9V5.7Z" />
+                </svg>
+              </span>
+              <span class="cb-ps-tutorial-card__label">{{ stepsSettings.tutorial_label || 'Ver tutorial completo' }} <span v-if="stepsSettings.tutorial_duration">· {{ stepsSettings.tutorial_duration }}</span></span>
+            </component>
+          </div>
+
+        </div>
+      </section>
+
+      <section v-if="sectionEnabled('postalshopper_calculator')" id="postalshopper-calculadora" class="cb-ps-calculator" aria-labelledby="postalshopper-calculator-title">
+        <div class="cb-shell">
           <div class="cb-ps-calculator__grid">
             <figure class="cb-ps-calculator__visual">
-              <span class="cb-ps-calculator__visual-orbit" aria-hidden="true"></span>
-              <span class="cb-ps-calculator__visual-spark cb-ps-calculator__visual-spark--one" aria-hidden="true"></span>
-              <span class="cb-ps-calculator__visual-spark cb-ps-calculator__visual-spark--two" aria-hidden="true"></span>
-              <img src="/postalshopper-calculator-mascot.png" alt="Cartero con un paquete y una calculadora de envíos" loading="lazy" decoding="async">
+              <img :src="calculatorSettings.image || '/postalshopper-calculator-mascot.png'" :alt="calculatorSettings.image_alt || 'Cartero con un paquete y una calculadora de envíos'" loading="lazy" decoding="async">
               <figcaption class="cb-ps-calculator__visual-caption">
                 <span class="cb-ps-calculator__caption-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -144,13 +212,26 @@
                   </svg>
                 </span>
                 <span class="cb-ps-calculator__caption-copy">
-                  <small>POSTAL SHOPPER</small>
-                  <strong>Tus compras, de Miami a Bolivia</strong>
+                  <small>{{ calculatorSettings.caption_label || 'POSTAL SHOPPER' }}</small>
+                  <strong>{{ calculatorSettings.caption_text || 'Tus compras, de Miami a Bolivia' }}</strong>
                 </span>
               </figcaption>
             </figure>
-
             <article class="cb-ps-calculator__card" aria-label="Calculadora de tarifa Postal Shopper">
+              <header class="cb-ps-calculator__heading">
+                <span class="cb-ps-calculator__heading-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <rect x="5" y="2.75" width="14" height="18.5" rx="2.5" stroke="currentColor" stroke-width="1.7" />
+                    <path d="M8 6.5h8M8 11h1m3 0h1m3 0h.01M8 14.5h1m3 0h1m3 0h.01M8 18h1m3 0h1m3 0h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                  </svg>
+                </span>
+                <span class="cb-ps-calculator__heading-copy">
+                  <small>{{ calculatorSettings.eyebrow || 'COTIZADOR DE ENVÍOS' }}</small>
+                  <h2 id="postalshopper-calculator-title">{{ calculatorSettings.title || 'Cotiza tu paquete' }} <em>{{ calculatorSettings.title_accent || 'en segundos.' }}</em></h2>
+                  <p>{{ calculatorSettings.description || 'Consulta una tarifa estimada para tu envío.' }}</p>
+                </span>
+              </header>
+
               <div class="cb-ps-calculator__selection">
                 <span class="cb-ps-calculator__selection-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -159,7 +240,10 @@
                     <circle cx="11" cy="13" r="2.5" stroke="currentColor" stroke-width="1.5" />
                   </svg>
                 </span>
-                <strong>Elige el peso del paquete</strong>
+                <span class="cb-ps-calculator__selection-copy">
+                  <strong>{{ calculatorSettings.weight_title || 'Elige el peso del paquete' }}</strong>
+                  <small>{{ calculatorSettings.weight_help || 'Selecciona entre 1 y 5 libras' }}</small>
+                </span>
               </div>
               <div class="cb-ps-calculator__presets" role="group" aria-label="Tarifas por peso">
                 <div class="cb-ps-calculator__presets-grid">
@@ -170,13 +254,13 @@
                     class="cb-ps-calculator__preset"
                     :class="{ 'cb-ps-calculator__preset--selected': parcelWeight === rate.weight }"
                     :aria-pressed="parcelWeight === rate.weight"
-                    :aria-label="'Elegir ' + rate.weight + (rate.weight === 1 ? ' libra' : ' libras') + ', precio $us ' + rate.price"
+                    :aria-label="'Elegir ' + rate.weight + ' ' + (rate.weight === 1 ? (calculatorSettings.weight_unit_singular || 'libra') : (calculatorSettings.weight_unit_plural || 'libras')) + ', precio ' + (calculatorSettings.currency_label || '$us') + ' ' + formatParcelPrice(rate.price)"
                     @click="parcelWeight = rate.weight"
                   >
                     <span
                       class="cb-ps-calculator__preset-icon"
                       :class="{ 'cb-ps-calculator__preset-icon--heavy': rate.weight >= 4 }"
-                      :style="{ width: (26 + rate.weight * 4) + 'px', height: (26 + rate.weight * 4) + 'px' }"
+                      :style="{ width: (24 + rate.weight * 2) + 'px', height: (24 + rate.weight * 2) + 'px' }"
                       aria-hidden="true"
                     >
                       <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -184,8 +268,8 @@
                         <path d="m5 10.7 11 6.1 11-6.1M16 17v12.5M11 7l11 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
                       </svg>
                     </span>
-                    <span class="cb-ps-calculator__preset-weight">{{ rate.weight }} {{ rate.weight === 1 ? 'libra' : 'libras' }}</span>
-                    <strong>$us {{ rate.price }}</strong>
+                    <span class="cb-ps-calculator__preset-weight">{{ rate.weight }} {{ rate.weight === 1 ? (calculatorSettings.weight_unit_singular || 'libra') : (calculatorSettings.weight_unit_plural || 'libras') }}</span>
+                    <strong>{{ calculatorSettings.currency_label || '$us' }} {{ formatParcelPrice(rate.price) }}</strong>
                   </button>
                 </div>
               </div>
@@ -197,15 +281,15 @@
                     <path d="M8 8h8M8 11.5h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
                   </svg>
                 </span>
-                <span class="cb-ps-calculator__quote-label">Tarifa estimada</span>
-                <strong class="cb-ps-calculator__quote-total"><span>$us</span> {{ selectedParcelRate.price }}</strong>
+                <span class="cb-ps-calculator__quote-label">{{ calculatorSettings.total_label || 'Tarifa estimada' }}</span>
+                <strong class="cb-ps-calculator__quote-total"><span>{{ calculatorSettings.currency_label || '$us' }}</span> {{ formatParcelPrice(selectedParcelRate.price) }}</strong>
               </div>
             </article>
           </div>
         </div>
       </section>
 
-      <section id="postalshopper-intro" class="cb-ps-intro" :class="{ 'cb-ps-intro--with-destinations': destinationItems.length }">
+      <section v-if="sectionEnabled('postalshopper_intro')" id="postalshopper-intro" class="cb-ps-intro">
         <div class="cb-shell cb-ps-intro__inner">
           <div class="cb-ps-heading cb-ps-heading--center">
             <div v-if="introSettings.eyebrow" class="cb-ps-heading__eyebrow">
@@ -241,28 +325,7 @@
         </div>
       </section>
 
-      <section id="postalshopper-steps" class="cb-ps-steps">
-        <div class="cb-shell">
-          <div class="cb-ps-heading cb-ps-heading--center">
-            <div class="cb-ps-heading__accent"></div>
-            <h2 v-if="stepsSettings.title">{{ stepsSettings.title }}</h2>
-            <p v-if="stepsSettings.subtitle">{{ stepsSettings.subtitle }}</p>
-          </div>
-
-          <div class="cb-ps-steps__grid">
-            <article v-for="(item, index) in stepItems" :key="item.id || item.title || index" class="cb-ps-step-card">
-              <span class="cb-ps-step-card__count">{{ item.step }}</span>
-              <div class="cb-ps-step-card__icon" v-html="resolveIcon(item.icon || 'pin')"></div>
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.text }}</p>
-            </article>
-          </div>
-
-          <div class="cb-ps-steps__line" aria-hidden="true"></div>
-        </div>
-      </section>
-
-      <section id="postalshopper-benefits" class="cb-ps-benefits">
+      <section v-if="sectionEnabled('postalshopper_benefits')" id="postalshopper-benefits" class="cb-ps-benefits">
         <div class="cb-shell">
           <div class="cb-ps-heading cb-ps-heading--center cb-ps-heading--light">
             <div class="cb-ps-heading__accent"></div>
@@ -284,6 +347,13 @@
               <h3 v-if="benefitsSettings.banner_title">{{ benefitsSettings.banner_title }}</h3>
               <p v-if="benefitsSettings.banner_text">{{ benefitsSettings.banner_text }}</p>
             </div>
+            <a
+              v-if="benefitsSettings.banner_button_label && benefitsSettings.banner_button_url"
+              class="cb-ps-btn cb-ps-btn--banner"
+              :href="benefitsSettings.banner_button_url"
+              :target="linkTarget(benefitsSettings.banner_button_url)"
+              :rel="linkRel(benefitsSettings.banner_button_url)"
+            >{{ benefitsSettings.banner_button_label }}</a>
           </div>
         </div>
       </section>
@@ -297,12 +367,14 @@
 import { sanitizeContentTree } from '~/utils/contentSecurity'
 import { fetchPageWithSharedLayout } from '~/utils/sharedLayout'
 
+const POSTALSHOPPER_REGISTER_URL = 'https://clientescorreos.sistemaml.net/'
+
 const POSTALSHOPPER_SOURCE_PAGE = {
   meta_title: '',
   meta_description: '',
   theme: { logo_url: '', primary_color: '#0d47b5', secondary_color: '#2a4268', accent_color: '#ffcc18' },
   sections: [
-    { key: 'header', settings: {}, items: [] },
+    { key: 'header', settings: {}, items: [], is_active: true },
     {
       key: 'postalshopper_hero',
       settings: {
@@ -325,31 +397,69 @@ const POSTALSHOPPER_SOURCE_PAGE = {
         map_destination_city: '',
         map_caption: ''
       },
-      items: []
+      items: [],
+      is_active: true
     },
     {
       key: 'postalshopper_destinations',
-      settings: { upcoming_label: 'Nuevos destinos', upcoming_status: 'Muy pronto' },
-      items: []
+      settings: { upcoming_label: 'Nuevos envíos', upcoming_status: 'Muy pronto', upcoming_enabled: true },
+      items: [],
+      is_active: true
     },
-    { key: 'postalshopper_intro', settings: { eyebrow: '', title: '', paragraph_one: '', paragraph_two: '' }, items: [] },
-    { key: 'postalshopper_steps', settings: { title: '', subtitle: '' }, items: [] },
+    { key: 'postalshopper_intro', settings: { eyebrow: '', title: '', paragraph_one: '', paragraph_two: '' }, items: [], is_active: true },
+    {
+      key: 'postalshopper_steps',
+      settings: {
+        title: '¿Cómo funciona Postal Shopper?',
+        subtitle: 'Mira el tutorial y compra desde Estados Unidos en 3 pasos',
+        tutorial_url: '',
+        tutorial_image: '',
+        tutorial_label: 'Ver tutorial completo',
+        tutorial_duration: '1:30 min'
+      },
+      items: [
+        { id: 'step-1', data: { step: '01', icon: 'pin', title: 'Regístrate gratis', text: '' } },
+        { id: 'step-2', data: { step: '02', icon: 'cart', title: 'Compra y envía a tu casilla', text: '' } },
+        { id: 'step-3', data: { step: '03', icon: 'package', title: 'Recibe tu paquete en Bolivia', text: '' } }
+      ],
+      is_active: true
+    },
+    {
+      key: 'postalshopper_calculator',
+      settings: {
+        eyebrow: 'COTIZADOR DE ENVÍOS',
+        title: 'Cotiza tu paquete',
+        title_accent: 'en segundos.',
+        description: 'Consulta una tarifa estimada para tu envío.',
+        weight_title: 'Elige el peso del paquete',
+        weight_help: 'Selecciona entre 1 y 5 libras',
+        weight_unit_singular: 'libra',
+        weight_unit_plural: 'libras',
+        currency_label: '$us',
+        total_label: 'Tarifa estimada',
+        image: '',
+        image_alt: 'Cartero con un paquete y una calculadora de envíos',
+        caption_label: 'POSTAL SHOPPER',
+        caption_text: 'Tus compras, de Miami a Bolivia'
+      },
+      items: [
+        { id: 'rate-1', data: { weight: 1, price: 10.59 } },
+        { id: 'rate-2', data: { weight: 2, price: 13.86 } },
+        { id: 'rate-3', data: { weight: 3, price: 17.14 } },
+        { id: 'rate-4', data: { weight: 4, price: 20.41 } },
+        { id: 'rate-5', data: { weight: 5, price: 23.70 } }
+      ],
+      is_active: true
+    },
     {
       key: 'postalshopper_benefits',
       settings: { title: '', subtitle: '', banner_title: '', banner_text: '', banner_button_label: '', banner_button_url: '' },
-      items: []
+      items: [],
+      is_active: true
     },
-    { key: 'footer', settings: {}, items: [] }
+    { key: 'footer', settings: {}, items: [], is_active: true }
   ]
 }
-
-const POSTALSHOPPER_PARCEL_RATES = [
-  { weight: 1, price: '10,59' },
-  { weight: 2, price: '13,86' },
-  { weight: 3, price: '17,14' },
-  { weight: 4, price: '20,41' },
-  { weight: 5, price: '23,70' }
-]
 
 export default {
   name: 'PostalShopperPage',
@@ -394,10 +504,23 @@ export default {
       return { '--cb-ps-hero-image': `url(${image})` }
     },
     parcelRates() {
-      return POSTALSHOPPER_PARCEL_RATES
+      const savedRates = this.getSectionItems('postalshopper_calculator')
+      const fallbackSection = POSTALSHOPPER_SOURCE_PAGE.sections.find((section) => section.key === 'postalshopper_calculator')
+      const rates = savedRates.length
+        ? savedRates
+        : (fallbackSection?.items || []).map((item) => item.data || item)
+
+      return rates
+        .map((rate) => ({
+          ...rate,
+          weight: Number(rate.weight),
+          price: Number(String(rate.price == null ? '' : rate.price).replace(',', '.'))
+        }))
+        .filter((rate) => Number.isFinite(rate.weight) && rate.weight > 0 && Number.isFinite(rate.price) && rate.price >= 0)
+        .sort((left, right) => left.weight - right.weight)
     },
     selectedParcelRate() {
-      return POSTALSHOPPER_PARCEL_RATES.find((rate) => rate.weight === this.parcelWeight) || POSTALSHOPPER_PARCEL_RATES[0]
+      return this.parcelRates.find((rate) => rate.weight === this.parcelWeight) || this.parcelRates[0] || { weight: this.parcelWeight, price: 0 }
     },
     headerSettings() {
       return this.getSectionSettings('header')
@@ -414,6 +537,39 @@ export default {
     heroSettings() {
       return this.getSectionSettings('postalshopper_hero')
     },
+    primaryButtonLabel() {
+      const label = String(this.heroSettings.primary_button_label || '').trim()
+      return ['como funciona', 'ver tutorial'].includes(label.toLowerCase()) ? 'Cómo funciona' : (label || 'Cómo funciona')
+    },
+    secondaryButtonUrl() {
+      const url = String(this.heroSettings.secondary_button_url || '').trim()
+      if (!url || url === '/contacto') {
+        const directService = this.availableDestinationItems.find((item) => item.url)
+        return directService?.url || POSTALSHOPPER_REGISTER_URL
+      }
+
+      return url
+    },
+    stepsSettings() {
+      const settings = this.getSectionSettings('postalshopper_steps')
+      const legacyTitle = 'Tu puente directo entre Miami y Bolivia.'
+      const legacySubtitle = 'Hemos simplificado el proceso de importacion para que tu unica preocupacion sea decidir que comprar hoy.'
+
+      return {
+        ...settings,
+        title: settings.title === legacyTitle ? '¿Cómo funciona Postal Shopper?' : settings.title,
+        subtitle: settings.subtitle === legacySubtitle ? 'Mira el tutorial y compra desde Estados Unidos en 3 pasos' : settings.subtitle
+      }
+    },
+    calculatorSettings() {
+      return this.getSectionSettings('postalshopper_calculator')
+    },
+    tutorialLink() {
+      const candidates = [this.stepsSettings.tutorial_url, this.heroSettings.primary_button_url]
+        .map((url) => String(url || '').trim())
+        .filter(Boolean)
+      return candidates.find((url) => /^https?:\/\//i.test(url)) || candidates[0] || ''
+    },
     heroTitleRows() {
       const rows = []
       const titleOneWhite = String(this.heroSettings.title_line_one_white || '').trim()
@@ -422,25 +578,8 @@ export default {
       const titleTwoYellow = String(this.heroSettings.title_line_two_yellow || '').trim()
       const titleThreeYellow = String(this.heroSettings.title_line_three_yellow || '').trim()
 
-      if (titleOneWhite) {
-        rows.push({ white: titleOneWhite, yellow: '' })
-      }
-
-      if (titleOneYellow) {
-        const [prefix, ...rest] = titleOneYellow.split(' ')
-        rows.push({
-          white: rest.length ? prefix : '',
-          yellow: rest.length ? rest.join(' ') : titleOneYellow
-        })
-      }
-
-      if (titleTwoWhite) {
-        rows.push({ white: titleTwoWhite, yellow: '' })
-      }
-
-      if (titleTwoYellow) {
-        rows.push({ white: '', yellow: titleTwoYellow })
-      }
+      if (titleOneWhite || titleOneYellow) rows.push({ white: titleOneWhite, yellow: titleOneYellow })
+      if (titleTwoWhite || titleTwoYellow) rows.push({ white: titleTwoWhite, yellow: titleTwoYellow })
 
       if (titleThreeYellow) {
         rows.push({ white: '', yellow: titleThreeYellow })
@@ -451,14 +590,29 @@ export default {
     introSettings() {
       return this.getSectionSettings('postalshopper_intro')
     },
-    stepsSettings() {
-      return this.getSectionSettings('postalshopper_steps')
-    },
     benefitsSettings() {
       return this.getSectionSettings('postalshopper_benefits')
     },
     heroFeatureItems() {
       return this.getSectionItems('postalshopper_hero')
+    },
+    stepItems() {
+      const savedItems = this.getSectionItems('postalshopper_steps')
+      const fallbackSection = POSTALSHOPPER_SOURCE_PAGE.sections.find((section) => section.key === 'postalshopper_steps')
+      const items = savedItems.length
+        ? savedItems
+        : (fallbackSection?.items || []).map((item) => ({ ...(item.data || item), id: item.id }))
+      const legacyTitles = ['Tu Direccion Americana', 'Compra sin Limites', 'Consolidacion y Ahorro', 'El Vuelo a Casa']
+
+      if (items.length !== legacyTitles.length || !items.every((item, index) => item.title === legacyTitles[index])) {
+        return items
+      }
+
+      return [
+        { ...items[0], step: '1', icon: 'user-plus', title: 'Regístrate gratis', text: '' },
+        { ...items[1], step: '2', icon: 'cart', title: 'Compra y envía a tu casilla', text: '' },
+        { ...items[3], step: '3', icon: 'package', title: 'Recibe tu paquete en Bolivia', text: '' }
+      ]
     },
     marketChips() {
       return this.getSectionItems('postalshopper_intro')
@@ -476,16 +630,20 @@ export default {
       })
     },
     hasUpcomingDestinations() {
-      return this.destinationItems.length > 0
+      return this.destinationSettings.upcoming_enabled !== false
     },
     marketMarqueeItems() {
       return [...this.marketChips, ...this.marketChips]
     },
-    stepItems() {
-      return this.getSectionItems('postalshopper_steps')
-    },
     benefitItems() {
       return this.getSectionItems('postalshopper_benefits')
+    }
+  },
+  watch: {
+    parcelRates(rates) {
+      if (rates.length && !rates.some((rate) => rate.weight === this.parcelWeight)) {
+        this.parcelWeight = rates[0].weight
+      }
     }
   },
   methods: {
@@ -510,12 +668,24 @@ export default {
       const section = this.resolvedPageContent.sections.find((item) => item.key === key)
       return section ? section.settings || {} : {}
     },
+    sectionEnabled(key) {
+      const section = this.resolvedPageContent.sections.find((item) => item.key === key)
+      return !section || section.is_active !== false
+    },
     getSectionItems(key) {
       const section = this.resolvedPageContent.sections.find((item) => item.key === key)
       if (!section || !Array.isArray(section.items)) {
         return []
       }
-      return section.items.map((item) => ({ ...(item.data || {}), id: item.id, type: item.type }))
+      return section.items
+        .filter((item) => item.is_active !== false)
+        .map((item) => ({ ...(item.data || {}), id: item.id, type: item.type }))
+    },
+    formatParcelPrice(value) {
+      const amount = Number(String(value == null ? '' : value).replace(',', '.'))
+      return Number.isFinite(amount)
+        ? amount.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        : '0,00'
     },
     marketLogoUrl(item) {
       return String(item?.logo || item?.image || item?.logo_url || '').trim()
@@ -567,6 +737,12 @@ export default {
     isInternalRoute(url) {
       return typeof url === 'string' && url.startsWith('/') && !url.startsWith('//')
     },
+    linkTarget(url) {
+      return /^https?:\/\//i.test(String(url || '').trim()) ? '_blank' : null
+    },
+    linkRel(url) {
+      return this.linkTarget(url) ? 'noopener noreferrer' : null
+    },
     linkAttrs(url) {
       if (this.isInternalRoute(url)) {
         return { to: url }
@@ -606,7 +782,9 @@ export default {
         : 'cb-ps-destination-card__status'
     },
     isDestinationAvailable(status) {
-      return String(status || '').toLowerCase().includes('disponible')
+      const value = String(status || '').trim()
+      return /\b(disponible|directo|activo|operativo)\b/i.test(value)
+        && !/\b(no disponible|inactivo|no operativo)\b/i.test(value)
     }
   },
   head() {
@@ -634,6 +812,7 @@ async function fetchPage($api) {
 
 function normalizePage(payload = {}, base = POSTALSHOPPER_SOURCE_PAGE) {
   const sectionMap = payload.section_map || {}
+  const fallbackOnMissing = new Set(['postalshopper_steps', 'postalshopper_calculator'])
   const fallbackMap = base.sections.reduce((accumulator, section) => {
     accumulator[section.key] = section
     return accumulator
@@ -650,7 +829,10 @@ function normalizePage(payload = {}, base = POSTALSHOPPER_SOURCE_PAGE) {
       const fallback = fallbackMap[key]
       const section = sectionMap[key] || (Array.isArray(payload.sections) ? payload.sections.find((item) => item.key === key) : null)
       if (!section) {
-        return fallback
+        const hasServerSections = Boolean(payload.section_map || Array.isArray(payload.sections))
+        return hasServerSections && !fallbackOnMissing.has(key)
+          ? { ...fallback, is_active: false, items: [] }
+          : fallback
       }
       return sanitizeContentTree({
         ...fallback,
@@ -674,6 +856,7 @@ function buildIcons() {
     login: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><path d="M10 17l5-5-5-5"></path><path d="M15 12H3"></path></svg>',
     search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>',
     star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.7 5.47 6.03.88-4.36 4.25 1.03 6.01L12 16.77 6.6 19.61l1.03-6.01L3.27 9.35l6.03-.88L12 3Z"></path></svg>',
+    'user-plus': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"></circle><path d="M2 21v-1a7 7 0 0 1 14 0v1M19 8v6M16 11h6"></path></svg>',
     pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
     cart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"></circle><circle cx="18" cy="20" r="1"></circle><path d="M3 4h3l2.4 10h10.8l2.1-7H7.2"></path></svg>',
     package: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 8 4.5v11L12 22 4 17.5v-11L12 2Z"></path><path d="M12 22V11"></path><path d="m20 6.5-8 4.5-8-4.5"></path><path d="m8 4.2 8 4.6"></path></svg>',

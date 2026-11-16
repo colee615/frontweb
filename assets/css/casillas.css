@@ -10,10 +10,10 @@
   padding: 112px 0 190px;
   color: #fff;
   background:
-    linear-gradient(90deg, rgba(6, 34, 91, 0.98) 0%, rgba(10, 58, 145, 0.93) 38%, rgba(10, 67, 169, 0.76) 62%, rgba(8, 34, 88, 0.38) 100%),
+    linear-gradient(90deg, rgba(6, 34, 91, 0.99) 0%, rgba(6, 34, 91, 0.98) 42%, rgba(10, 58, 145, 0.96) 55%, rgba(10, 58, 145, 0.82) 63%, rgba(8, 34, 88, 0.48) 69%, rgba(8, 34, 88, 0.12) 74%, rgba(8, 34, 88, 0) 78%),
     var(--cb-hero-image, linear-gradient(180deg, #103f98 0%, #0b378a 100%));
   background-size: cover, auto 114%;
-  background-position: center, right 48% center;
+  background-position: center, right center;
   background-repeat: no-repeat;
   border-top: 3px solid var(--cb-yellow);
 }
@@ -24,7 +24,6 @@
   background-size: cover, auto 112%;
 }
 
-.cb-casillas-hero::before,
 .cb-casillas-requirements::before {
   content: "";
   position: absolute;
@@ -41,33 +40,6 @@
     radial-gradient(circle at 69% 61%, rgba(255, 204, 24, 0.88) 0 1.15px, transparent 1.8px),
     radial-gradient(circle at 81% 27%, rgba(255, 204, 24, 0.7) 0 1px, transparent 1.7px),
     radial-gradient(circle at 92% 76%, rgba(255, 204, 24, 0.96) 0 1.2px, transparent 1.9px);
-}
-
-.cb-casillas-hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.38;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
-    repeating-linear-gradient(90deg, rgba(17, 45, 101, 0.22) 0 112px, rgba(6, 20, 52, 0.07) 112px 116px),
-    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0 68px, rgba(6, 20, 52, 0.11) 68px 70px),
-    radial-gradient(circle at 76% 34%, rgba(255, 255, 255, 0.09) 0 90px, transparent 180px),
-    radial-gradient(circle at 60% 72%, rgba(255, 255, 255, 0.08) 0 80px, transparent 160px);
-  background-size:
-    auto,
-    112px 100%,
-    100% 70px,
-    auto,
-    auto;
-  background-position:
-    center,
-    center,
-    center,
-    center,
-    center;
-  mix-blend-mode: screen;
 }
 
 .cb-casillas-hero__inner {
