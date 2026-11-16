@@ -435,7 +435,9 @@
         </div>
       </section>
 
-      <transition name="cb-ps-editor-modal">
+    </main>
+
+    <transition name="cb-ps-editor-modal">
         <div
           v-if="productEditorOpen"
           ref="productEditorModal"
@@ -540,8 +542,6 @@
           </section>
         </div>
       </transition>
-
-    </main>
 
     <transition name="cb-ps-video-modal">
       <div
