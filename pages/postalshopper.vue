@@ -355,10 +355,7 @@
 
                   <p class="cb-ps-flow__disclaimer">{{ calculatorSettings.estimate_disclaimer || 'El peso y el costo finales se confirman cuando el paquete llega al almacén y es verificado. Impuestos y otros cargos no se incluyen sin una regla y un valor confirmados.' }}</p>
                   <div class="cb-ps-flow__actions cb-ps-flow__actions--quote">
-                    <div class="cb-ps-flow__actions-group">
-                      <button type="button" class="cb-ps-flow__button cb-ps-flow__button--secondary" @click="calculatorStep = 1"><span class="cb-ps-flow__button-leading" aria-hidden="true">←</span>{{ calculatorSettings.button_edit_products || 'Editar productos' }}</button>
-                      <button type="button" class="cb-ps-flow__button cb-ps-flow__button--secondary" @click="calculatorStep = 2"><span class="cb-ps-flow__button-leading" aria-hidden="true">←</span>{{ calculatorSettings.button_edit_weight || 'Editar peso' }}</button>
-                    </div>
+                    <button type="button" class="cb-ps-flow__button cb-ps-flow__button--secondary" @click="openProductEditor">{{ calculatorSettings.button_edit_products || 'Editar productos' }}</button>
                     <a class="cb-ps-flow__button cb-ps-flow__button--primary" :href="secondaryButtonUrl" :target="linkTarget(secondaryButtonUrl)" :rel="linkRel(secondaryButtonUrl)">{{ calculatorSettings.button_create_account || 'Crear mi casilla' }} <span class="cb-ps-flow__button-arrow" aria-hidden="true">→</span></a>
                   </div>
                 </section>
@@ -438,71 +435,178 @@
         </div>
       </section>
 
-      <transition name="cb-ps-video-modal">
+      <transition name="cb-ps-editor-modal">
         <div
-          v-if="tutorialModalOpen"
-          ref="tutorialModal"
-          class="cb-ps-video-modal"
+          v-if="productEditorOpen"
+          ref="productEditorModal"
+          class="cb-ps-editor-modal"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="cb-ps-video-modal-title"
-          @click.self="closeTutorialModal"
+          aria-labelledby="cb-ps-editor-title"
+          tabindex="-1"
+          @click.self="closeProductEditor"
         >
-          <section class="cb-ps-video-modal__dialog">
-            <header class="cb-ps-video-modal__header">
-              <div class="cb-ps-video-modal__heading">
-                <span class="cb-ps-video-modal__eyebrow">POSTAL SHOPPER · TUTORIAL</span>
-                <h2 id="cb-ps-video-modal-title">{{ stepsSettings.tutorial_label || 'Cómo funciona Postal Shopper' }}</h2>
-                <p v-if="stepsSettings.tutorial_duration">Aprende el proceso en {{ stepsSettings.tutorial_duration }}</p>
+          <section class="cb-ps-editor-modal__dialog">
+            <header class="cb-ps-editor-modal__header">
+              <div class="cb-ps-editor-modal__heading">
+                <span class="cb-ps-editor-modal__eyebrow">POSTAL SHOPPER · TU ENVÍO</span>
+                <h2 id="cb-ps-editor-title">Editar productos</h2>
+                <p>Agrega o quita productos y actualiza el peso de cada uno.</p>
               </div>
-              <button
-                ref="tutorialModalClose"
-                type="button"
-                class="cb-ps-video-modal__close"
-                aria-label="Cerrar video"
-                @click="closeTutorialModal"
-              >
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                </svg>
+              <button ref="productEditorClose" type="button" class="cb-ps-editor-modal__close" aria-label="Cerrar edición" @click="closeProductEditor">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
               </button>
             </header>
 
-            <div class="cb-ps-video-modal__player">
-              <video
-                v-if="isDirectVideoTutorial"
-                :key="tutorialLink"
-                :src="tutorialLink"
-                :poster="stepsSettings.tutorial_image || null"
-                controls
-                autoplay
-                playsinline
-                preload="metadata"
-                aria-label="Video tutorial de Postal Shopper"
-              ></video>
-              <iframe
-                v-else-if="tutorialEmbedUrl"
-                :src="tutorialEmbedUrl"
-                title="Video tutorial de Postal Shopper"
-                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-              ></iframe>
-              <div v-else class="cb-ps-video-modal__fallback">
-                <span class="cb-ps-video-modal__fallback-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5v-9Z" stroke="currentColor" stroke-width="1.7" />
-                    <path d="m10 9 5 3-5 3V9Z" fill="currentColor" />
-                  </svg>
-                </span>
-                <p>Este enlace no se puede reproducir dentro de la página.</p>
-                <a :href="tutorialLink" target="_blank" rel="noopener noreferrer">Abrir el tutorial en otra pestaña</a>
+            <div class="cb-ps-editor-modal__body">
+              <section class="cb-ps-editor-modal__section" aria-labelledby="cb-ps-editor-categories-title">
+                <div class="cb-ps-editor-modal__section-heading">
+                  <div><span class="cb-ps-editor-modal__step">1</span><h3 id="cb-ps-editor-categories-title">Agrega o quita productos</h3></div>
+                  <small>Selecciona una o varias categorías</small>
+                </div>
+                <div v-if="tariffCategories.length" class="cb-ps-editor-modal__categories">
+                  <button
+                    v-for="category in tariffCategories"
+                    :key="category.key"
+                    type="button"
+                    class="cb-ps-editor-modal__category"
+                    :class="{ 'is-selected': isProductEditorCategorySelected(category.key) }"
+                    :aria-pressed="isProductEditorCategorySelected(category.key)"
+                    @click="toggleProductEditorCategory(category.key)"
+                  >
+                    <span class="cb-ps-editor-modal__category-image">
+                      <img v-if="category.image" :src="category.image" alt="" loading="lazy" decoding="async">
+                      <span v-else v-html="categoryIllustration(category)"></span>
+                    </span>
+                    <strong>{{ category.label }}</strong>
+                    <small v-if="categoryDetails(category.key)">{{ categoryDetails(category.key) }}</small>
+                    <span class="cb-ps-editor-modal__category-check" aria-hidden="true">{{ isProductEditorCategorySelected(category.key) ? '✓' : '+' }}</span>
+                  </button>
+                </div>
+                <p v-else class="cb-ps-editor-modal__empty">No hay categorías disponibles.</p>
+              </section>
+
+              <section class="cb-ps-editor-modal__section" aria-labelledby="cb-ps-editor-list-title">
+                <div class="cb-ps-editor-modal__section-heading">
+                  <div><span class="cb-ps-editor-modal__step">2</span><h3 id="cb-ps-editor-list-title">Productos y peso</h3></div>
+                  <small>{{ productEditorDraft.length }} {{ productEditorDraft.length === 1 ? 'producto' : 'productos' }}</small>
+                </div>
+                <div v-if="productEditorDraft.length" class="cb-ps-editor-modal__products">
+                  <article v-for="product in productEditorDraft" :key="product.id" class="cb-ps-editor-modal__product">
+                    <span class="cb-ps-editor-modal__product-icon" aria-hidden="true">
+                      <img v-if="selectedProductCategory(product.categoryKey)?.image" :src="selectedProductCategory(product.categoryKey).image" alt="" loading="lazy" decoding="async">
+                      <span v-else v-html="categoryIllustration(selectedProductCategory(product.categoryKey))"></span>
+                    </span>
+                    <span class="cb-ps-editor-modal__product-copy"><strong>{{ productDisplayName(product) }}</strong><small>{{ productCategoryLabel(product.categoryKey) }}</small></span>
+                    <div class="cb-ps-editor-modal__weight-control">
+                      <label :for="'product-editor-weight-' + product.id">Peso</label>
+                      <div class="cb-ps-editor-modal__weight-input">
+                        <input
+                          :id="'product-editor-weight-' + product.id"
+                          v-model.number="product.weight"
+                          :class="{ 'is-invalid': shouldShowProductEditorWeightError(product) }"
+                          type="number"
+                          min="0.01"
+                          step="0.01"
+                          inputmode="decimal"
+                          required
+                          :aria-invalid="!isProductWeightValid(product)"
+                          :aria-describedby="shouldShowProductEditorWeightError(product) ? 'product-editor-error-' + product.id : null"
+                          @blur="markProductEditorWeightTouched(product.id)"
+                        >
+                        <span>{{ weightUnit(product.weight) }}</span>
+                      </div>
+                      <small v-if="shouldShowProductEditorWeightError(product)" :id="'product-editor-error-' + product.id" class="cb-ps-editor-modal__error" role="status">Ingresa un peso mayor que cero.</small>
+                    </div>
+                    <button type="button" class="cb-ps-editor-modal__remove" :aria-label="'Quitar ' + productDisplayName(product)" @click="removeProductEditorItem(product.id)">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7h14M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                    </button>
+                  </article>
+                </div>
+                <p v-else class="cb-ps-editor-modal__empty">Selecciona al menos un producto para cotizar tu envío.</p>
+                <p v-if="productEditorAttemptedSave && !productEditorDraft.length" class="cb-ps-editor-modal__error" role="alert">Agrega al menos un producto para continuar.</p>
+              </section>
+
+              <div class="cb-ps-editor-modal__total" aria-live="polite">
+                <span>Peso total estimado</span>
+                <strong>{{ formatParcelWeight(productEditorTotalWeight) }} <small>{{ weightUnit(productEditorTotalWeight) }}</small></strong>
               </div>
             </div>
+
+            <footer class="cb-ps-editor-modal__footer">
+              <button type="button" class="cb-ps-editor-modal__cancel" @click="closeProductEditor">Cancelar</button>
+              <button type="button" class="cb-ps-editor-modal__save" @click="saveProductEditor">Guardar cambios <span aria-hidden="true">→</span></button>
+            </footer>
           </section>
         </div>
       </transition>
+
     </main>
+
+    <transition name="cb-ps-video-modal">
+      <div
+        v-if="tutorialModalOpen"
+        ref="tutorialModal"
+        class="cb-ps-video-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cb-ps-video-modal-title"
+        @click.self="closeTutorialModal"
+      >
+        <section class="cb-ps-video-modal__dialog">
+          <header class="cb-ps-video-modal__header">
+            <div class="cb-ps-video-modal__heading">
+              <span class="cb-ps-video-modal__eyebrow">POSTAL SHOPPER · TUTORIAL</span>
+              <h2 id="cb-ps-video-modal-title">{{ stepsSettings.tutorial_label || 'Cómo funciona Postal Shopper' }}</h2>
+              <p v-if="stepsSettings.tutorial_duration">Aprende el proceso en {{ stepsSettings.tutorial_duration }}</p>
+            </div>
+            <button
+              ref="tutorialModalClose"
+              type="button"
+              class="cb-ps-video-modal__close"
+              aria-label="Cerrar video"
+              @click="closeTutorialModal"
+            >
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </button>
+          </header>
+
+          <div class="cb-ps-video-modal__player">
+            <video
+              v-if="isDirectVideoTutorial"
+              :key="tutorialLink"
+              :src="tutorialLink"
+              :poster="stepsSettings.tutorial_image || null"
+              controls
+              autoplay
+              playsinline
+              preload="metadata"
+              aria-label="Video tutorial de Postal Shopper"
+            ></video>
+            <iframe
+              v-else-if="tutorialEmbedUrl"
+              :src="tutorialEmbedUrl"
+              title="Video tutorial de Postal Shopper"
+              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+            <div v-else class="cb-ps-video-modal__fallback">
+              <span class="cb-ps-video-modal__fallback-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5v-9Z" stroke="currentColor" stroke-width="1.7" />
+                  <path d="m10 9 5 3-5 3V9Z" fill="currentColor" />
+                </svg>
+              </span>
+              <p>Este enlace no se puede reproducir dentro de la página.</p>
+              <a :href="tutorialLink" target="_blank" rel="noopener noreferrer">Abrir el tutorial en otra pestaña</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </transition>
 
     <HomeFooter v-if="!isBootLoading" :logo-url="logoUrl" :icons="icons" :content="footerSettings" :links="footerLinks" />
   </div>
@@ -642,6 +746,12 @@ export default {
       parcelProducts: [],
       nextParcelProductId: 1,
       weightTouched: {},
+      productEditorOpen: false,
+      productEditorDraft: [],
+      productEditorDraftTouched: {},
+      productEditorAttemptedSave: false,
+      productEditorTriggerElement: null,
+      productEditorPreviousBodyOverflow: '',
       categoryStripHasOverflow: false,
       tutorialModalOpen: false,
       tutorialTriggerElement: null,
@@ -663,6 +773,7 @@ export default {
   beforeDestroy() {
     window.removeEventListener('resize', this.updateCategoryStripOverflow)
     if (this.tutorialModalOpen) this.cleanupTutorialModal()
+    if (this.productEditorOpen) this.cleanupProductEditor()
   },
   watch: {
     calculatorStep(step) {
@@ -810,6 +921,17 @@ export default {
     },
     weightsAreValid() {
       return this.productsAreValid && this.parcelProducts.every((product) => this.isProductWeightValid(product))
+    },
+    productEditorDraftValid() {
+      return this.productEditorDraft.length > 0 && this.productEditorDraft.every((product) => {
+        return Boolean(product.categoryKey) && this.isProductWeightValid(product)
+      })
+    },
+    productEditorTotalWeight() {
+      return this.productEditorDraft.reduce((total, product) => {
+        const weight = Number(product.weight)
+        return total + (Number.isFinite(weight) && weight > 0 ? weight : 0)
+      }, 0)
     },
     totalParcelWeight() {
       return this.parcelProducts.reduce((total, product) => {
@@ -1060,6 +1182,116 @@ export default {
     },
     shouldShowWeightError(product) {
       return Boolean(this.weightTouched[product.id]) && !this.isProductWeightValid(product)
+    },
+    openProductEditor(event) {
+      if (this.productEditorOpen) return
+
+      this.productEditorTriggerElement = event?.currentTarget || document.activeElement
+      this.productEditorDraft = this.parcelProducts.map((product) => ({ ...product }))
+      this.productEditorDraftTouched = {}
+      this.productEditorAttemptedSave = false
+      this.productEditorPreviousBodyOverflow = document.body.style.overflow
+      this.productEditorOpen = true
+      document.body.style.overflow = 'hidden'
+      window.addEventListener('keydown', this.handleProductEditorKeydown)
+
+      this.$nextTick(() => {
+        this.$refs.productEditorClose?.focus()
+      })
+    },
+    closeProductEditor() {
+      if (!this.productEditorOpen) return
+
+      this.productEditorOpen = false
+      this.cleanupProductEditor()
+      const triggerElement = this.productEditorTriggerElement
+      this.productEditorTriggerElement = null
+      this.productEditorDraft = []
+      this.productEditorDraftTouched = {}
+      this.productEditorAttemptedSave = false
+
+      this.$nextTick(() => {
+        if (triggerElement && document.contains(triggerElement)) triggerElement.focus()
+      })
+    },
+    cleanupProductEditor() {
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = this.productEditorPreviousBodyOverflow || ''
+      }
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('keydown', this.handleProductEditorKeydown)
+      }
+    },
+    handleProductEditorKeydown(event) {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        this.closeProductEditor()
+        return
+      }
+
+      if (event.key !== 'Tab') return
+      const focusable = this.$refs.productEditorModal?.querySelectorAll('button:not([disabled]), input:not([disabled])')
+      if (!focusable?.length) return
+
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    },
+    isProductEditorCategorySelected(categoryKey) {
+      return this.productEditorDraft.some((product) => product.categoryKey === categoryKey)
+    },
+    toggleProductEditorCategory(categoryKey) {
+      const existingProduct = this.productEditorDraft.find((product) => product.categoryKey === categoryKey)
+      if (existingProduct) {
+        this.removeProductEditorItem(existingProduct.id)
+        return
+      }
+
+      const category = this.selectedProductCategory(categoryKey)
+      if (!category) return
+
+      this.productEditorDraft.push({
+        id: `product-${this.nextParcelProductId}`,
+        name: category.label,
+        categoryKey,
+        weight: ''
+      })
+      this.nextParcelProductId += 1
+    },
+    removeProductEditorItem(productId) {
+      this.productEditorDraft = this.productEditorDraft.filter((product) => product.id !== productId)
+      this.$delete(this.productEditorDraftTouched, productId)
+    },
+    markProductEditorWeightTouched(productId) {
+      this.$set(this.productEditorDraftTouched, productId, true)
+    },
+    shouldShowProductEditorWeightError(product) {
+      return Boolean(this.productEditorAttemptedSave || this.productEditorDraftTouched[product.id])
+        && !this.isProductWeightValid(product)
+    },
+    saveProductEditor() {
+      this.productEditorAttemptedSave = true
+      if (!this.productEditorDraftValid) {
+        this.$nextTick(() => {
+          const firstInvalidInput = this.$refs.productEditorModal?.querySelector('.cb-ps-editor-modal__weight-input input[aria-invalid="true"]')
+          if (firstInvalidInput) firstInvalidInput.focus()
+        })
+        return
+      }
+
+      this.parcelProducts = this.productEditorDraft.map((product) => ({ ...product }))
+      const currentIds = new Set(this.parcelProducts.map((product) => product.id))
+      this.weightTouched = Object.keys(this.weightTouched).reduce((touched, productId) => {
+        if (currentIds.has(productId)) touched[productId] = this.weightTouched[productId]
+        return touched
+      }, {})
+      this.closeProductEditor()
     },
     continueToQuote() {
       const invalidProducts = this.parcelProducts.filter((product) => !this.isProductWeightValid(product))

@@ -11,7 +11,12 @@ const FILATELIA_API_URL = (process.env.FILATELIA_API_URL || 'https://filatelia.c
 const CONNECT_SRC = ["'self'", 'https://www.google-analytics.com', 'https://analytics.google.com', 'https://www.googletagmanager.com']
 const IMG_SRC = ["'self'", 'data:', 'https:']
 const MEDIA_SRC = ["'self'", 'https:']
-const FRAME_SRC = ["'self'", 'https://chatbot.correos.gob.bo']
+const FRAME_SRC = [
+  "'self'",
+  'https://chatbot.correos.gob.bo',
+  'https://www.youtube-nocookie.com',
+  'https://player.vimeo.com'
+]
 const SCRIPT_SRC = process.env.NODE_ENV === 'development'
   ? ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo']
   : ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com', 'https://chatbot.correos.gob.bo']
