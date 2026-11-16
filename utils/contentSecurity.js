@@ -16,7 +16,9 @@ const LINK_KEYS = new Set([
   'play_store_url',
   'view_all_url',
   'primary_button_url',
-  'secondary_button_url'
+  'secondary_button_url',
+  'tutorial_url',
+  'source_url'
 ])
 
 const COLOR_KEYS = new Set([

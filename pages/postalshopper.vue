@@ -50,16 +50,28 @@
               </span>
             </h1>
 
-            <p v-if="heroSettings.lead_text" class="cb-ps-hero__lead">{{ heroSettings.lead_text }}</p>
-            <p v-if="heroSettings.subtitle" class="cb-ps-hero__subtitle">{{ heroSettings.subtitle }}</p>
+            <p
+              v-for="(paragraph, index) in heroParagraphs"
+              :key="`ps-hero-paragraph-${index}`"
+              :class="paragraph.style === 'lead' ? 'cb-ps-hero__lead' : 'cb-ps-hero__subtitle'"
+            >{{ paragraph.text }}</p>
 
             <div v-if="heroSettings.primary_button_label || heroSettings.primary_button_url || heroSettings.secondary_button_label || heroSettings.secondary_button_url" class="cb-ps-hero__actions">
-              <a
-                v-if="heroSettings.primary_button_label || heroSettings.primary_button_url"
+              <button
+                v-if="(heroSettings.primary_button_label || heroSettings.primary_button_url) && tutorialLink"
+                type="button"
                 class="cb-ps-btn cb-ps-btn--primary"
-                :href="tutorialLink || '#postalshopper-tutorial'"
-                :target="linkTarget(tutorialLink)"
-                :rel="linkRel(tutorialLink)"
+                @click="openTutorialModal"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M8 5.7c0-.8.9-1.3 1.6-.9l10 6.3a1 1 0 0 1 0 1.7l-10 6.3c-.7.4-1.6-.1-1.6-.9V5.7Z" />
+                </svg>
+                <span>{{ primaryButtonLabel }}</span>
+              </button>
+              <a
+                v-else-if="heroSettings.primary_button_label || heroSettings.primary_button_url"
+                class="cb-ps-btn cb-ps-btn--primary"
+                href="#postalshopper-steps"
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M8 5.7c0-.8.9-1.3 1.6-.9l10 6.3a1 1 0 0 1 0 1.7l-10 6.3c-.7.4-1.6-.1-1.6-.9V5.7Z" />
@@ -172,13 +184,12 @@
             </div>
 
             <component
-              :is="tutorialLink ? 'a' : 'article'"
+              :is="tutorialLink ? 'button' : 'article'"
               v-if="stepsSettings.tutorial_label || stepsSettings.tutorial_image || tutorialLink"
               id="postalshopper-tutorial"
               class="cb-ps-tutorial-card"
-              :href="tutorialLink || null"
-              :target="linkTarget(tutorialLink)"
-              :rel="linkRel(tutorialLink)"
+              :type="tutorialLink ? 'button' : null"
+              @click="tutorialLink ? openTutorialModal($event) : null"
               :aria-label="`${stepsSettings.tutorial_label || 'Ver tutorial completo de Postal Shopper'}${stepsSettings.tutorial_duration ? ', duración ' + stepsSettings.tutorial_duration : ''}`"
             >
               <span class="cb-ps-tutorial-card__city" aria-hidden="true">
@@ -207,82 +218,151 @@
               <figcaption class="cb-ps-calculator__visual-caption">
                 <span class="cb-ps-calculator__caption-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="m4 8 8-4 8 4v8l-8 4-8-4V8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
-                    <path d="m4.5 8.3 7.5 4 7.5-4M12 12.5V20M8 6l8 4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
+                    <path d="M12 11v5m0-8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                   </svg>
                 </span>
                 <span class="cb-ps-calculator__caption-copy">
                   <small>{{ calculatorSettings.caption_label || 'POSTAL SHOPPER' }}</small>
-                  <strong>{{ calculatorSettings.caption_text || 'Tus compras, de Miami a Bolivia' }}</strong>
+                  <strong>{{ calculatorSettings.caption_notice || 'Acompañamos cada envío hasta Bolivia.' }}</strong>
+                  <span>{{ calculatorSettings.caption_text || 'Tus compras, de Miami a Bolivia' }}</span>
                 </span>
               </figcaption>
             </figure>
-            <article class="cb-ps-calculator__card" aria-label="Calculadora de tarifa Postal Shopper">
-              <header class="cb-ps-calculator__heading">
-                <span class="cb-ps-calculator__heading-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <rect x="5" y="2.75" width="14" height="18.5" rx="2.5" stroke="currentColor" stroke-width="1.7" />
-                    <path d="M8 6.5h8M8 11h1m3 0h1m3 0h.01M8 14.5h1m3 0h1m3 0h.01M8 18h1m3 0h1m3 0h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                  </svg>
-                </span>
-                <span class="cb-ps-calculator__heading-copy">
-                  <small>{{ calculatorSettings.eyebrow || 'COTIZADOR DE ENVÍOS' }}</small>
-                  <h2 id="postalshopper-calculator-title">{{ calculatorSettings.title || 'Cotiza tu paquete' }} <em>{{ calculatorSettings.title_accent || 'en segundos.' }}</em></h2>
-                  <p>{{ calculatorSettings.description || 'Consulta una tarifa estimada para tu envío.' }}</p>
-                </span>
-              </header>
+            <article class="cb-ps-calculator__card" :aria-label="calculatorSettings.calculator_aria_label || 'Calculadora de tarifa Postal Shopper'">
+              <div class="cb-ps-flow">
+                <ol class="cb-ps-flow__progress" :aria-label="calculatorSettings.progress_label || 'Pasos de la cotización'">
+                  <li v-for="(step, index) in calculatorStepLabels" :key="step" :aria-current="calculatorStep === index + 1 ? 'step' : null" :class="{ 'is-current': calculatorStep === index + 1, 'is-complete': calculatorStep > index + 1 }">
+                    <span class="cb-ps-flow__step-number">{{ index + 1 }}</span><small>{{ step }}</small>
+                    <span v-if="index < calculatorStepLabels.length - 1" class="cb-ps-flow__step-connector" aria-hidden="true"></span>
+                  </li>
+                </ol>
+                <header class="cb-ps-flow__step-heading">
+                  <span class="cb-ps-flow__step-heading-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none"><path d="m24 5 17 9.3v19.4L24 43 7 33.7V14.3L24 5Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="m7.8 14.8 16.2 9 16.2-9M24 23.8V42m-7.2-33 16.5 9" stroke="currentColor" stroke-width="2.7" stroke-linejoin="round"/></svg>
+                  </span>
+                  <span class="cb-ps-flow__step-heading-copy">
+                    <h2 id="postalshopper-calculator-title">{{ calculatorCurrentHeading.title }}<em v-if="calculatorCurrentHeading.accent"> {{ calculatorCurrentHeading.accent }}</em></h2>
+                    <p>{{ calculatorCurrentHeading.subtitle }}</p>
+                  </span>
+                </header>
 
-              <div class="cb-ps-calculator__selection">
-                <span class="cb-ps-calculator__selection-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 4h10l4 5v11H3V9l4-5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
-                    <path d="M7 4 5 9h14l-2-5M12 12l2.2 2.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
-                    <circle cx="11" cy="13" r="2.5" stroke="currentColor" stroke-width="1.5" />
-                  </svg>
-                </span>
-                <span class="cb-ps-calculator__selection-copy">
-                  <strong>{{ calculatorSettings.weight_title || 'Elige el peso del paquete' }}</strong>
-                  <small>{{ calculatorSettings.weight_help || 'Selecciona entre 1 y 5 libras' }}</small>
-                </span>
-              </div>
-              <div class="cb-ps-calculator__presets" role="group" aria-label="Tarifas por peso">
-                <div class="cb-ps-calculator__presets-grid">
-                  <button
-                    v-for="rate in parcelRates"
-                    :key="rate.weight"
-                    type="button"
-                    class="cb-ps-calculator__preset"
-                    :class="{ 'cb-ps-calculator__preset--selected': parcelWeight === rate.weight }"
-                    :aria-pressed="parcelWeight === rate.weight"
-                    :aria-label="'Elegir ' + rate.weight + ' ' + (rate.weight === 1 ? (calculatorSettings.weight_unit_singular || 'libra') : (calculatorSettings.weight_unit_plural || 'libras')) + ', precio ' + (calculatorSettings.currency_label || '$us') + ' ' + formatParcelPrice(rate.price)"
-                    @click="parcelWeight = rate.weight"
-                  >
-                    <span
-                      class="cb-ps-calculator__preset-icon"
-                      :class="{ 'cb-ps-calculator__preset-icon--heavy': rate.weight >= 4 }"
-                      :style="{ width: (24 + rate.weight * 2) + 'px', height: (24 + rate.weight * 2) + 'px' }"
-                      aria-hidden="true"
-                    >
-                      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4.5 10.5 16 4l11.5 6.5v13L16 30 4.5 23.5v-13Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
-                        <path d="m5 10.7 11 6.1 11-6.1M16 17v12.5M11 7l11 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
-                      </svg>
-                    </span>
-                    <span class="cb-ps-calculator__preset-weight">{{ rate.weight }} {{ rate.weight === 1 ? (calculatorSettings.weight_unit_singular || 'libra') : (calculatorSettings.weight_unit_plural || 'libras') }}</span>
-                    <strong>{{ calculatorSettings.currency_label || '$us' }} {{ formatParcelPrice(rate.price) }}</strong>
-                  </button>
-                </div>
-              </div>
+                <transition name="cb-ps-step" mode="out-in">
+                <section v-if="calculatorStep === 1" class="cb-ps-flow__panel" aria-labelledby="postalshopper-calculator-title">
+                  <p v-if="tariffCategories.length && !hasOfficialProductCategories" class="cb-ps-flow__notice cb-ps-flow__notice--soft">
+                    <span aria-hidden="true">i</span>
+                    {{ calculatorSettings.unclassified_notice || 'Estas opciones son orientativas y no representan categorías oficiales ni determinan una tarifa. La clasificación, admisión y costo se confirman con el proveedor.' }}
+                  </p>
 
-              <div class="cb-ps-calculator__quote" aria-live="polite" aria-atomic="true">
-                <span class="cb-ps-calculator__quote-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6 3.75h12a2 2 0 0 1 2 2v14.5l-4-2.5-4 2.5-4-2.5-4 2.5V5.75a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
-                    <path d="M8 8h8M8 11.5h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                  </svg>
-                </span>
-                <span class="cb-ps-calculator__quote-label">{{ calculatorSettings.total_label || 'Tarifa estimada' }}</span>
-                <strong class="cb-ps-calculator__quote-total"><span>{{ calculatorSettings.currency_label || '$us' }}</span> {{ formatParcelPrice(selectedParcelRate.price) }}</strong>
+                  <p v-if="!tariffCategories.length" class="cb-ps-flow__empty-selection">{{ calculatorSettings.empty_categories_label || 'No hay categorías disponibles en este momento.' }}</p>
+                  <div v-else ref="categoryScroller" class="cb-ps-flow__category-scroller" role="group" tabindex="0" :aria-label="calculatorSettings.category_picker_label || 'Elige uno o varios tipos de producto'">
+                    <div class="cb-ps-flow__category-grid">
+                      <button
+                        v-for="category in tariffCategories"
+                        :key="category.key"
+                        type="button"
+                        class="cb-ps-flow__category-choice"
+                        :class="{ 'is-selected': isProductCategorySelected(category.key) }"
+                        :aria-pressed="isProductCategorySelected(category.key)"
+                        @click="selectProductCategory(category.key)"
+                      >
+                        <span class="cb-ps-flow__category-art" :class="`cb-ps-flow__category-art--${category.icon || 'package'}`" aria-hidden="true">
+                          <img v-if="category.image" :src="category.image" alt="" loading="lazy" decoding="async">
+                          <span v-else v-html="categoryIllustration(category)"></span>
+                        </span>
+                        <strong>{{ category.label }}</strong>
+                        <span v-if="categoryDetails(category.key)" class="cb-ps-flow__category-note">{{ categoryDetails(category.key) }}</span>
+                        <span v-if="isProductCategorySelected(category.key)" class="cb-ps-flow__category-check" aria-hidden="true">✓</span>
+                      </button>
+                    </div>
+                  </div>
+                  <p v-if="categoryStripHasOverflow" class="cb-ps-flow__scroll-hint">Desliza para ver más categorías <span aria-hidden="true">→</span></p>
+
+                  <div v-if="parcelProducts.length" class="cb-ps-flow__selected-list" :aria-label="calculatorSettings.selected_products_label || 'Productos seleccionados'">
+                    <article v-for="product in parcelProducts" :key="product.id" class="cb-ps-flow__selected-product">
+                      <span class="cb-ps-flow__selected-icon" aria-hidden="true">
+                        <img v-if="selectedProductCategory(product.categoryKey)?.image" :src="selectedProductCategory(product.categoryKey).image" alt="" loading="lazy" decoding="async">
+                        <span v-else v-html="categoryIllustration(selectedProductCategory(product.categoryKey))"></span>
+                      </span>
+                      <span class="cb-ps-flow__selected-copy">
+                        <strong>{{ productDisplayName(product) }}</strong>
+                        <small v-if="!product.categoryKey">{{ calculatorSettings.missing_category_label || 'Elige una categoría arriba para este producto.' }}</small>
+                        <small v-else-if="categoryDetails(product.categoryKey)">{{ categoryDetails(product.categoryKey) }}</small>
+                      </span>
+                      <button type="button" class="cb-ps-flow__remove-icon" :aria-label="(calculatorSettings.remove_product_label || 'Quitar') + ' ' + productDisplayName(product)" @click="removeParcelProduct(product.id)">×</button>
+                    </article>
+                  </div>
+                  <p v-else-if="tariffCategories.length" class="cb-ps-flow__empty-selection">{{ calculatorSettings.empty_selection_label || 'Selecciona una o varias categorías para armar tu compra.' }}</p>
+
+                  <div class="cb-ps-flow__actions cb-ps-flow__actions--end">
+                    <button type="button" class="cb-ps-flow__button cb-ps-flow__button--primary" :disabled="!productsAreValid" @click="calculatorStep = 2">{{ calculatorSettings.button_continue_weight || 'Continuar al peso' }} <span class="cb-ps-flow__button-arrow" aria-hidden="true">→</span></button>
+                  </div>
+                </section>
+
+                <section v-else-if="calculatorStep === 2" class="cb-ps-flow__panel" aria-labelledby="postalshopper-calculator-title">
+                  <div class="cb-ps-flow__weights">
+                    <div v-for="product in parcelProducts" :key="product.id" class="cb-ps-flow__weight-row">
+                      <div class="cb-ps-flow__weight-product"><strong>{{ productDisplayName(product) }}</strong><small>{{ productCategoryLabel(product.categoryKey) }}</small></div>
+                      <div class="cb-ps-flow__weight-control">
+                        <label class="cb-ps-flow__weight-input">
+                          <span class="cb-ps-flow__sr-only">{{ calculatorSettings.weight_input_label || 'Peso de' }} {{ productDisplayName(product) }}</span>
+                          <input v-model.number="product.weight" :class="{ 'is-invalid': shouldShowWeightError(product) }" type="number" min="0.01" step="0.01" inputmode="decimal" required :aria-invalid="!isProductWeightValid(product)" :aria-describedby="shouldShowWeightError(product) ? 'postalshopper-weight-error-' + product.id : null" @blur="markWeightTouched(product.id)">
+                          <span>{{ weightUnit(product.weight) }}</span>
+                        </label>
+                        <small v-if="shouldShowWeightError(product)" :id="'postalshopper-weight-error-' + product.id" class="cb-ps-flow__field-error" role="status">{{ calculatorSettings.weight_validation_message || 'Ingresa un peso mayor que cero.' }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="cb-ps-flow__weight-total"><span>{{ calculatorSettings.weight_total_label || 'Peso estimado total' }}</span><strong>{{ formatParcelWeight(totalParcelWeight) }} <small>{{ weightUnit(totalParcelWeight) }}</small></strong></div>
+                  <div class="cb-ps-flow__actions">
+                    <button type="button" class="cb-ps-flow__button cb-ps-flow__button--secondary" @click="calculatorStep = 1"><span class="cb-ps-flow__button-leading" aria-hidden="true">←</span>{{ calculatorSettings.button_edit_products || 'Editar productos' }}</button>
+                    <button type="button" class="cb-ps-flow__button cb-ps-flow__button--primary" @click="continueToQuote">{{ calculatorSettings.button_continue_quote || 'Ver cotización' }} <span class="cb-ps-flow__button-arrow" aria-hidden="true">→</span></button>
+                  </div>
+                </section>
+
+                <section v-else class="cb-ps-flow__panel" aria-labelledby="postalshopper-calculator-title">
+                  <div class="cb-ps-flow__summary">
+                    <div v-for="product in parcelProducts" :key="product.id" class="cb-ps-flow__summary-row">
+                      <span class="cb-ps-flow__summary-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="m12 2 8 4.5v11L12 22 4 17.5v-11L12 2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 22V11m8-4.5-8 4.5-8-4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                      </span>
+                      <span class="cb-ps-flow__summary-copy"><strong>{{ productDisplayName(product) }}</strong><small>{{ productCategoryLabel(product.categoryKey) }}</small></span>
+                      <strong class="cb-ps-flow__summary-weight">{{ formatParcelWeight(product.weight) }} {{ weightUnit(product.weight) }}</strong>
+                    </div>
+                    <div class="cb-ps-flow__summary-total"><span>{{ calculatorSettings.quote_weight_total_label || calculatorSettings.weight_total_label || 'Peso total estimado' }}</span><strong>{{ formatParcelWeight(totalParcelWeight) }} {{ weightUnit(totalParcelWeight) }}</strong></div>
+                  </div>
+
+                  <div v-if="matchedTariffRule" class="cb-ps-flow__price-card" aria-live="polite">
+                    <div class="cb-ps-flow__price-line"><span>{{ calculatorSettings.shipping_label || 'Envío Postal Shopper' }}</span><strong>{{ matchedTariffRule.currency }} {{ formatParcelPrice(matchedTariffRule.shipping_price) }}</strong></div>
+                    <div class="cb-ps-flow__price-total"><span>{{ calculatorSettings.total_label || 'Costo estimado de envío' }}</span><strong>{{ matchedTariffRule.currency }} {{ formatParcelPrice(matchedTariffRule.shipping_price) }}</strong></div>
+                    <p v-if="matchedTariffRule.source_label || matchedTariffRule.source_url" class="cb-ps-flow__source">{{ calculatorSettings.quote_rule_label || 'Regla confirmada:' }} <a v-if="matchedTariffRule.source_url" :href="matchedTariffRule.source_url" target="_blank" rel="noopener noreferrer">{{ matchedTariffRule.source_label || calculatorSettings.quote_source_link_label || 'Ver fuente' }}</a><span v-else>{{ matchedTariffRule.source_label }}</span></p>
+                  </div>
+                  <div v-else-if="weightTariffQuote" class="cb-ps-flow__price-card" aria-live="polite">
+                    <div v-if="weightTariffQuote.extra_weight === 0" class="cb-ps-flow__price-line">
+                      <span>{{ calculatorSettings.quote_applied_label || 'Tarifa aplicada hasta' }} {{ weightTariffQuote.billable_weight }} {{ weightUnit(weightTariffQuote.billable_weight) }}</span>
+                      <strong>{{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.base_price) }}</strong>
+                    </div>
+                    <template v-else>
+                      <div class="cb-ps-flow__price-line"><span>{{ calculatorSettings.quote_base_label || 'Tarifa base para' }} {{ weightTariffQuote.base_weight }} {{ weightUnitPlural }}</span><strong>{{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.base_price) }}</strong></div>
+                      <div class="cb-ps-flow__price-line cb-ps-flow__price-line--extra"><span>{{ calculatorSettings.quote_excess_label || 'Peso excedente' }}: {{ formatParcelWeight(weightTariffQuote.extra_weight) }} {{ weightUnitPlural }} × {{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.extra_rate) }}/{{ weightUnitPlural }}</span><strong>{{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.extra_price) }}</strong></div>
+                    </template>
+                    <div class="cb-ps-flow__price-total"><span>{{ calculatorSettings.total_label || 'Total estimado de envío' }}</span><strong>{{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.shipping_price) }}</strong></div>
+                  </div>
+                  <div v-else class="cb-ps-flow__notice cb-ps-flow__notice--pending" role="status">
+                    <span class="cb-ps-flow__pending-mark" aria-hidden="true">!</span>
+                    <div><strong>{{ calculatorSettings.pending_quote_title || 'Cotización pendiente de confirmación' }}</strong><p>{{ calculatorSettings.pending_quote_message || 'No hay una tarifa cargada para el peso indicado ni una regla confirmada para los productos seleccionados.' }}</p></div>
+                  </div>
+
+                  <p class="cb-ps-flow__disclaimer">{{ calculatorSettings.estimate_disclaimer || 'El peso y el costo finales se confirman cuando el paquete llega al almacén y es verificado. Impuestos y otros cargos no se incluyen sin una regla y un valor confirmados.' }}</p>
+                  <div class="cb-ps-flow__actions cb-ps-flow__actions--quote">
+                    <div class="cb-ps-flow__actions-group">
+                      <button type="button" class="cb-ps-flow__button cb-ps-flow__button--secondary" @click="calculatorStep = 1"><span class="cb-ps-flow__button-leading" aria-hidden="true">←</span>{{ calculatorSettings.button_edit_products || 'Editar productos' }}</button>
+                      <button type="button" class="cb-ps-flow__button cb-ps-flow__button--secondary" @click="calculatorStep = 2"><span class="cb-ps-flow__button-leading" aria-hidden="true">←</span>{{ calculatorSettings.button_edit_weight || 'Editar peso' }}</button>
+                    </div>
+                    <a class="cb-ps-flow__button cb-ps-flow__button--primary" :href="secondaryButtonUrl" :target="linkTarget(secondaryButtonUrl)" :rel="linkRel(secondaryButtonUrl)">{{ calculatorSettings.button_create_account || 'Crear mi casilla' }} <span class="cb-ps-flow__button-arrow" aria-hidden="true">→</span></a>
+                  </div>
+                </section>
+                </transition>
               </div>
             </article>
           </div>
@@ -357,6 +437,71 @@
           </div>
         </div>
       </section>
+
+      <transition name="cb-ps-video-modal">
+        <div
+          v-if="tutorialModalOpen"
+          ref="tutorialModal"
+          class="cb-ps-video-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cb-ps-video-modal-title"
+          @click.self="closeTutorialModal"
+        >
+          <section class="cb-ps-video-modal__dialog">
+            <header class="cb-ps-video-modal__header">
+              <div class="cb-ps-video-modal__heading">
+                <span class="cb-ps-video-modal__eyebrow">POSTAL SHOPPER · TUTORIAL</span>
+                <h2 id="cb-ps-video-modal-title">{{ stepsSettings.tutorial_label || 'Cómo funciona Postal Shopper' }}</h2>
+                <p v-if="stepsSettings.tutorial_duration">Aprende el proceso en {{ stepsSettings.tutorial_duration }}</p>
+              </div>
+              <button
+                ref="tutorialModalClose"
+                type="button"
+                class="cb-ps-video-modal__close"
+                aria-label="Cerrar video"
+                @click="closeTutorialModal"
+              >
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </button>
+            </header>
+
+            <div class="cb-ps-video-modal__player">
+              <video
+                v-if="isDirectVideoTutorial"
+                :key="tutorialLink"
+                :src="tutorialLink"
+                :poster="stepsSettings.tutorial_image || null"
+                controls
+                autoplay
+                playsinline
+                preload="metadata"
+                aria-label="Video tutorial de Postal Shopper"
+              ></video>
+              <iframe
+                v-else-if="tutorialEmbedUrl"
+                :src="tutorialEmbedUrl"
+                title="Video tutorial de Postal Shopper"
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+              ></iframe>
+              <div v-else class="cb-ps-video-modal__fallback">
+                <span class="cb-ps-video-modal__fallback-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5v-9Z" stroke="currentColor" stroke-width="1.7" />
+                    <path d="m10 9 5 3-5 3V9Z" fill="currentColor" />
+                  </svg>
+                </span>
+                <p>Este enlace no se puede reproducir dentro de la página.</p>
+                <a :href="tutorialLink" target="_blank" rel="noopener noreferrer">Abrir el tutorial en otra pestaña</a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </transition>
     </main>
 
     <HomeFooter v-if="!isBootLoading" :logo-url="logoUrl" :icons="icons" :content="footerSettings" :links="footerLinks" />
@@ -368,6 +513,23 @@ import { sanitizeContentTree } from '~/utils/contentSecurity'
 import { fetchPageWithSharedLayout } from '~/utils/sharedLayout'
 
 const POSTALSHOPPER_REGISTER_URL = 'https://clientescorreos.sistemaml.net/'
+// These examples help describe a purchase only. They are never treated as official tariff categories.
+const POSTALSHOPPER_REFERENCE_CATEGORIES = [
+  { key: 'reference-clothing-footwear', label: 'Ropa y calzado', icon: 'clothing', confirmed: false, is_reference: true },
+  { key: 'reference-technology', label: 'Tecnología', icon: 'technology', confirmed: false, is_reference: true },
+  { key: 'reference-beauty', label: 'Belleza y cuidado personal', icon: 'beauty', confirmed: false, is_reference: true },
+  { key: 'reference-home', label: 'Hogar', icon: 'home', confirmed: false, is_reference: true }
+]
+const POSTALSHOPPER_WEIGHT_TARIFF = [
+  { weight: 1, price: 10.59 }, { weight: 2, price: 13.86 }, { weight: 3, price: 17.14 },
+  { weight: 4, price: 20.41 }, { weight: 5, price: 23.70 }, { weight: 6, price: 27.70 },
+  { weight: 7, price: 31.70 }, { weight: 8, price: 35.70 }, { weight: 9, price: 39.70 },
+  { weight: 10, price: 43.70 }, { weight: 11, price: 47.70 }, { weight: 12, price: 51.70 },
+  { weight: 13, price: 55.70 }, { weight: 14, price: 59.70 }, { weight: 15, price: 63.70 },
+  { weight: 16, price: 67.70 }, { weight: 17, price: 71.70 }, { weight: 18, price: 75.70 },
+  { weight: 19, price: 79.70 }, { weight: 20, price: 83.70 }
+]
+const POSTALSHOPPER_EXCESS_RATE_PER_POUND = 4
 
 const POSTALSHOPPER_SOURCE_PAGE = {
   meta_title: '',
@@ -428,26 +590,32 @@ const POSTALSHOPPER_SOURCE_PAGE = {
       key: 'postalshopper_calculator',
       settings: {
         eyebrow: 'COTIZADOR DE ENVÍOS',
-        title: 'Cotiza tu paquete',
-        title_accent: 'en segundos.',
-        description: 'Consulta una tarifa estimada para tu envío.',
-        weight_title: 'Elige el peso del paquete',
-        weight_help: 'Selecciona entre 1 y 5 libras',
+        title: 'Cotiza tu',
+        title_accent: 'compra',
+        description: '¿Qué productos vas a recibir en tu casilla?',
+        products_title: '¿Qué productos vas a recibir en tu casilla?',
+        products_help: 'Agrega cada producto por separado. Puedes indicar más de una categoría.',
+        unclassified_notice: 'Estas opciones son orientativas y no representan categorías oficiales ni determinan una tarifa. La clasificación, admisión y costo se confirman con el proveedor.',
+        weight_title: '¿Cuánto pesa cada producto?',
+        weight_help: 'Ingresa el peso estimado de cada producto.',
         weight_unit_singular: 'libra',
         weight_unit_plural: 'libras',
         currency_label: '$us',
         total_label: 'Tarifa estimada',
+        excess_weight_price_per_lb: POSTALSHOPPER_EXCESS_RATE_PER_POUND,
+        shipping_label: 'Envío Postal Shopper',
+        quote_title: 'Resumen de tu cotización',
+        quote_help: 'Revisa los productos, categorías y peso estimado.',
+        pending_quote_title: 'Cotización pendiente de confirmación',
+        pending_quote_message: 'No hay una tarifa cargada para el peso indicado ni una regla confirmada para los productos seleccionados.',
+        estimate_disclaimer: 'El peso y el costo finales se confirman cuando el paquete llega al almacén y es verificado. Impuestos y otros cargos no se incluyen sin una regla y un valor confirmados.',
         image: '',
         image_alt: 'Cartero con un paquete y una calculadora de envíos',
         caption_label: 'POSTAL SHOPPER',
         caption_text: 'Tus compras, de Miami a Bolivia'
       },
       items: [
-        { id: 'rate-1', data: { weight: 1, price: 10.59 } },
-        { id: 'rate-2', data: { weight: 2, price: 13.86 } },
-        { id: 'rate-3', data: { weight: 3, price: 17.14 } },
-        { id: 'rate-4', data: { weight: 4, price: 20.41 } },
-        { id: 'rate-5', data: { weight: 5, price: 23.70 } }
+        ...POSTALSHOPPER_WEIGHT_TARIFF.map((rate) => ({ id: `rate-${rate.weight}`, data: rate }))
       ],
       is_active: true
     },
@@ -470,16 +638,45 @@ export default {
   data() {
     return {
       isBootLoading: true,
-      parcelWeight: 1
+      calculatorStep: 1,
+      parcelProducts: [],
+      nextParcelProductId: 1,
+      weightTouched: {},
+      categoryStripHasOverflow: false,
+      tutorialModalOpen: false,
+      tutorialTriggerElement: null,
+      tutorialPreviousBodyOverflow: ''
     }
   },
   async mounted() {
+    window.addEventListener('resize', this.updateCategoryStripOverflow)
+
     if (!this.logoUrl) {
       await this.refreshPageContent()
+      this.$nextTick(this.updateCategoryStripOverflow)
       return
     }
 
     this.isBootLoading = false
+    this.$nextTick(this.updateCategoryStripOverflow)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.updateCategoryStripOverflow)
+    if (this.tutorialModalOpen) this.cleanupTutorialModal()
+  },
+  watch: {
+    calculatorStep(step) {
+      if (step === 1) this.$nextTick(this.updateCategoryStripOverflow)
+    },
+    isBootLoading(isLoading) {
+      if (!isLoading) this.$nextTick(this.updateCategoryStripOverflow)
+    },
+    tariffCategories: {
+      deep: true,
+      handler() {
+        this.$nextTick(this.updateCategoryStripOverflow)
+      }
+    }
   },
   computed: {
     resolvedPageContent() {
@@ -503,24 +700,167 @@ export default {
       const image = this.heroSettings.background_image || '/personajechica.png'
       return { '--cb-ps-hero-image': `url(${image})` }
     },
-    parcelRates() {
-      const savedRates = this.getSectionItems('postalshopper_calculator')
-      const fallbackSection = POSTALSHOPPER_SOURCE_PAGE.sections.find((section) => section.key === 'postalshopper_calculator')
-      const rates = savedRates.length
-        ? savedRates
-        : (fallbackSection?.items || []).map((item) => item.data || item)
-
-      return rates
-        .map((rate) => ({
-          ...rate,
-          weight: Number(rate.weight),
-          price: Number(String(rate.price == null ? '' : rate.price).replace(',', '.'))
-        }))
-        .filter((rate) => Number.isFinite(rate.weight) && rate.weight > 0 && Number.isFinite(rate.price) && rate.price >= 0)
-        .sort((left, right) => left.weight - right.weight)
+    calculatorStepLabels() {
+      return [
+        this.calculatorSettings.step_products_label || 'Productos',
+        this.calculatorSettings.step_weight_label || 'Peso',
+        this.calculatorSettings.step_quote_label || 'Cotización'
+      ]
     },
-    selectedParcelRate() {
-      return this.parcelRates.find((rate) => rate.weight === this.parcelWeight) || this.parcelRates[0] || { weight: this.parcelWeight, price: 0 }
+    calculatorCurrentHeading() {
+      if (this.calculatorStep === 1) {
+        return {
+          title: this.calculatorSettings.title || 'Cotiza tu',
+          accent: this.calculatorSettings.title_accent || 'compra',
+          subtitle: this.calculatorSettings.description || '¿Qué productos vas a recibir en tu casilla?'
+        }
+      }
+      if (this.calculatorStep === 2) {
+        return {
+          title: this.calculatorSettings.weight_title || '¿Cuánto pesa cada producto?',
+          accent: '',
+          subtitle: this.calculatorSettings.weight_help || `Ingresa el peso estimado en ${this.weightUnitPlural}.`
+        }
+      }
+      return {
+        title: this.calculatorSettings.quote_title || 'Resumen de tu cotización',
+        accent: '',
+        subtitle: this.calculatorSettings.quote_help || 'Revisa los productos y el peso estimado.'
+      }
+    },
+    weightUnitPlural() {
+      return this.calculatorSettings.weight_unit_plural || 'libras'
+    },
+    tariffCategories() {
+      const categories = this.calculatorSettings.categories
+      const configured = Array.isArray(categories)
+        ? categories.filter((category) => category && category.key && category.label && category.is_active !== false)
+        : []
+      return Array.isArray(categories) ? configured : POSTALSHOPPER_REFERENCE_CATEGORIES
+    },
+    hasOfficialProductCategories() {
+      const categories = this.calculatorSettings.categories
+      return Array.isArray(categories) && categories.some((category) => category && category.key && category.label && category.is_active !== false && !this.isReferenceCategory(category))
+    },
+    tariffRules() {
+      const rules = this.calculatorSettings.tariff_rules
+      return Array.isArray(rules) ? rules.filter(Boolean) : []
+    },
+    weightTariffRates() {
+      const configuredRates = this.getSectionItems('postalshopper_calculator')
+        .filter((item) => Number.isInteger(Number(item.weight)) && Number(item.weight) >= 1 && Number(item.weight) <= 20)
+      const configuredByWeight = new Map(configuredRates.map((item) => [Number(item.weight), Number(item.price)]))
+
+      return POSTALSHOPPER_WEIGHT_TARIFF.map((rate) => ({
+        weight: rate.weight,
+        price: Number.isFinite(configuredByWeight.get(rate.weight)) ? configuredByWeight.get(rate.weight) : rate.price
+      }))
+    },
+    weightTariffQuote() {
+      if (!this.weightsAreValid || this.matchingTariffRules.length > 0) return null
+
+      const weight = this.totalParcelWeight
+      const ratesByWeight = new Map(this.weightTariffRates.map((rate) => [rate.weight, rate.price]))
+      const configuredExtraRate = this.calculatorSettings.excess_weight_price_per_lb
+      const extraRateValue = configuredExtraRate === '' || configuredExtraRate === null || configuredExtraRate === undefined
+        ? Number.NaN
+        : Number(configuredExtraRate)
+      const extraRate = Number.isFinite(extraRateValue) && extraRateValue >= 0
+        ? extraRateValue
+        : POSTALSHOPPER_EXCESS_RATE_PER_POUND
+      const currency = this.calculatorSettings.currency_label || '$us'
+
+      if (weight <= 20) {
+        const billableWeight = Math.max(1, Math.ceil(weight - 1e-9))
+        const basePrice = ratesByWeight.get(billableWeight)
+        if (!Number.isFinite(basePrice)) return null
+
+        return {
+          currency,
+          billable_weight: billableWeight,
+          base_weight: billableWeight,
+          base_price: basePrice,
+          extra_weight: 0,
+          extra_rate: extraRate,
+          extra_price: 0,
+          shipping_price: basePrice
+        }
+      }
+
+      const basePrice = ratesByWeight.get(20)
+      if (!Number.isFinite(basePrice)) return null
+
+      const extraWeight = weight - 20
+      const extraPrice = Math.round((extraWeight * extraRate + Number.EPSILON) * 100) / 100
+      return {
+        currency,
+        billable_weight: null,
+        base_weight: 20,
+        base_price: basePrice,
+        extra_weight: extraWeight,
+        extra_rate: extraRate,
+        extra_price: extraPrice,
+        shipping_price: Math.round((basePrice + extraPrice + Number.EPSILON) * 100) / 100
+      }
+    },
+    productsAreValid() {
+      return this.parcelProducts.length > 0 && this.parcelProducts.every((product) => {
+        return Boolean(product.categoryKey)
+      })
+    },
+    weightsAreValid() {
+      return this.productsAreValid && this.parcelProducts.every((product) => this.isProductWeightValid(product))
+    },
+    totalParcelWeight() {
+      return this.parcelProducts.reduce((total, product) => {
+        const weight = Number(product.weight)
+        return total + (Number.isFinite(weight) && weight > 0 ? weight : 0)
+      }, 0)
+    },
+    hasConfirmedCategories() {
+      if (!this.tariffCategories.length || !this.parcelProducts.length) return false
+      const keys = this.parcelProducts.map((product) => product.categoryKey).filter(Boolean)
+      return keys.length > 0 && keys.every((key) => {
+        const category = this.tariffCategories.find((item) => item.key === key)
+        const hasSource = Boolean(String(category?.source_label || '').trim() || String(category?.source_url || '').trim())
+        return category && this.isCategoryConfirmed(category) && hasSource
+      })
+    },
+    matchingTariffRules() {
+      if (!this.weightsAreValid || !this.hasConfirmedCategories) return []
+      const categoryKeys = this.parcelProducts.map((product) => product.categoryKey).sort()
+      const matches = this.tariffRules.filter((rule) => {
+        const keys = Array.isArray(rule.category_keys)
+          ? rule.category_keys.map((key) => String(key).trim()).filter(Boolean).sort()
+          : String(rule.category_keys || '').split(',').map((key) => key.trim()).filter(Boolean).sort()
+        const priceValue = String(rule.shipping_price == null ? '' : rule.shipping_price).trim()
+        const price = Number(priceValue.replace(',', '.'))
+        const minWeight = Number(rule.weight_min)
+        const maxWeight = Number(rule.weight_max)
+        const currency = String(rule.currency || '').trim()
+        const confirmed = rule.confirmed === true || rule.confirmed === 1 || rule.confirmed === '1' || rule.confirmed === 'true'
+        const hasSource = Boolean(String(rule.source_label || '').trim() || String(rule.source_url || '').trim())
+
+        return confirmed
+          && hasSource
+          && priceValue !== ''
+          && Number.isFinite(price)
+          && price >= 0
+          && Number.isFinite(minWeight)
+          && Number.isFinite(maxWeight)
+          && currency !== ''
+          && minWeight > 0
+          && maxWeight >= minWeight
+          && this.totalParcelWeight >= minWeight
+          && this.totalParcelWeight <= maxWeight
+          && keys.length === categoryKeys.length
+          && keys.every((key, index) => key === categoryKeys[index])
+      })
+
+      return matches
+    },
+    matchedTariffRule() {
+      return this.matchingTariffRules.length === 1 ? this.matchingTariffRules[0] : null
     },
     headerSettings() {
       return this.getSectionSettings('header')
@@ -537,13 +877,36 @@ export default {
     heroSettings() {
       return this.getSectionSettings('postalshopper_hero')
     },
+    heroParagraphs() {
+      const normalizeParagraph = (paragraph, index) => {
+        const text = typeof paragraph === 'string' ? paragraph : paragraph?.text
+        return {
+          text: String(text || '').trim(),
+          style: typeof paragraph === 'object' && paragraph?.style === 'lead'
+            ? 'lead'
+            : (index === 0 && typeof paragraph === 'string' ? 'lead' : 'body')
+        }
+      }
+      const configuredParagraphs = this.heroSettings.paragraphs
+      const legacyParagraphs = [
+        { text: this.heroSettings.lead_text, style: 'lead' },
+        { text: this.heroSettings.subtitle, style: 'body' }
+      ].filter((paragraph) => String(paragraph.text || '').trim())
+      const paragraphs = Array.isArray(configuredParagraphs) && (configuredParagraphs.length || !legacyParagraphs.length)
+        ? configuredParagraphs
+        : legacyParagraphs
+
+      return paragraphs
+        .map((paragraph, index) => normalizeParagraph(paragraph, index))
+        .filter((paragraph) => paragraph.text)
+    },
     primaryButtonLabel() {
       const label = String(this.heroSettings.primary_button_label || '').trim()
       return ['como funciona', 'ver tutorial'].includes(label.toLowerCase()) ? 'Cómo funciona' : (label || 'Cómo funciona')
     },
     secondaryButtonUrl() {
       const url = String(this.heroSettings.secondary_button_url || '').trim()
-      if (!url || url === '/contacto') {
+      if (!url || url === '#' || url === '/contacto') {
         const directService = this.availableDestinationItems.find((item) => item.url)
         return directService?.url || POSTALSHOPPER_REGISTER_URL
       }
@@ -562,13 +925,36 @@ export default {
       }
     },
     calculatorSettings() {
-      return this.getSectionSettings('postalshopper_calculator')
+      const settings = this.getSectionSettings('postalshopper_calculator')
+      return {
+        ...settings,
+        title: settings.title === 'Cotiza tu paquete' ? 'Cotiza tu' : settings.title,
+        title_accent: settings.title_accent === 'en segundos.' ? 'compra' : settings.title_accent,
+        description: settings.description === 'Consulta una tarifa estimada para tu envío.' ? '¿Qué productos vas a recibir en tu casilla?' : settings.description,
+        weight_title: settings.weight_title === 'Elige el peso del paquete' ? '¿Cuánto pesa cada producto?' : settings.weight_title,
+        weight_help: settings.weight_help === 'Selecciona entre 1 y 5 libras' ? 'Ingresa el peso estimado de cada producto.' : settings.weight_help,
+        unclassified_notice: settings.unclassified_notice === 'No hay categorías oficiales ni restricciones configuradas en la información disponible. Describe tu compra; su clasificación y admisión deben confirmarse con el proveedor.'
+          ? 'Estas opciones son orientativas y no representan categorías oficiales ni determinan una tarifa. La clasificación, admisión y costo se confirman con el proveedor.'
+          : settings.unclassified_notice
+      }
     },
     tutorialLink() {
-      const candidates = [this.stepsSettings.tutorial_url, this.heroSettings.primary_button_url]
+      return [this.stepsSettings.tutorial_url, this.heroSettings.primary_button_url]
         .map((url) => String(url || '').trim())
-        .filter(Boolean)
-      return candidates.find((url) => /^https?:\/\//i.test(url)) || candidates[0] || ''
+        .find((url) => url && url !== '#') || ''
+    },
+    isDirectVideoTutorial() {
+      return /\.(?:mp4|webm|ogg)(?:$|[?#])/i.test(this.tutorialLink)
+    },
+    tutorialEmbedUrl() {
+      const url = this.tutorialLink
+      const youtube = url.match(/(?:youtube(?:-nocookie)?\.com\/(?:.*[?&]v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/i)
+      if (youtube) return `https://www.youtube-nocookie.com/embed/${youtube[1]}?autoplay=1&rel=0`
+
+      const vimeo = url.match(/(?:player\.)?vimeo\.com\/(?:video\/)?([0-9]+)/i)
+      if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}?autoplay=1`
+
+      return ''
     },
     heroTitleRows() {
       const rows = []
@@ -639,14 +1025,168 @@ export default {
       return this.getSectionItems('postalshopper_benefits')
     }
   },
-  watch: {
-    parcelRates(rates) {
-      if (rates.length && !rates.some((rate) => rate.weight === this.parcelWeight)) {
-        this.parcelWeight = rates[0].weight
-      }
-    }
-  },
   methods: {
+    updateCategoryStripOverflow() {
+      const scroller = this.$refs.categoryScroller
+      this.categoryStripHasOverflow = Boolean(scroller && scroller.scrollWidth > scroller.clientWidth + 2)
+    },
+    selectProductCategory(categoryKey) {
+      const category = this.selectedProductCategory(categoryKey)
+      if (!category) return
+
+      const existingProduct = this.parcelProducts.find((product) => product.categoryKey === categoryKey)
+      if (existingProduct) {
+        this.removeParcelProduct(existingProduct.id)
+        return
+      }
+
+      this.parcelProducts.push({
+        id: `product-${this.nextParcelProductId}`,
+        name: category.label,
+        categoryKey,
+        weight: ''
+      })
+      this.nextParcelProductId += 1
+    },
+    isProductCategorySelected(categoryKey) {
+      return this.parcelProducts.some((product) => product.categoryKey === categoryKey)
+    },
+    removeParcelProduct(productId) {
+      this.parcelProducts = this.parcelProducts.filter((product) => product.id !== productId)
+      this.$delete(this.weightTouched, productId)
+    },
+    markWeightTouched(productId) {
+      this.$set(this.weightTouched, productId, true)
+    },
+    shouldShowWeightError(product) {
+      return Boolean(this.weightTouched[product.id]) && !this.isProductWeightValid(product)
+    },
+    continueToQuote() {
+      const invalidProducts = this.parcelProducts.filter((product) => !this.isProductWeightValid(product))
+      if (!this.weightsAreValid) {
+        invalidProducts.forEach((product) => this.markWeightTouched(product.id))
+        this.$nextTick(() => {
+          const firstInvalidInput = this.$el.querySelector('.cb-ps-flow__weight-input input[aria-invalid="true"]')
+          if (firstInvalidInput) firstInvalidInput.focus()
+        })
+        return
+      }
+      this.calculatorStep = 3
+    },
+    isProductWeightValid(product) {
+      const weight = Number(product.weight)
+      return Number.isFinite(weight) && weight > 0
+    },
+    formatParcelWeight(value) {
+      const weight = Number(value)
+      return Number.isFinite(weight)
+        ? weight.toLocaleString('es-BO', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+        : '0'
+    },
+    weightUnit(value) {
+      return Number(value) === 1
+        ? (this.calculatorSettings.weight_unit_singular || 'libra')
+        : this.weightUnitPlural
+    },
+    isCategoryConfirmed(category) {
+      if (!category || this.isReferenceCategory(category)) return false
+      return category.confirmed === true || category.confirmed === 1 || category.confirmed === '1' || category.confirmed === 'true'
+    },
+    isReferenceCategory(category) {
+      return category?.is_reference === true || category?.is_reference === 1 || category?.is_reference === '1' || category?.is_reference === 'true'
+    },
+    selectedProductCategory(categoryKey) {
+      return this.tariffCategories.find((category) => category.key === categoryKey) || null
+    },
+    categoryDescription(categoryKey) {
+      const category = this.selectedProductCategory(categoryKey)
+      return category ? category.description : ''
+    },
+    categoryRestrictions(categoryKey) {
+      const category = this.selectedProductCategory(categoryKey)
+      return category ? category.restrictions : ''
+    },
+    categoryDetails(categoryKey) {
+      const category = this.selectedProductCategory(categoryKey)
+      return category ? [category.description, category.restrictions].map((value) => String(value || '').trim()).filter(Boolean).join(' · ') : ''
+    },
+    productCategoryLabel(categoryKey) {
+      const category = this.selectedProductCategory(categoryKey)
+      if (!category) return this.calculatorSettings.category_pending_label || 'Por confirmar'
+      if (this.isReferenceCategory(category)) return `${this.calculatorSettings.category_reference_label || 'Orientativa'} · ${this.calculatorSettings.category_pending_label || 'tarifa por confirmar'}`
+      return this.isCategoryConfirmed(category)
+        ? category.label
+        : `${category.label} · ${this.calculatorSettings.category_pending_label || 'por confirmar'}`
+    },
+    productDisplayName(product) {
+      const category = this.selectedProductCategory(product.categoryKey)
+      return String(product.name || '').trim() || (category ? category.label : 'Producto')
+    },
+    categoryIllustration(category) {
+      const icon = String(category?.icon || '').toLowerCase()
+      const icons = {
+        clothing: '<svg viewBox="0 0 140 100" fill="none"><ellipse cx="70" cy="89" rx="48" ry="6" fill="#dce6f3"/><path d="m47 14 15-7h16l15 7 18 13-11 18-13-8v31H43V37l-13 8-11-18 28-13Z" fill="#2b83df"/><path d="m62 7 8 10 8-10M70 17v51" stroke="#dcecff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 69h38l9 8-2 8H31c-7 0-10-5-4-16Z" fill="#fff" stroke="#d8e0eb" stroke-width="2"/><path d="M73 74h37l8 7-2 7H77c-7 0-10-5-4-14Z" fill="#f7f8fa" stroke="#d8e0eb" stroke-width="2"/><path d="M36 76h24m26 4h22" stroke="#7990ad" stroke-width="2.2" stroke-linecap="round"/></svg>',
+        technology: '<svg viewBox="0 0 140 100" fill="none"><ellipse cx="68" cy="89" rx="54" ry="6" fill="#dce6f3"/><path d="M25 17h67a5 5 0 0 1 5 5v43H20V22a5 5 0 0 1 5-5Z" fill="#26384f"/><path d="M27 23h63v35H27z" fill="#52a8f5"/><path d="m27 53 39-30h24v35H27z" fill="#81c5ff" opacity=".72"/><path d="M16 65h85l12 10H8l8-10Z" fill="#bac5d1"/><path d="M49 68h20l4 4H45l4-4Z" fill="#8695a7"/><path d="M104 26c9 0 16 7 16 16v12h-8V42c0-4-3-8-8-8s-8 4-8 8v12h-8V42c0-9 7-16 16-16Z" fill="#27364c"/><rect x="91" y="43" width="9" height="18" rx="4" fill="#25354d"/><rect x="108" y="43" width="9" height="18" rx="4" fill="#25354d"/><path d="M91 58c4 8 10 11 18 9" stroke="#25354d" stroke-width="4" stroke-linecap="round"/></svg>',
+        beauty: '<svg viewBox="0 0 140 100" fill="none"><ellipse cx="70" cy="90" rx="48" ry="6" fill="#eadfe4"/><path d="M39 34h31v42a9 9 0 0 1-9 9H48a9 9 0 0 1-9-9V34Z" fill="#f7a6be"/><path d="M46 25h17v9H46zM50 17h9v8h-9z" fill="#bd793f"/><path d="M44 47h21v19H44z" fill="#ffd7e3" opacity=".85"/><path d="M86 50h21v33H86z" fill="#232c39"/><path d="M89 31h15v19H89z" fill="#df315d"/><path d="M92 21h9v10h-9z" fill="#bd793f"/><path d="M89 59h15" stroke="#4e5867" stroke-width="2"/><path d="M47 39h15" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>',
+        home: '<svg viewBox="0 0 140 100" fill="none"><ellipse cx="69" cy="90" rx="56" ry="6" fill="#e8e2d8"/><path d="M24 47a10 10 0 0 1 10-10h52a10 10 0 0 1 10 10v29H24V47Z" fill="#d5bda4"/><path d="M18 53a9 9 0 0 1 9-9h9v34H27a9 9 0 0 1-9-9V53ZM84 44h11a9 9 0 0 1 9 9v16a9 9 0 0 1-9 9H84V44Z" fill="#c8ae94"/><path d="M30 48h55v24H30z" fill="#ebdece"/><path d="M30 76v9m56-9v9" stroke="#8c6b4e" stroke-width="4" stroke-linecap="round"/><path d="M112 25v54m-12-1h24" stroke="#88653e" stroke-width="4" stroke-linecap="round"/><path d="M100 24c2-10 22-10 24 0l-4 14h-16l-4-14Z" fill="#f6d79b"/><path d="M105 37h14" stroke="#d1a863" stroke-width="2"/></svg>',
+        package: '<svg viewBox="0 0 140 100" fill="none"><ellipse cx="70" cy="89" rx="42" ry="6" fill="#dce6f3"/><path d="m70 11 38 20v41L70 91 32 72V31l38-20Z" fill="#d9a667"/><path d="m32 31 38 21 38-21M70 52v39M55 19l38 20" stroke="#9a652d" stroke-width="4" stroke-linejoin="round"/><path d="m64 14 12 6-7 4-12-6 7-4Z" fill="#ffcb1b"/></svg>'
+      }
+      return icons[icon] || icons.package
+    },
+    openTutorialModal(event) {
+      if (!this.tutorialLink || this.tutorialModalOpen) return
+
+      this.tutorialTriggerElement = event?.currentTarget || document.activeElement
+      this.tutorialPreviousBodyOverflow = document.body.style.overflow
+      this.tutorialModalOpen = true
+      document.body.style.overflow = 'hidden'
+      window.addEventListener('keydown', this.handleTutorialModalKeydown)
+
+      this.$nextTick(() => {
+        this.$refs.tutorialModalClose?.focus()
+      })
+    },
+    closeTutorialModal() {
+      if (!this.tutorialModalOpen) return
+
+      this.tutorialModalOpen = false
+      this.cleanupTutorialModal()
+      const triggerElement = this.tutorialTriggerElement
+      this.tutorialTriggerElement = null
+
+      this.$nextTick(() => {
+        if (triggerElement && document.contains(triggerElement)) triggerElement.focus()
+      })
+    },
+    cleanupTutorialModal() {
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = this.tutorialPreviousBodyOverflow || ''
+      }
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('keydown', this.handleTutorialModalKeydown)
+      }
+    },
+    handleTutorialModalKeydown(event) {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        this.closeTutorialModal()
+        return
+      }
+
+      if (event.key !== 'Tab') return
+      const focusable = this.$refs.tutorialModal?.querySelectorAll('button:not([disabled]), a[href], iframe, video[controls]')
+      if (!focusable?.length) return
+
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    },
     async refreshPageContent() {
       const startedAt = Date.now()
 
