@@ -237,7 +237,7 @@
                     <span v-if="index < calculatorStepLabels.length - 1" class="cb-ps-flow__step-connector" aria-hidden="true"></span>
                   </li>
                 </ol>
-                <header class="cb-ps-flow__step-heading">
+                <header class="cb-ps-flow__step-heading" :class="{ 'cb-ps-flow__step-heading--weight': calculatorStep === 2 }">
                   <span class="cb-ps-flow__step-heading-icon" aria-hidden="true">
                     <svg viewBox="0 0 48 48" fill="none"><path d="m24 5 17 9.3v19.4L24 43 7 33.7V14.3L24 5Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="m7.8 14.8 16.2 9 16.2-9M24 23.8V42m-7.2-33 16.5 9" stroke="currentColor" stroke-width="2.7" stroke-linejoin="round"/></svg>
                   </span>
@@ -302,22 +302,41 @@
                 <section v-else-if="calculatorStep === 2" class="cb-ps-flow__panel" aria-labelledby="postalshopper-calculator-title">
                   <div class="cb-ps-flow__weights">
                     <div v-for="product in parcelProducts" :key="product.id" class="cb-ps-flow__weight-row">
-                      <div class="cb-ps-flow__weight-product"><strong>{{ productDisplayName(product) }}</strong><small>{{ productCategoryLabel(product.categoryKey) }}</small></div>
+                      <div class="cb-ps-flow__weight-product">
+                        <span class="cb-ps-flow__weight-product-icon" aria-hidden="true">
+                          <img v-if="selectedProductCategory(product.categoryKey)?.image" :src="selectedProductCategory(product.categoryKey).image" alt="" loading="lazy" decoding="async">
+                          <span v-else v-html="categoryIllustration(selectedProductCategory(product.categoryKey))"></span>
+                        </span>
+                        <span class="cb-ps-flow__weight-product-copy">
+                          <strong>{{ productDisplayName(product) }}</strong>
+                          <small>{{ productCategoryLabel(product.categoryKey) }}</small>
+                          <span class="cb-ps-flow__product-unit-control">
+                            <small class="cb-ps-flow__product-unit-caption">Unidad de este producto</small>
+                            <span class="cb-ps-flow__product-unit" role="group" :aria-label="'Unidad de peso para ' + productDisplayName(product)">
+                              <button type="button" :class="{ 'is-selected': productWeightUnit(product) === 'lb' }" :aria-pressed="productWeightUnit(product) === 'lb'" @click="setProductWeightUnit(product, 'lb')">lb</button>
+                              <button type="button" :class="{ 'is-selected': productWeightUnit(product) === 'kg' }" :aria-pressed="productWeightUnit(product) === 'kg'" @click="setProductWeightUnit(product, 'kg')">kg</button>
+                            </span>
+                          </span>
+                        </span>
+                      </div>
                       <div class="cb-ps-flow__weight-control">
-                        <label class="cb-ps-flow__weight-label">Peso estimado</label>
+                        <div class="cb-ps-flow__weight-control-head">
+                          <label class="cb-ps-flow__weight-label">Peso estimado ({{ productWeightUnit(product) }})</label>
+                        </div>
                         <label class="cb-ps-flow__weight-input">
                           <span class="cb-ps-flow__sr-only">{{ calculatorSettings.weight_input_label || 'Peso de' }} {{ productDisplayName(product) }}</span>
-                          <input v-model.number="product.weight" :class="{ 'is-invalid': shouldShowWeightError(product) }" type="number" min="0.01" step="0.01" inputmode="decimal" required :aria-invalid="!isProductWeightValid(product)" :aria-describedby="shouldShowWeightError(product) ? 'postalshopper-weight-error-' + product.id : null" @blur="markWeightTouched(product.id)">
-                          <span>{{ weightUnit(product.weight) }}</span>
+                          <input v-model.number="product.weight" :class="{ 'is-invalid': shouldShowWeightError(product) }" type="number" min="0.01" :max="maxWeightForProduct(product)" step="0.01" inputmode="decimal" required :aria-invalid="!isProductWeightValid(product)" :aria-describedby="shouldShowWeightError(product) ? 'postalshopper-weight-error-' + product.id : null" @blur="markWeightTouched(product.id)">
+                          <span>{{ weightUnit(product) }}</span>
                         </label>
-                        <small v-if="shouldShowWeightError(product)" :id="'postalshopper-weight-error-' + product.id" class="cb-ps-flow__field-error" role="status">{{ calculatorSettings.weight_validation_message || 'Ingresa un peso mayor que cero.' }}</small>
+                        <small v-if="shouldShowWeightError(product)" :id="'postalshopper-weight-error-' + product.id" class="cb-ps-flow__field-error" role="status">{{ productWeightErrorMessage(product) }}</small>
                       </div>
                     </div>
                   </div>
-                  <div class="cb-ps-flow__weight-total"><span>{{ calculatorSettings.weight_total_label || 'Peso estimado total' }}</span><strong>{{ formatParcelWeight(totalParcelWeight) }} <small>{{ weightUnit(totalParcelWeight) }}</small></strong></div>
+                  <div class="cb-ps-flow__weight-total"><span class="cb-ps-flow__weight-total-label">{{ calculatorSettings.weight_total_label || 'Peso estimado total' }}<small>Límite: 40 kg ({{ formatParcelWeight(maxWeightPounds) }} lb)</small></span><strong>{{ formatParcelWeight(totalParcelWeightPounds) }} <small>lb</small></strong></div>
+                  <p v-if="totalWeightLimitExceeded" class="cb-ps-flow__limit-error" role="alert">El peso total del envío no puede superar 40 kg ({{ formatParcelWeight(maxWeightPounds) }} lb).</p>
                   <div class="cb-ps-flow__actions">
                     <button type="button" class="cb-ps-flow__button cb-ps-flow__button--secondary" @click="calculatorStep = 1"><span class="cb-ps-flow__button-leading" aria-hidden="true">←</span>{{ calculatorSettings.button_edit_products || 'Editar productos' }}</button>
-                    <button type="button" class="cb-ps-flow__button cb-ps-flow__button--primary" @click="continueToQuote">{{ calculatorSettings.button_continue_quote || 'Ver cotización' }} <span class="cb-ps-flow__button-arrow" aria-hidden="true">→</span></button>
+                    <button type="button" class="cb-ps-flow__button cb-ps-flow__button--primary" :disabled="totalWeightLimitExceeded" @click="continueToQuote">{{ calculatorSettings.button_continue_quote || 'Ver cotización' }} <span class="cb-ps-flow__button-arrow" aria-hidden="true">→</span></button>
                   </div>
                 </section>
 
@@ -328,37 +347,33 @@
                         <svg viewBox="0 0 24 24" fill="none"><path d="m12 2 8 4.5v11L12 22 4 17.5v-11L12 2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 22V11m8-4.5-8 4.5-8-4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
                       </span>
                       <span class="cb-ps-flow__summary-copy"><strong>{{ productDisplayName(product) }}</strong><small>{{ productCategoryLabel(product.categoryKey) }}</small></span>
-                      <strong class="cb-ps-flow__summary-weight">{{ formatParcelWeight(product.weight) }} {{ weightUnit(product.weight) }}</strong>
+                      <strong class="cb-ps-flow__summary-weight">{{ formatParcelWeight(product.weight) }} {{ productWeightUnit(product) }}</strong>
                     </div>
-                    <div class="cb-ps-flow__summary-total"><span>{{ calculatorSettings.quote_weight_total_label || calculatorSettings.weight_total_label || 'Peso total estimado' }}</span><strong>{{ formatParcelWeight(totalParcelWeight) }} {{ weightUnit(totalParcelWeight) }}</strong></div>
+                    <div class="cb-ps-flow__summary-total"><span>{{ calculatorSettings.quote_weight_total_label || calculatorSettings.weight_total_label || 'Peso total estimado' }} (en libras)</span><strong>{{ formatParcelWeight(totalParcelWeightPounds) }} lb</strong></div>
                   </div>
 
-                  <div v-if="matchedTariffRule" class="cb-ps-flow__price-card" aria-live="polite">
-                    <div class="cb-ps-flow__price-line"><span>{{ calculatorSettings.shipping_label || 'Envío Postal Shopper' }}</span><strong>{{ matchedTariffRule.currency }} {{ formatParcelPrice(matchedTariffRule.shipping_price) }}</strong></div>
-                    <div class="cb-ps-flow__price-total"><span>{{ calculatorSettings.total_label || 'Costo estimado de envío' }}</span><strong>{{ matchedTariffRule.currency }} {{ formatParcelPrice(matchedTariffRule.shipping_price) }}</strong></div>
-                    <p v-if="matchedTariffRule.source_label || matchedTariffRule.source_url" class="cb-ps-flow__source">{{ calculatorSettings.quote_rule_label || 'Regla confirmada:' }} <a v-if="matchedTariffRule.source_url" :href="matchedTariffRule.source_url" target="_blank" rel="noopener noreferrer">{{ matchedTariffRule.source_label || calculatorSettings.quote_source_link_label || 'Ver fuente' }}</a><span v-else>{{ matchedTariffRule.source_label }}</span></p>
-                  </div>
-                  <div v-else-if="weightTariffQuote" class="cb-ps-flow__price-card" aria-live="polite">
+                  <div v-if="weightTariffQuote" class="cb-ps-flow__price-card" aria-live="polite">
                     <div v-if="weightTariffQuote.extra_weight === 0" class="cb-ps-flow__price-line">
-                      <span>{{ calculatorSettings.quote_applied_label || 'Tarifa aplicada hasta' }} {{ weightTariffQuote.billable_weight }} {{ weightUnit(weightTariffQuote.billable_weight) }}</span>
+                      <span>{{ calculatorSettings.quote_applied_label || 'Tarifa aplicada hasta' }} {{ weightTariffQuote.billable_weight }} lb</span>
                       <strong>{{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.base_price) }}</strong>
                     </div>
                     <template v-else>
-                      <div class="cb-ps-flow__price-line"><span>{{ calculatorSettings.quote_base_label || 'Tarifa base para' }} {{ weightTariffQuote.base_weight }} {{ weightUnitPlural }}</span><strong>{{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.base_price) }}</strong></div>
-                      <div class="cb-ps-flow__price-line cb-ps-flow__price-line--extra"><span>{{ calculatorSettings.quote_excess_label || 'Peso excedente' }}: {{ formatParcelWeight(weightTariffQuote.extra_weight) }} {{ weightUnitPlural }} × {{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.extra_rate) }}/{{ weightUnitPlural }}</span><strong>{{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.extra_price) }}</strong></div>
+                      <div class="cb-ps-flow__price-line"><span>{{ calculatorSettings.quote_base_label || 'Tarifa base para' }} {{ weightTariffQuote.base_weight }} lb</span><strong>{{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.base_price) }}</strong></div>
+                      <div class="cb-ps-flow__price-line cb-ps-flow__price-line--extra"><span>{{ calculatorSettings.quote_excess_label || 'Peso excedente' }}: {{ formatParcelWeight(weightTariffQuote.extra_weight) }} lb × {{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.extra_rate) }}/lb</span><strong>{{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.extra_price) }}</strong></div>
                     </template>
                     <div class="cb-ps-flow__price-total"><span>{{ calculatorSettings.total_label || 'Total estimado de envío' }}</span><strong>{{ weightTariffQuote.currency }} {{ formatParcelPrice(weightTariffQuote.shipping_price) }}</strong></div>
                   </div>
                   <div v-else class="cb-ps-flow__notice cb-ps-flow__notice--pending" role="status">
                     <span class="cb-ps-flow__pending-mark" aria-hidden="true">!</span>
-                    <div><strong>{{ calculatorSettings.pending_quote_title || 'Cotización pendiente de confirmación' }}</strong><p>{{ calculatorSettings.pending_quote_message || 'No hay una tarifa cargada para el peso indicado ni una regla confirmada para los productos seleccionados.' }}</p></div>
+                    <div><strong>{{ calculatorSettings.pending_quote_title || 'Cotización pendiente de confirmación' }}</strong><p>{{ calculatorSettings.pending_quote_message || 'No hay una tarifa cargada para el peso facturable indicado. Contacta a Correos para confirmar el costo.' }}</p></div>
                   </div>
 
-                  <p v-if="quoteLimitExceeded" class="cb-ps-flow__limit-error" role="alert">El valor de los productos de un envío no puede superar USD 999. Retire productos o divídalos en otro envío.</p>
+                  <p v-if="totalWeightLimitExceeded" class="cb-ps-flow__limit-error" role="alert">El peso total del envío no puede superar 40 kg ({{ formatParcelWeight(maxWeightPounds) }} lb).</p>
                   <p class="cb-ps-flow__disclaimer">{{ calculatorSettings.estimate_disclaimer || 'El peso y el costo finales se confirman cuando el paquete llega al almacén y es verificado. Impuestos y otros cargos no se incluyen sin una regla y un valor confirmados.' }}</p>
                   <div class="cb-ps-flow__actions cb-ps-flow__actions--quote">
                     <button type="button" class="cb-ps-flow__button cb-ps-flow__button--secondary" @click="openProductEditor">{{ calculatorSettings.button_edit_products || 'Editar productos' }}</button>
-                    <a class="cb-ps-flow__button cb-ps-flow__button--primary" :href="secondaryButtonUrl" :target="linkTarget(secondaryButtonUrl)" :rel="linkRel(secondaryButtonUrl)">{{ calculatorSettings.button_create_account || 'Crear mi casilla' }} <span class="cb-ps-flow__button-arrow" aria-hidden="true">→</span></a>
+                    <a v-if="!shipmentLimitsExceeded" class="cb-ps-flow__button cb-ps-flow__button--primary" :href="secondaryButtonUrl" :target="linkTarget(secondaryButtonUrl)" :rel="linkRel(secondaryButtonUrl)">{{ calculatorSettings.button_create_account || 'Crear mi casilla' }} <span class="cb-ps-flow__button-arrow" aria-hidden="true">→</span></a>
+                    <button v-else type="button" class="cb-ps-flow__button cb-ps-flow__button--primary" disabled aria-disabled="true">Envío sobre el límite</button>
                   </div>
                 </section>
                 </transition>
@@ -492,7 +507,7 @@
 
               <section class="cb-ps-editor-modal__section" aria-labelledby="cb-ps-editor-list-title">
                 <div class="cb-ps-editor-modal__section-heading">
-                  <div><span class="cb-ps-editor-modal__step">2</span><h3 id="cb-ps-editor-list-title">Productos, peso y valor</h3></div>
+                  <div><span class="cb-ps-editor-modal__step">2</span><h3 id="cb-ps-editor-list-title">Productos y peso</h3></div>
                   <small>{{ productEditorDraft.length }} {{ productEditorDraft.length === 1 ? 'producto' : 'productos' }}</small>
                 </div>
                 <div v-if="productEditorDraft.length" class="cb-ps-editor-modal__products">
@@ -501,9 +516,21 @@
                       <img v-if="selectedProductCategory(product.categoryKey)?.image" :src="selectedProductCategory(product.categoryKey).image" alt="" loading="lazy" decoding="async">
                       <span v-else v-html="categoryIllustration(selectedProductCategory(product.categoryKey))"></span>
                     </span>
-                    <span class="cb-ps-editor-modal__product-copy"><strong>{{ productDisplayName(product) }}</strong><small>{{ productCategoryLabel(product.categoryKey) }}</small></span>
+                    <span class="cb-ps-editor-modal__product-copy">
+                      <strong>{{ productDisplayName(product) }}</strong>
+                      <small>{{ productCategoryLabel(product.categoryKey) }}</small>
+                      <span class="cb-ps-flow__product-unit-control">
+                        <small class="cb-ps-flow__product-unit-caption">Unidad de este producto</small>
+                        <span class="cb-ps-flow__product-unit" role="group" :aria-label="'Unidad de peso para ' + productDisplayName(product)">
+                          <button type="button" :class="{ 'is-selected': productWeightUnit(product) === 'lb' }" :aria-pressed="productWeightUnit(product) === 'lb'" @click="setProductWeightUnit(product, 'lb')">lb</button>
+                          <button type="button" :class="{ 'is-selected': productWeightUnit(product) === 'kg' }" :aria-pressed="productWeightUnit(product) === 'kg'" @click="setProductWeightUnit(product, 'kg')">kg</button>
+                        </span>
+                      </span>
+                    </span>
                     <div class="cb-ps-editor-modal__weight-control">
-                      <label :for="'product-editor-weight-' + product.id">Peso</label>
+                      <div class="cb-ps-flow__weight-control-head">
+                        <label :for="'product-editor-weight-' + product.id" class="cb-ps-flow__weight-label">Peso estimado ({{ productWeightUnit(product) }})</label>
+                      </div>
                       <div class="cb-ps-editor-modal__weight-input">
                         <input
                           :id="'product-editor-weight-' + product.id"
@@ -511,6 +538,7 @@
                           :class="{ 'is-invalid': shouldShowProductEditorWeightError(product) }"
                           type="number"
                           min="0.01"
+                          :max="maxWeightForProduct(product)"
                           step="0.01"
                           inputmode="decimal"
                           required
@@ -518,9 +546,9 @@
                           :aria-describedby="shouldShowProductEditorWeightError(product) ? 'product-editor-error-' + product.id : null"
                           @blur="markProductEditorWeightTouched(product.id)"
                         >
-                        <span>{{ weightUnit(product.weight) }}</span>
+                        <span>{{ weightUnit(product) }}</span>
                       </div>
-                      <small v-if="shouldShowProductEditorWeightError(product)" :id="'product-editor-error-' + product.id" class="cb-ps-editor-modal__error" role="status">Ingresa un peso mayor que cero.</small>
+                      <small v-if="shouldShowProductEditorWeightError(product)" :id="'product-editor-error-' + product.id" class="cb-ps-editor-modal__error" role="status">{{ productWeightErrorMessage(product) }}</small>
                     </div>
                     <button type="button" class="cb-ps-editor-modal__remove" :aria-label="'Quitar ' + productDisplayName(product)" @click="removeProductEditorItem(product.id)">
                       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7h14M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg>
@@ -533,8 +561,10 @@
 
               <div class="cb-ps-editor-modal__total" aria-live="polite">
                 <span>Peso total estimado</span>
-                <strong>{{ formatParcelWeight(productEditorTotalWeight) }} <small>{{ weightUnit(productEditorTotalWeight) }}</small></strong>
+                <strong>{{ formatParcelWeight(productEditorTotalWeightPounds) }} <small>lb</small></strong>
               </div>
+              <p class="cb-ps-flow__weight-limit">Límite postal: 40 kg ({{ formatParcelWeight(maxWeightPounds) }} lb).</p>
+              <p v-if="productEditorTotalWeightLimitExceeded" class="cb-ps-flow__limit-error" role="alert">El peso total del envío no puede superar 40 kg ({{ formatParcelWeight(maxWeightPounds) }} lb).</p>
             </div>
 
             <footer class="cb-ps-editor-modal__footer">
@@ -636,6 +666,9 @@ const POSTALSHOPPER_WEIGHT_TARIFF = [
   { weight: 19, price: 79.70 }, { weight: 20, price: 83.70 }
 ]
 const POSTALSHOPPER_EXCESS_RATE_PER_POUND = 4
+const POSTALSHOPPER_POUNDS_PER_KG = 2.20462262185
+const POSTALSHOPPER_MAX_WEIGHT_KG = 40
+const POSTALSHOPPER_MAX_WEIGHT_POUNDS = POSTALSHOPPER_MAX_WEIGHT_KG * POSTALSHOPPER_POUNDS_PER_KG
 
 const POSTALSHOPPER_SOURCE_PAGE = {
   meta_title: '',
@@ -706,7 +739,7 @@ const POSTALSHOPPER_SOURCE_PAGE = {
         weight_help: 'Ingresa el peso estimado de cada producto.',
         weight_unit_singular: 'libra',
         weight_unit_plural: 'libras',
-        currency_label: '$us',
+        currency_label: 'USD',
         total_label: 'Tarifa estimada',
         excess_weight_price_per_lb: POSTALSHOPPER_EXCESS_RATE_PER_POUND,
         shipping_label: 'Envío Postal Shopper',
@@ -832,7 +865,7 @@ export default {
         return {
           title: this.calculatorSettings.weight_title || '¿Cuánto pesa cada producto?',
           accent: '',
-          subtitle: this.calculatorSettings.weight_help || `Ingresa el peso estimado en ${this.weightUnitPlural}.`
+          subtitle: this.calculatorSettings.weight_help || 'Ingresa el peso estimado de cada producto y elige lb o kg.'
         }
       }
       return {
@@ -841,8 +874,11 @@ export default {
         subtitle: this.calculatorSettings.quote_help || 'Revisa los productos y el peso estimado.'
       }
     },
-    weightUnitPlural() {
-      return this.calculatorSettings.weight_unit_plural || 'libras'
+    maxWeightPounds() {
+      return POSTALSHOPPER_MAX_WEIGHT_POUNDS
+    },
+    maxWeightKg() {
+      return POSTALSHOPPER_MAX_WEIGHT_KG
     },
     tariffCategories() {
       const categories = this.calculatorSettings.categories
@@ -855,10 +891,6 @@ export default {
       const categories = this.calculatorSettings.categories
       return Array.isArray(categories) && categories.some((category) => category && category.key && category.label && category.is_active !== false && !this.isReferenceCategory(category))
     },
-    tariffRules() {
-      const rules = this.calculatorSettings.tariff_rules
-      return Array.isArray(rules) ? rules.filter(Boolean) : []
-    },
     weightTariffRates() {
       const configuredRates = this.getSectionItems('postalshopper_calculator')
         .filter((item) => Number.isInteger(Number(item.weight)) && Number(item.weight) >= 1 && Number(item.weight) <= 20)
@@ -870,9 +902,11 @@ export default {
       }))
     },
     weightTariffQuote() {
-      if (!this.weightsAreValid || this.matchingTariffRules.length > 0) return null
+      if (!this.weightsAreValid || this.totalWeightLimitExceeded) return null
 
-      const weight = this.totalParcelWeight
+      const weight = Math.round((this.totalParcelWeightPounds + Number.EPSILON) * 100) / 100
+      if (!Number.isFinite(weight) || weight <= 0) return null
+      const billableWeight = Math.max(1, Math.ceil(weight - 1e-9))
       const ratesByWeight = new Map(this.weightTariffRates.map((rate) => [rate.weight, rate.price]))
       const configuredExtraRate = this.calculatorSettings.excess_weight_price_per_lb
       const extraRateValue = configuredExtraRate === '' || configuredExtraRate === null || configuredExtraRate === undefined
@@ -881,10 +915,12 @@ export default {
       const extraRate = Number.isFinite(extraRateValue) && extraRateValue >= 0
         ? extraRateValue
         : POSTALSHOPPER_EXCESS_RATE_PER_POUND
-      const currency = this.calculatorSettings.currency_label || '$us'
+      const configuredCurrency = String(this.calculatorSettings.currency_label || 'USD').trim()
+      const currency = ['usd', 'us$', '$us'].includes(configuredCurrency.toLowerCase().replace(/\s/g, ''))
+        ? 'USD'
+        : configuredCurrency
 
-      if (weight <= 20) {
-        const billableWeight = Math.max(1, Math.ceil(weight - 1e-9))
+      if (billableWeight <= 20) {
         const basePrice = ratesByWeight.get(billableWeight)
         if (!Number.isFinite(basePrice)) return null
 
@@ -927,79 +963,22 @@ export default {
     productEditorDraftValid() {
       return this.productEditorDraft.length > 0 && this.productEditorDraft.every((product) => {
         return Boolean(product.categoryKey) && this.isProductWeightValid(product)
-      })
+      }) && !this.productEditorTotalWeightLimitExceeded
     },
-    productEditorTotalWeight() {
-      return this.productEditorDraft.reduce((total, product) => {
-        const weight = Number(product.weight)
-        return total + (Number.isFinite(weight) && weight > 0 ? weight : 0)
-      }, 0)
+    productEditorTotalWeightPounds() {
+      return this.productEditorDraft.reduce((total, product) => total + this.productWeightInPounds(product), 0)
     },
-    totalParcelWeight() {
-      return this.parcelProducts.reduce((total, product) => {
-        const weight = Number(product.weight)
-        return total + (Number.isFinite(weight) && weight > 0 ? weight : 0)
-      }, 0)
+    productEditorTotalWeightLimitExceeded() {
+      return this.productEditorTotalWeightPounds > this.maxWeightPounds + 1e-8
     },
-    hasConfirmedCategories() {
-      if (!this.tariffCategories.length || !this.parcelProducts.length) return false
-      const keys = this.parcelProducts.map((product) => product.categoryKey).filter(Boolean)
-      return keys.length > 0 && keys.every((key) => {
-        const category = this.tariffCategories.find((item) => item.key === key)
-        const hasSource = Boolean(String(category?.source_label || '').trim() || String(category?.source_url || '').trim())
-        return category && this.isCategoryConfirmed(category) && hasSource
-      })
+    totalParcelWeightPounds() {
+      return this.parcelProducts.reduce((total, product) => total + this.productWeightInPounds(product), 0)
     },
-    matchingTariffRules() {
-      if (!this.weightsAreValid || !this.hasConfirmedCategories) return []
-      const categoryKeys = this.parcelProducts.map((product) => product.categoryKey).sort()
-      const matches = this.tariffRules.filter((rule) => {
-        const keys = Array.isArray(rule.category_keys)
-          ? rule.category_keys.map((key) => String(key).trim()).filter(Boolean).sort()
-          : String(rule.category_keys || '').split(',').map((key) => key.trim()).filter(Boolean).sort()
-        const priceValue = String(rule.shipping_price == null ? '' : rule.shipping_price).trim()
-        const price = Number(priceValue.replace(',', '.'))
-        const minWeight = Number(rule.weight_min)
-        const maxWeight = Number(rule.weight_max)
-        const currency = String(rule.currency || '').trim()
-        const confirmed = rule.confirmed === true || rule.confirmed === 1 || rule.confirmed === '1' || rule.confirmed === 'true'
-        const hasSource = Boolean(String(rule.source_label || '').trim() || String(rule.source_url || '').trim())
-
-        return confirmed
-          && hasSource
-          && priceValue !== ''
-          && Number.isFinite(price)
-          && price >= 0
-          && Number.isFinite(minWeight)
-          && Number.isFinite(maxWeight)
-          && currency !== ''
-          && minWeight > 0
-          && maxWeight >= minWeight
-          && this.totalParcelWeight >= minWeight
-          && this.totalParcelWeight <= maxWeight
-          && keys.length === categoryKeys.length
-          && keys.every((key, index) => key === categoryKeys[index])
-      })
-
-      return matches
+    totalWeightLimitExceeded() {
+      return this.totalParcelWeightPounds > this.maxWeightPounds + 1e-8
     },
-    matchedTariffRule() {
-      return this.matchingTariffRules.length === 1 ? this.matchingTariffRules[0] : null
-    },
-    calculatedQuotePrice() {
-      const rawPrice = this.matchedTariffRule
-        ? this.matchedTariffRule.shipping_price
-        : this.weightTariffQuote?.shipping_price
-      const price = Number(String(rawPrice == null ? '' : rawPrice).trim().replace(',', '.'))
-      return Number.isFinite(price) ? price : null
-    },
-    calculatedQuoteCurrency() {
-      return this.matchedTariffRule?.currency || this.weightTariffQuote?.currency || ''
-    },
-    quoteLimitExceeded() {
-      const currency = String(this.calculatedQuoteCurrency).toLowerCase().replace(/[^a-z]/g, '')
-      const isUsd = currency === 'usd' || currency === 'us'
-      return isUsd && this.calculatedQuotePrice !== null && this.calculatedQuotePrice > 999
+    shipmentLimitsExceeded() {
+      return this.totalWeightLimitExceeded
     },
     headerSettings() {
       return this.getSectionSettings('header')
@@ -1183,7 +1162,8 @@ export default {
         id: `product-${this.nextParcelProductId}`,
         name: category.label,
         categoryKey,
-        weight: ''
+        weight: '',
+        weightUnit: 'lb'
       })
       this.nextParcelProductId += 1
     },
@@ -1277,7 +1257,8 @@ export default {
         id: `product-${this.nextParcelProductId}`,
         name: category.label,
         categoryKey,
-        weight: ''
+        weight: '',
+        weightUnit: 'lb'
       })
       this.nextParcelProductId += 1
     },
@@ -1298,6 +1279,10 @@ export default {
         this.$nextTick(() => {
           const firstInvalidInput = this.$refs.productEditorModal?.querySelector('.cb-ps-editor-modal__weight-input input[aria-invalid="true"]')
           if (firstInvalidInput) firstInvalidInput.focus()
+          else if (this.productEditorTotalWeightLimitExceeded) {
+            const weights = this.$refs.productEditorModal?.querySelectorAll('.cb-ps-editor-modal__weight-input input')
+            weights?.[weights.length - 1]?.focus()
+          }
         })
         return
       }
@@ -1320,11 +1305,24 @@ export default {
         })
         return
       }
+      if (this.shipmentLimitsExceeded) return
       this.calculatorStep = 3
     },
     isProductWeightValid(product) {
       const weight = Number(product.weight)
-      return Number.isFinite(weight) && weight > 0
+      return Number.isFinite(weight)
+        && weight > 0
+        && weight <= this.maxWeightForProduct(product)
+        && Math.abs(weight * 100 - Math.round(weight * 100)) < 1e-7
+    },
+    productWeightErrorMessage(product) {
+      const weight = Number(product.weight)
+      const hasValidPrecision = Number.isFinite(weight)
+        && weight > 0
+        && Math.abs(weight * 100 - Math.round(weight * 100)) < 1e-7
+
+      if (!hasValidPrecision) return 'Ingresa un peso positivo con hasta 2 decimales.'
+      return `El peso no puede superar ${this.formatParcelWeight(this.maxWeightForProduct(product))} ${this.productWeightUnit(product)}.`
     },
     formatParcelWeight(value) {
       const weight = Number(value)
@@ -1332,10 +1330,31 @@ export default {
         ? weight.toLocaleString('es-BO', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
         : '0'
     },
-    weightUnit(value) {
-      return Number(value) === 1
-        ? (this.calculatorSettings.weight_unit_singular || 'libra')
-        : this.weightUnitPlural
+    weightUnit(product) {
+      return this.productWeightUnit(product)
+    },
+    productWeightUnit(product) {
+      return product && product.weightUnit === 'kg' ? 'kg' : 'lb'
+    },
+    maxWeightForProduct(product) {
+      return this.productWeightUnit(product) === 'kg' ? this.maxWeightKg : this.maxWeightPounds
+    },
+    productWeightInPounds(product) {
+      const weight = Number(product && product.weight)
+      if (!Number.isFinite(weight) || weight <= 0) return 0
+      return this.productWeightUnit(product) === 'kg' ? weight * POSTALSHOPPER_POUNDS_PER_KG : weight
+    },
+    setProductWeightUnit(product, unit) {
+      if (unit !== 'kg' && unit !== 'lb') return
+      if (!product || unit === this.productWeightUnit(product)) return
+
+      const weight = Number(product.weight)
+      if (Number.isFinite(weight) && weight > 0) {
+        const pounds = this.productWeightUnit(product) === 'kg' ? weight * POSTALSHOPPER_POUNDS_PER_KG : weight
+        const convertedWeight = unit === 'kg' ? pounds / POSTALSHOPPER_POUNDS_PER_KG : pounds
+        this.$set(product, 'weight', Math.round((convertedWeight + Number.EPSILON) * 100) / 100)
+      }
+      this.$set(product, 'weightUnit', unit)
     },
     isCategoryConfirmed(category) {
       if (!category || this.isReferenceCategory(category)) return false
