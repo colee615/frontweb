@@ -119,11 +119,11 @@
             v-bind="destinationCardAttributes(item)"
             class="cb-ps-destination-card"
             :class="{
-              'cb-ps-destination-card--linked': item.url,
+              'cb-ps-destination-card--linked': isDestinationAvailable(item.status),
               'cb-ps-destination-card--available': isDestinationAvailable(item.status)
             }"
             :aria-label="destinationCardAriaLabel(item)"
-            :aria-disabled="!item.url || null"
+            :aria-disabled="!isDestinationAvailable(item.status) || null"
           >
             <span
               class="cb-ps-destination-card__flag"
@@ -141,7 +141,7 @@
                 {{ item.status || 'Próximamente' }}
               </small>
             </span>
-            <span v-if="item.url" class="cb-ps-destination-card__arrow" aria-hidden="true">↗</span>
+            <span v-if="isDestinationAvailable(item.status)" class="cb-ps-destination-card__arrow" aria-hidden="true">↗</span>
           </component>
 
           <article
@@ -473,11 +473,11 @@
               <p v-if="benefitsSettings.banner_text">{{ benefitsSettings.banner_text }}</p>
             </div>
             <a
-              v-if="benefitsSettings.banner_button_label && benefitsSettings.banner_button_url"
+              v-if="benefitsSettings.banner_button_label && benefitsBannerButtonUrl"
               class="cb-ps-btn cb-ps-btn--banner"
-              :href="benefitsSettings.banner_button_url"
-              :target="linkTarget(benefitsSettings.banner_button_url)"
-              :rel="linkRel(benefitsSettings.banner_button_url)"
+              :href="benefitsBannerButtonUrl"
+              :target="linkTarget(benefitsBannerButtonUrl)"
+              :rel="linkRel(benefitsBannerButtonUrl)"
             >{{ benefitsSettings.banner_button_label }}</a>
           </div>
         </div>
@@ -700,7 +700,7 @@
 import { sanitizeContentTree } from '~/utils/contentSecurity'
 import { fetchPageWithSharedLayout } from '~/utils/sharedLayout'
 
-const POSTALSHOPPER_REGISTER_URL = 'https://clientescorreos.sistemaml.net/'
+const POSTALSHOPPER_REGISTER_URL = 'https://delivery.correos.gob.bo/'
 // These examples help describe a purchase only. They are never treated as official tariff categories.
 const POSTALSHOPPER_REFERENCE_CATEGORIES = [
   { key: 'reference-clothing-footwear', label: 'Ropa y calzado', icon: 'clothing', confirmed: false, is_reference: true },
@@ -1123,7 +1123,10 @@ export default {
       return this.getSectionSettings('footer')
     },
     headerLinks() {
-      return this.getSectionItems('header')
+      return this.getSectionItems('header').map((item) => ({
+        ...item,
+        url: this.isRegistrationActionLabel(item.label) ? POSTALSHOPPER_REGISTER_URL : item.url
+      }))
     },
     footerLinks() {
       return this.getSectionItems('footer')
@@ -1159,13 +1162,7 @@ export default {
       return ['como funciona', 'ver tutorial'].includes(label.toLowerCase()) ? 'Cómo funciona' : (label || 'Cómo funciona')
     },
     secondaryButtonUrl() {
-      const url = String(this.heroSettings.secondary_button_url || '').trim()
-      if (!url || url === '#' || url === '/contacto') {
-        const directService = this.availableDestinationItems.find((item) => item.url)
-        return directService?.url || POSTALSHOPPER_REGISTER_URL
-      }
-
-      return url
+      return POSTALSHOPPER_REGISTER_URL
     },
     stepsSettings() {
       const settings = this.getSectionSettings('postalshopper_steps')
@@ -1295,6 +1292,12 @@ export default {
     },
     benefitItems() {
       return this.getSectionItems('postalshopper_benefits')
+    },
+    benefitsBannerButtonUrl() {
+      const configuredUrl = String(this.benefitsSettings.banner_button_url || '').trim()
+      return this.isRegistrationActionLabel(this.benefitsSettings.banner_button_label)
+        ? POSTALSHOPPER_REGISTER_URL
+        : configuredUrl
     }
   },
   methods: {
@@ -1778,13 +1781,11 @@ export default {
       return { href: url || '#' }
     },
     destinationCardComponent(item) {
-      if (!item.url) return 'article'
-      return this.isInternalRoute(item.url) ? 'nuxt-link' : 'a'
+      return this.isDestinationAvailable(item.status) ? 'a' : 'article'
     },
     destinationCardAttributes(item) {
-      if (!item.url) return {}
-      if (this.isInternalRoute(item.url)) return { to: item.url }
-      return { href: item.url, target: '_blank', rel: 'noopener noreferrer' }
+      if (!this.isDestinationAvailable(item.status)) return {}
+      return { href: POSTALSHOPPER_REGISTER_URL, target: '_blank', rel: 'noopener noreferrer' }
     },
     destinationFlagImage(flag) {
       const value = String(flag || '').trim()
@@ -1813,6 +1814,13 @@ export default {
       const value = String(status || '').trim()
       return /\b(disponible|directo|activo|operativo)\b/i.test(value)
         && !/\b(no disponible|inactivo|no operativo)\b/i.test(value)
+    },
+    isRegistrationActionLabel(label) {
+      const normalized = String(label || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+      return /registr|crea(?:r)?.{0,32}casilla|casilla.{0,32}crea(?:r)?|iniciar\s+sesion|abrir.{0,32}casilla|solicit.{0,32}casilla|obten.{0,32}casilla|crea(?:r)?.{0,24}cuenta|abrir.{0,24}cuenta|acceder/.test(normalized)
     }
   },
   head() {
