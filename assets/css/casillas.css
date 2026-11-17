@@ -502,6 +502,7 @@
 }
 
 .cb-casillas-sizes__plans-label {
+  flex: 0 0 auto;
   color: #89a3d7;
   font-size: 15px;
 }
@@ -519,14 +520,25 @@
   color: var(--cb-blue);
   font-size: 15px;
   font-weight: 800;
-  cursor: default;
-  user-select: none;
+  cursor: pointer;
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.cb-casillas-pill:hover {
+  border-color: var(--cb-blue);
+  transform: translateY(-1px);
+}
+
+.cb-casillas-pill:focus-visible {
+  outline: 3px solid rgba(13, 71, 181, 0.24);
+  outline-offset: 2px;
 }
 
 .cb-casillas-pill.is-active {
   border-color: var(--cb-blue);
   background: var(--cb-blue);
   color: #fff;
+  box-shadow: 0 10px 22px rgba(13, 71, 181, 0.15);
 }
 
 .cb-casillas-pill__badge {
@@ -585,10 +597,35 @@
   background: linear-gradient(180deg, #f1f6ff 0%, #eaf1ff 100%);
 }
 
+.cb-casillas-panel__locker-price {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 8px;
+  border: 1px solid rgba(190, 207, 238, 0.9);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--cb-blue);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 3px 9px rgba(26, 62, 123, 0.08);
+}
+
 .cb-casillas-panel__locker.is-active .cb-casillas-panel__locker-box {
   border-color: var(--cb-yellow);
   background: var(--cb-blue);
   box-shadow: 0 0 0 4px rgba(255, 204, 24, 0.2);
+}
+
+.cb-casillas-panel__locker.is-active .cb-casillas-panel__locker-price {
+  border-color: var(--cb-yellow);
+  background: var(--cb-yellow);
+  color: var(--cb-blue);
 }
 
 .cb-casillas-panel__locker-lines {
@@ -651,35 +688,6 @@
   margin-top: 4px;
   color: #90ace0;
   font-size: 14px;
-}
-
-.cb-casillas-panel__detail {
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid rgba(201, 214, 238, 0.8);
-}
-
-.cb-casillas-panel__detail-label {
-  margin: 0 0 10px;
-  color: #9ab4e8;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.cb-casillas-panel__detail strong {
-  display: block;
-  color: var(--cb-blue);
-  font-size: 34px;
-  font-weight: 900;
-}
-
-.cb-casillas-panel__detail p {
-  margin: 12px 0 0;
-  color: #6d89bc;
-  font-size: 17px;
-  line-height: 1.55;
 }
 
 .cb-casillas-requirements {

@@ -150,32 +150,19 @@
             </div>
 
             <div class="cb-casillas-sizes__plans">
-              <span v-if="sizesSettings.plan_label" class="cb-casillas-sizes__plans-label">{{ sizesSettings.plan_label }}</span>
+              <span class="cb-casillas-sizes__plans-label">{{ sizesSettings.plan_label || 'Plan de alquiler:' }}</span>
 
-              <span
-                v-if="sizesSettings.quarterly_label"
+              <button
+                v-for="plan in planOptions"
+                :key="plan.key"
+                type="button"
                 class="cb-casillas-pill"
-                :class="{ 'is-active': selectedPlan === 'quarterly' }"
+                :class="{ 'is-active': selectedPlan === plan.key }"
+                :aria-pressed="selectedPlan === plan.key"
+                @click="selectPlan(plan.key)"
               >
-                {{ sizesSettings.quarterly_label }}
-              </span>
-
-              <span
-                v-if="sizesSettings.semiannual_label"
-                class="cb-casillas-pill"
-                :class="{ 'is-active': selectedPlan === 'semiannual' }"
-              >
-                {{ sizesSettings.semiannual_label }}
-              </span>
-
-              <span
-                v-if="sizesSettings.annual_label"
-                class="cb-casillas-pill"
-                :class="{ 'is-active': selectedPlan === 'annual' }"
-              >
-                <span v-if="sizesSettings.annual_badge" class="cb-casillas-pill__badge">{{ sizesSettings.annual_badge }}</span>
-                {{ sizesSettings.annual_label }}
-              </span>
+                {{ plan.label }}
+              </button>
             </div>
           </article>
 
@@ -189,10 +176,14 @@
                 type="button"
                 class="cb-casillas-panel__locker"
                 :class="{ 'is-active': index === selectedSizeIndex }"
+                :aria-pressed="index === selectedSizeIndex"
                 @click="selectSize(index)"
               >
                 <span v-if="index === selectedSizeIndex" class="cb-casillas-panel__selected">Seleccionada</span>
                 <span class="cb-casillas-panel__locker-box">
+                  <span v-if="priceForItem(item, selectedPlan) !== null" class="cb-casillas-panel__locker-price">
+                    Bs {{ formatBolivianos(priceForItem(item, selectedPlan)) }}
+                  </span>
                   <span class="cb-casillas-panel__locker-lines"></span>
                   <span class="cb-casillas-panel__locker-icon" v-html="resolveIcon(item.icon || 'mailbox')"></span>
                 </span>
@@ -201,11 +192,6 @@
               </button>
             </div>
 
-            <div v-if="activeSizeItem" class="cb-casillas-panel__detail">
-              <p class="cb-casillas-panel__detail-label">{{ activeSizeItem.title }}</p>
-              <strong>{{ activeSizeItem.dimensions }}</strong>
-              <p>{{ activeSizeItem.text }}</p>
-            </div>
           </article>
         </div>
       </section>
@@ -267,7 +253,7 @@ const CASILLAS_SOURCE_PAGE = {
     { key: 'casillas_hero', settings: { badge: '', title_line_one_white: '', title_line_one_yellow: '', title_line_two_white: '', highlight_text: '', subtitle: '', primary_button_label: '', primary_button_url: '', secondary_button_label: '', secondary_button_url: '', background_image: '' }, items: [] },
     { key: 'casillas_intro', settings: { eyebrow: '', title: '', paragraph_one: '', paragraph_two: '' }, items: [] },
     { key: 'casillas_benefits', settings: { title: '', subtitle: '' }, items: [] },
-    { key: 'casillas_sizes', settings: { title: '', subtitle: '', plan_label: '', quarterly_label: '', semiannual_label: '', annual_label: '', annual_badge: '', panel_title: '' }, items: [] },
+    { key: 'casillas_sizes', settings: { title: '', subtitle: '', plan_label: 'Plan de alquiler:', monthly_label: 'Mensual', semiannual_label: 'Semestral', annual_label: 'Anual', panel_title: '' }, items: [] },
     { key: 'casillas_requirements', settings: { title: '', subtitle: '', banner_title: '', banner_text: '', banner_button_label: '', banner_button_url: '' }, items: [] },
     { key: 'footer', settings: {}, items: [] }
   ]
@@ -283,7 +269,7 @@ export default {
     return {
       isBootLoading: true,
       selectedSizeIndex: 1,
-      selectedPlan: 'annual'
+      selectedPlan: 'monthly'
     }
   },
   async mounted() {
@@ -377,11 +363,12 @@ export default {
     requirementItems() {
       return this.getSectionItems('casillas_requirements')
     },
-    activeSizeItem() {
-      if (!this.sizeItems.length) {
-        return null
-      }
-      return this.sizeItems[this.selectedSizeIndex] || this.sizeItems[0]
+    planOptions() {
+      return [
+        { key: 'monthly', label: this.sizesSettings.monthly_label || 'Mensual' },
+        { key: 'semiannual', label: this.sizesSettings.semiannual_label || 'Semestral' },
+        { key: 'annual', label: this.sizesSettings.annual_label || 'Anual' }
+      ]
     }
   },
   watch: {
@@ -432,7 +419,23 @@ export default {
       this.selectedSizeIndex = index
     },
     selectPlan(plan) {
-      this.selectedPlan = plan
+      if (['monthly', 'semiannual', 'annual'].includes(plan)) {
+        this.selectedPlan = plan
+      }
+    },
+    priceForItem(item, plan) {
+      if (!item) {
+        return null
+      }
+      const value = item[`${plan}_price`]
+      if (value === undefined || value === null || value === '') {
+        return null
+      }
+      const price = Number(value)
+      return Number.isFinite(price) && price >= 0 ? price : null
+    },
+    formatBolivianos(value) {
+      return new Intl.NumberFormat('es-BO', { maximumFractionDigits: 2 }).format(value)
     },
     buildRequirementLines(item) {
       return [

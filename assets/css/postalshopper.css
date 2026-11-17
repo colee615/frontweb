@@ -5344,3 +5344,17 @@
     min-height: 29px;
   }
 }
+
+.cb-ps-flow__weight-total > strong {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4px 7px;
+}
+
+.cb-ps-flow__weight-total > strong small + small {
+  margin-left: 3px;
+  color: #7185a0;
+  font-size: 12px;
+}
