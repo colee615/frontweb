@@ -343,7 +343,8 @@
                   <div class="cb-ps-flow__summary">
                     <div v-for="product in parcelProducts" :key="product.id" class="cb-ps-flow__summary-row">
                       <span class="cb-ps-flow__summary-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none"><path d="m12 2 8 4.5v11L12 22 4 17.5v-11L12 2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 22V11m8-4.5-8 4.5-8-4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                        <img v-if="selectedProductCategory(product.categoryKey)?.image" :src="selectedProductCategory(product.categoryKey).image" alt="" loading="lazy" decoding="async">
+                        <svg v-else viewBox="0 0 24 24" fill="none"><path d="m12 2 8 4.5v11L12 22 4 17.5v-11L12 2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 22V11m8-4.5-8 4.5-8-4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
                       </span>
                       <span class="cb-ps-flow__summary-copy"><strong>{{ productDisplayName(product) }}</strong><small>{{ productCategoryLabel(product.categoryKey) }}</small></span>
                       <strong class="cb-ps-flow__summary-weight">{{ formatParcelWeight(product.weight) }} {{ productWeightUnit(product) }}</strong>
@@ -934,7 +935,7 @@ export default {
       if (!this.weightsAreValid) return null
 
       const weight = Math.round((this.totalParcelWeightPounds + Number.EPSILON) * 100) / 100
-      if (!Number.isFinite(weight) || weight <= 0 || weight > this.maxWeightPounds + 1e-9) return null
+      if (!Number.isFinite(weight) || weight <= 0) return null
       const billableWeight = Math.max(1, Math.ceil(weight - 1e-9))
       const ratesByWeight = new Map(this.weightTariffRates.map((rate) => [rate.weight, rate.price]))
       const configuredExtraRate = this.calculatorSettings.excess_weight_price_per_lb
@@ -963,7 +964,10 @@ export default {
       }
 
       const basePrice = ratesByWeight.get(20)
-      const shippingPrice = ratesByWeight.get(billableWeight)
+      const configuredShippingPrice = ratesByWeight.get(billableWeight)
+      const shippingPrice = Number.isFinite(configuredShippingPrice)
+        ? configuredShippingPrice
+        : Math.round((basePrice + ((billableWeight - 20) * extraRate) + Number.EPSILON) * 100) / 100
       if (!Number.isFinite(basePrice) || !Number.isFinite(shippingPrice)) return null
 
       const extraWeight = billableWeight - 20

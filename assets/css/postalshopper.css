@@ -2490,6 +2490,13 @@
   height: 21px;
 }
 
+.cb-ps-flow__summary-icon img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: contain;
+}
+
 .cb-ps-flow__summary-weight {
   color: #31587f;
   font-size: 12px;
@@ -4469,13 +4476,17 @@
   border-color: #1556ad;
   border-radius: 12px;
   background: #1556ad;
+  color: #fff;
   box-shadow: 0 5px 12px rgba(21, 86, 173, 0.14);
+  text-decoration: none;
 }
 
 .cb-ps-flow__actions .cb-ps-flow__button--primary:not(:disabled):hover {
   border-color: #104a99;
   background: #104a99;
+  color: #fff;
   box-shadow: 0 7px 15px rgba(21, 86, 173, 0.18);
+  text-decoration: none;
 }
 
 .cb-ps-flow__actions .cb-ps-flow__button-arrow {
