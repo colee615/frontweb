@@ -304,6 +304,7 @@
                     <div v-for="product in parcelProducts" :key="product.id" class="cb-ps-flow__weight-row">
                       <div class="cb-ps-flow__weight-product"><strong>{{ productDisplayName(product) }}</strong><small>{{ productCategoryLabel(product.categoryKey) }}</small></div>
                       <div class="cb-ps-flow__weight-control">
+                        <label class="cb-ps-flow__weight-label">Peso estimado</label>
                         <label class="cb-ps-flow__weight-input">
                           <span class="cb-ps-flow__sr-only">{{ calculatorSettings.weight_input_label || 'Peso de' }} {{ productDisplayName(product) }}</span>
                           <input v-model.number="product.weight" :class="{ 'is-invalid': shouldShowWeightError(product) }" type="number" min="0.01" step="0.01" inputmode="decimal" required :aria-invalid="!isProductWeightValid(product)" :aria-describedby="shouldShowWeightError(product) ? 'postalshopper-weight-error-' + product.id : null" @blur="markWeightTouched(product.id)">
@@ -311,9 +312,19 @@
                         </label>
                         <small v-if="shouldShowWeightError(product)" :id="'postalshopper-weight-error-' + product.id" class="cb-ps-flow__field-error" role="status">{{ calculatorSettings.weight_validation_message || 'Ingresa un peso mayor que cero.' }}</small>
                       </div>
+                      <div class="cb-ps-flow__weight-control">
+                        <label class="cb-ps-flow__weight-label" :for="'postalshopper-value-' + product.id">Valor declarado (USD)</label>
+                        <div class="cb-ps-flow__weight-input cb-ps-flow__declared-input">
+                          <input :id="'postalshopper-value-' + product.id" v-model.number="product.valueUsd" :class="{ 'is-invalid': shouldShowDeclaredValueError(product) }" type="number" min="0.01" max="999" step="0.01" inputmode="decimal" required :aria-invalid="!isProductDeclaredValueValid(product)" :aria-describedby="shouldShowDeclaredValueError(product) ? 'postalshopper-value-error-' + product.id : null" @blur="markDeclaredValueTouched(product.id)">
+                          <span>USD</span>
+                        </div>
+                        <small v-if="shouldShowDeclaredValueError(product)" :id="'postalshopper-value-error-' + product.id" class="cb-ps-flow__field-error" role="status">Ingresa un valor válido en USD (máximo USD 999 por envío).</small>
+                      </div>
                     </div>
                   </div>
                   <div class="cb-ps-flow__weight-total"><span>{{ calculatorSettings.weight_total_label || 'Peso estimado total' }}</span><strong>{{ formatParcelWeight(totalParcelWeight) }} <small>{{ weightUnit(totalParcelWeight) }}</small></strong></div>
+                  <div class="cb-ps-flow__weight-total cb-ps-flow__declared-total"><span>Valor declarado total</span><strong>USD {{ formatDeclaredValue(totalDeclaredValue) }}</strong></div>
+                  <p v-if="declaredValueLimitExceeded" class="cb-ps-flow__limit-error" role="alert">El valor de los productos de un envío no puede superar USD 999. Retire productos o divídalos en otro envío.</p>
                   <div class="cb-ps-flow__actions">
                     <button type="button" class="cb-ps-flow__button cb-ps-flow__button--secondary" @click="calculatorStep = 1"><span class="cb-ps-flow__button-leading" aria-hidden="true">←</span>{{ calculatorSettings.button_edit_products || 'Editar productos' }}</button>
                     <button type="button" class="cb-ps-flow__button cb-ps-flow__button--primary" @click="continueToQuote">{{ calculatorSettings.button_continue_quote || 'Ver cotización' }} <span class="cb-ps-flow__button-arrow" aria-hidden="true">→</span></button>
@@ -326,13 +337,19 @@
                       <span class="cb-ps-flow__summary-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none"><path d="m12 2 8 4.5v11L12 22 4 17.5v-11L12 2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 22V11m8-4.5-8 4.5-8-4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
                       </span>
-                      <span class="cb-ps-flow__summary-copy"><strong>{{ productDisplayName(product) }}</strong><small>{{ productCategoryLabel(product.categoryKey) }}</small></span>
+                      <span class="cb-ps-flow__summary-copy"><strong>{{ productDisplayName(product) }}</strong><small>{{ productCategoryLabel(product.categoryKey) }}</small><small>Valor declarado · USD {{ formatDeclaredValue(product.valueUsd) }}</small></span>
                       <strong class="cb-ps-flow__summary-weight">{{ formatParcelWeight(product.weight) }} {{ weightUnit(product.weight) }}</strong>
                     </div>
                     <div class="cb-ps-flow__summary-total"><span>{{ calculatorSettings.quote_weight_total_label || calculatorSettings.weight_total_label || 'Peso total estimado' }}</span><strong>{{ formatParcelWeight(totalParcelWeight) }} {{ weightUnit(totalParcelWeight) }}</strong></div>
+                    <div class="cb-ps-flow__summary-total cb-ps-flow__summary-total--declared"><span>Valor declarado total</span><strong>USD {{ formatDeclaredValue(totalDeclaredValue) }}</strong></div>
                   </div>
 
-                  <div v-if="matchedTariffRule" class="cb-ps-flow__price-card" aria-live="polite">
+                  <p v-if="declaredValueLimitExceeded" class="cb-ps-flow__limit-error" role="alert">El valor de los productos de un envío no puede superar USD 999. Retire productos o divídalos en otro envío.</p>
+                  <div v-else-if="!declaredValuesAreValid" class="cb-ps-flow__notice cb-ps-flow__notice--pending" role="status">
+                    <span class="cb-ps-flow__pending-mark" aria-hidden="true">!</span>
+                    <div><strong>Completa el valor declarado</strong><p>Ingresa un valor válido en USD para cada producto antes de consultar el envío.</p></div>
+                  </div>
+                  <div v-else-if="matchedTariffRule" class="cb-ps-flow__price-card" aria-live="polite">
                     <div class="cb-ps-flow__price-line"><span>{{ calculatorSettings.shipping_label || 'Envío Postal Shopper' }}</span><strong>{{ matchedTariffRule.currency }} {{ formatParcelPrice(matchedTariffRule.shipping_price) }}</strong></div>
                     <div class="cb-ps-flow__price-total"><span>{{ calculatorSettings.total_label || 'Costo estimado de envío' }}</span><strong>{{ matchedTariffRule.currency }} {{ formatParcelPrice(matchedTariffRule.shipping_price) }}</strong></div>
                     <p v-if="matchedTariffRule.source_label || matchedTariffRule.source_url" class="cb-ps-flow__source">{{ calculatorSettings.quote_rule_label || 'Regla confirmada:' }} <a v-if="matchedTariffRule.source_url" :href="matchedTariffRule.source_url" target="_blank" rel="noopener noreferrer">{{ matchedTariffRule.source_label || calculatorSettings.quote_source_link_label || 'Ver fuente' }}</a><span v-else>{{ matchedTariffRule.source_label }}</span></p>
@@ -490,7 +507,7 @@
 
               <section class="cb-ps-editor-modal__section" aria-labelledby="cb-ps-editor-list-title">
                 <div class="cb-ps-editor-modal__section-heading">
-                  <div><span class="cb-ps-editor-modal__step">2</span><h3 id="cb-ps-editor-list-title">Productos y peso</h3></div>
+                  <div><span class="cb-ps-editor-modal__step">2</span><h3 id="cb-ps-editor-list-title">Productos, peso y valor</h3></div>
                   <small>{{ productEditorDraft.length }} {{ productEditorDraft.length === 1 ? 'producto' : 'productos' }}</small>
                 </div>
                 <div v-if="productEditorDraft.length" class="cb-ps-editor-modal__products">
@@ -520,6 +537,27 @@
                       </div>
                       <small v-if="shouldShowProductEditorWeightError(product)" :id="'product-editor-error-' + product.id" class="cb-ps-editor-modal__error" role="status">Ingresa un peso mayor que cero.</small>
                     </div>
+                    <div class="cb-ps-editor-modal__weight-control cb-ps-editor-modal__declared-control">
+                      <label :for="'product-editor-value-' + product.id">Valor declarado (USD)</label>
+                      <div class="cb-ps-editor-modal__weight-input cb-ps-editor-modal__declared-input">
+                        <input
+                          :id="'product-editor-value-' + product.id"
+                          v-model.number="product.valueUsd"
+                          :class="{ 'is-invalid': shouldShowProductEditorDeclaredValueError(product) }"
+                          type="number"
+                          min="0.01"
+                          max="999"
+                          step="0.01"
+                          inputmode="decimal"
+                          required
+                          :aria-invalid="!isProductDeclaredValueValid(product)"
+                          :aria-describedby="shouldShowProductEditorDeclaredValueError(product) ? 'product-editor-value-error-' + product.id : null"
+                          @blur="markProductEditorDeclaredValueTouched(product.id)"
+                        >
+                        <span>USD</span>
+                      </div>
+                      <small v-if="shouldShowProductEditorDeclaredValueError(product)" :id="'product-editor-value-error-' + product.id" class="cb-ps-editor-modal__error" role="status">Ingresa un valor válido en USD (máximo USD 999 por envío).</small>
+                    </div>
                     <button type="button" class="cb-ps-editor-modal__remove" :aria-label="'Quitar ' + productDisplayName(product)" @click="removeProductEditorItem(product.id)">
                       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7h14M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg>
                     </button>
@@ -530,9 +568,10 @@
               </section>
 
               <div class="cb-ps-editor-modal__total" aria-live="polite">
-                <span>Peso total estimado</span>
-                <strong>{{ formatParcelWeight(productEditorTotalWeight) }} <small>{{ weightUnit(productEditorTotalWeight) }}</small></strong>
+                <span class="cb-ps-editor-modal__total-item"><span>Peso total estimado</span><strong>{{ formatParcelWeight(productEditorTotalWeight) }} <small>{{ weightUnit(productEditorTotalWeight) }}</small></strong></span>
+                <span class="cb-ps-editor-modal__total-item"><span>Valor declarado total</span><strong>USD {{ formatDeclaredValue(productEditorTotalDeclaredValue) }}</strong></span>
               </div>
+              <p v-if="productEditorDeclaredValueLimitExceeded" class="cb-ps-editor-modal__error cb-ps-editor-modal__limit-error" role="alert">El valor de los productos de un envío no puede superar USD 999. Retire productos o divídalos en otro envío.</p>
             </div>
 
             <footer class="cb-ps-editor-modal__footer">
@@ -746,9 +785,12 @@ export default {
       parcelProducts: [],
       nextParcelProductId: 1,
       weightTouched: {},
+      declaredValueTouched: {},
+      declaredValueAttempted: false,
       productEditorOpen: false,
       productEditorDraft: [],
       productEditorDraftTouched: {},
+      productEditorDraftValueTouched: {},
       productEditorAttemptedSave: false,
       productEditorTriggerElement: null,
       productEditorPreviousBodyOverflow: '',
@@ -924,14 +966,37 @@ export default {
     },
     productEditorDraftValid() {
       return this.productEditorDraft.length > 0 && this.productEditorDraft.every((product) => {
-        return Boolean(product.categoryKey) && this.isProductWeightValid(product)
-      })
+        return Boolean(product.categoryKey) && this.isProductWeightValid(product) && this.isProductDeclaredValueValid(product)
+      }) && !this.productEditorDeclaredValueLimitExceeded
+    },
+    declaredValueTotalCents() {
+      return this.sumDeclaredValuesCents(this.parcelProducts)
+    },
+    totalDeclaredValue() {
+      return this.declaredValueTotalCents / 100
+    },
+    declaredValueLimitExceeded() {
+      return this.declaredValueTotalCents > 99900
+    },
+    declaredValuesAreValid() {
+      return this.productsAreValid
+        && this.parcelProducts.every((product) => this.isProductDeclaredValueValid(product))
+        && !this.declaredValueLimitExceeded
     },
     productEditorTotalWeight() {
       return this.productEditorDraft.reduce((total, product) => {
         const weight = Number(product.weight)
         return total + (Number.isFinite(weight) && weight > 0 ? weight : 0)
       }, 0)
+    },
+    productEditorTotalDeclaredValueCents() {
+      return this.sumDeclaredValuesCents(this.productEditorDraft)
+    },
+    productEditorTotalDeclaredValue() {
+      return this.productEditorTotalDeclaredValueCents / 100
+    },
+    productEditorDeclaredValueLimitExceeded() {
+      return this.productEditorTotalDeclaredValueCents > 99900
     },
     totalParcelWeight() {
       return this.parcelProducts.reduce((total, product) => {
@@ -1166,7 +1231,8 @@ export default {
         id: `product-${this.nextParcelProductId}`,
         name: category.label,
         categoryKey,
-        weight: ''
+        weight: '',
+        valueUsd: ''
       })
       this.nextParcelProductId += 1
     },
@@ -1176,12 +1242,20 @@ export default {
     removeParcelProduct(productId) {
       this.parcelProducts = this.parcelProducts.filter((product) => product.id !== productId)
       this.$delete(this.weightTouched, productId)
+      this.$delete(this.declaredValueTouched, productId)
     },
     markWeightTouched(productId) {
       this.$set(this.weightTouched, productId, true)
     },
+    markDeclaredValueTouched(productId) {
+      this.$set(this.declaredValueTouched, productId, true)
+    },
     shouldShowWeightError(product) {
       return Boolean(this.weightTouched[product.id]) && !this.isProductWeightValid(product)
+    },
+    shouldShowDeclaredValueError(product) {
+      return Boolean(this.declaredValueAttempted || this.declaredValueTouched[product.id])
+        && !this.isProductDeclaredValueValid(product)
     },
     openProductEditor(event) {
       if (this.productEditorOpen) return
@@ -1189,6 +1263,7 @@ export default {
       this.productEditorTriggerElement = event?.currentTarget || document.activeElement
       this.productEditorDraft = this.parcelProducts.map((product) => ({ ...product }))
       this.productEditorDraftTouched = {}
+      this.productEditorDraftValueTouched = {}
       this.productEditorAttemptedSave = false
       this.productEditorPreviousBodyOverflow = document.body.style.overflow
       this.productEditorOpen = true
@@ -1208,6 +1283,7 @@ export default {
       this.productEditorTriggerElement = null
       this.productEditorDraft = []
       this.productEditorDraftTouched = {}
+      this.productEditorDraftValueTouched = {}
       this.productEditorAttemptedSave = false
 
       this.$nextTick(() => {
@@ -1260,13 +1336,15 @@ export default {
         id: `product-${this.nextParcelProductId}`,
         name: category.label,
         categoryKey,
-        weight: ''
+        weight: '',
+        valueUsd: ''
       })
       this.nextParcelProductId += 1
     },
     removeProductEditorItem(productId) {
       this.productEditorDraft = this.productEditorDraft.filter((product) => product.id !== productId)
       this.$delete(this.productEditorDraftTouched, productId)
+      this.$delete(this.productEditorDraftValueTouched, productId)
     },
     markProductEditorWeightTouched(productId) {
       this.$set(this.productEditorDraftTouched, productId, true)
@@ -1275,12 +1353,23 @@ export default {
       return Boolean(this.productEditorAttemptedSave || this.productEditorDraftTouched[product.id])
         && !this.isProductWeightValid(product)
     },
+    markProductEditorDeclaredValueTouched(productId) {
+      this.$set(this.productEditorDraftValueTouched, productId, true)
+    },
+    shouldShowProductEditorDeclaredValueError(product) {
+      return Boolean(this.productEditorAttemptedSave || this.productEditorDraftValueTouched[product.id])
+        && !this.isProductDeclaredValueValid(product)
+    },
     saveProductEditor() {
       this.productEditorAttemptedSave = true
       if (!this.productEditorDraftValid) {
         this.$nextTick(() => {
-          const firstInvalidInput = this.$refs.productEditorModal?.querySelector('.cb-ps-editor-modal__weight-input input[aria-invalid="true"]')
+          const firstInvalidInput = this.$refs.productEditorModal?.querySelector('.cb-ps-editor-modal__weight-input input[aria-invalid="true"], .cb-ps-editor-modal__declared-input input[aria-invalid="true"]')
           if (firstInvalidInput) firstInvalidInput.focus()
+          else if (this.productEditorDeclaredValueLimitExceeded) {
+            const values = this.$refs.productEditorModal?.querySelectorAll('.cb-ps-editor-modal__declared-input input')
+            values?.[values.length - 1]?.focus()
+          }
         })
         return
       }
@@ -1289,6 +1378,10 @@ export default {
       const currentIds = new Set(this.parcelProducts.map((product) => product.id))
       this.weightTouched = Object.keys(this.weightTouched).reduce((touched, productId) => {
         if (currentIds.has(productId)) touched[productId] = this.weightTouched[productId]
+        return touched
+      }, {})
+      this.declaredValueTouched = Object.keys(this.declaredValueTouched).reduce((touched, productId) => {
+        if (currentIds.has(productId)) touched[productId] = this.declaredValueTouched[productId]
         return touched
       }, {})
       this.closeProductEditor()
@@ -1303,11 +1396,40 @@ export default {
         })
         return
       }
+      this.declaredValueAttempted = true
+      if (!this.declaredValuesAreValid) {
+        this.parcelProducts.forEach((product) => this.markDeclaredValueTouched(product.id))
+        this.$nextTick(() => {
+          const firstInvalidInput = this.$el.querySelector('.cb-ps-flow__declared-input input[aria-invalid="true"]')
+          if (firstInvalidInput) firstInvalidInput.focus()
+          else if (this.declaredValueLimitExceeded) {
+            const values = this.$el.querySelectorAll('.cb-ps-flow__declared-input input')
+            values?.[values.length - 1]?.focus()
+          }
+        })
+        return
+      }
       this.calculatorStep = 3
     },
     isProductWeightValid(product) {
       const weight = Number(product.weight)
       return Number.isFinite(weight) && weight > 0
+    },
+    isProductDeclaredValueValid(product) {
+      const value = Number(product.valueUsd)
+      return Number.isFinite(value) && value > 0 && value <= 999
+    },
+    sumDeclaredValuesCents(products) {
+      return products.reduce((total, product) => {
+        const value = Number(product.valueUsd)
+        return total + (Number.isFinite(value) ? Math.round((value + Number.EPSILON) * 100) : 0)
+      }, 0)
+    },
+    formatDeclaredValue(value) {
+      const amount = Number(value)
+      return Number.isFinite(amount)
+        ? amount.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        : '0,00'
     },
     formatParcelWeight(value) {
       const weight = Number(value)
